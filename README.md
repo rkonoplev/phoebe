@@ -53,7 +53,7 @@ phoebe/
 ## 🚀 Quick Start
 
 **Requirements:**
-- JDK 21+
+- JDK 21+ (optional, for hybrid development mode)
 - Docker & Docker Compose
 - Git
 
@@ -64,10 +64,13 @@ git clone https://github.com/rkonoplev/phoebe.git
 cd phoebe
 
 # 2. Create the environment file (defaults are fine)
-cp .env.example .env
+cp .env.dev.example .env.dev
 
 # 3. Run everything!
+# For backend developers (requires local JDK for full IDE support):
 make run
+# For frontend developers (only Docker is needed):
+make run-prod
 ```
 The API is now available at `http://localhost:8080` and Swagger UI at `http://localhost:8080/swagger-ui/index.html`.
 

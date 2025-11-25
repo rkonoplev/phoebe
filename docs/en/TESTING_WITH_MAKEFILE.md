@@ -5,6 +5,7 @@
 ## Table of Contents
 
 - [Quick Reference](#quick-reference)
+- [Choosing a Development Mode](#choosing-a-development-mode)
 - [Development Workflows](#development-workflows)
   - [1. Full Stack Development](#1-full-stack-development)
   - [2. Backend-Only Development](#2-backend-only-development)
@@ -13,22 +14,10 @@
     - [Full Test Suite](#full-test-suite)
     - [Code Quality Checks](#code-quality-checks)
 - [Environment Requirements](#environment-requirements)
-  - [For `make run` and `make stop`](#for-make-run-and-make-stop)
-  - [For `make test` and `make all-tests`](#for-make-test-and-make-all-tests)
-  - [For `make boot`](#for-make-boot)
 - [Configuration Details](#configuration-details)
-  - [Docker Compose (`make run`)](#docker-compose-make-run)
-  - [Testcontainers (`make test`)](#testcontainers-make-test)
-  - [Local Development (`make boot`)](#local-development-make-boot)
 - [Troubleshooting](#troubleshooting)
-  - [Build and Cache Issues](#build-and-cache-issues)
-  - [Docker Issues](#docker-issues)
-  - [Test Issues](#test-issues)
-  - [Local MySQL Issues](#local-mysql-issues)
 - [Best Practices](#best-practices)
 - [Integration with IDEs](#integration-with-ides)
-  - [IntelliJ IDEA](#intellij-idea)
-  - [VS Code](#vs-code)
 - [CI/CD Integration](#cicd-integration)
 
 This guide explains how to use the Makefile commands for development and testing workflows.
@@ -37,17 +26,33 @@ This guide explains how to use the Makefile commands for development and testing
 
 | Command | Description | Use Case |
 |:---|:---|:---|
-| `make run` | Start full project (Docker Compose) | Manual testing, frontend development |
-| `make stop` | Stop project | Clean shutdown |
-| `make rebuild` | Rebuild backend without cache and start | Fixing build cache issues |
-| `make hard-rebuild` | Stop, rebuild backend without cache, start | When `rebuild` is not enough |
-| `make reset` | **Delete all containers and DB data** | Complete environment reset |
-| `make test` | Run integration tests (Testcontainers) | Quick test feedback |
-| `make all-tests` | Run all tests (unit + integration) | Full validation |
-| `make boot` | Start backend locally | Development with local MySQL |
-| `make clean` | Clean build artifacts | Fresh start |
-| `make lint` | Run static analysis | Code quality checks |
-| `make coverage` | Generate test coverage | Coverage reports |
+| `make run-hybrid` | **(Default)** Start in Hybrid Mode. | For backend developers (requires local JDK). |
+| `make run-prod` | Start in Production-Like Mode. | For frontend developers (only Docker needed). |
+| `make run` | Alias for `make run-hybrid`. | Quick start in the default mode. |
+| `make stop` | Stop the project. | Clean shutdown. |
+| `make reset` | **Delete all containers and DB data**. | Complete environment reset. |
+| `make test` | Run integration tests (Testcontainers). | Quick test feedback. |
+| `make all-tests` | Run all tests (unit + integration). | Full validation. |
+| `make boot` | Start backend locally. | Development with local MySQL. |
+| `make clean` | Clean build artifacts. | Fresh start. |
+| `make lint` | Run static analysis. | Code quality checks. |
+| `make coverage` | Generate test coverage. | Coverage reports. |
+
+## Choosing a Development Mode
+
+The project supports two launch modes for local development to suit different tasks.
+
+### Mode 1: Hybrid (`make run-hybrid` or `make run`)
+- **For whom:** Ideal for **backend developers** actively working on Java code.
+- **How it works:** The code is compiled inside a Docker container, but `volumes` allow changes to be picked up instantly. Requires a **locally installed JDK** for full IDE support (code analysis, running unit tests).
+- **When to use:** When you are writing Java code and want to quickly run unit tests directly from your IDE.
+
+### Mode 2: Production-Like (`make run-prod`)
+- **For whom:** Ideal for **frontend developers, testers,** or for final checks.
+- **How it works:** Uses a multi-stage build to create a lightweight, self-contained backend image. **No local JDK is required.**
+- **When to use:** When you just need a working backend and do not plan to make changes to the Java code.
+
+> A detailed comparison of the approaches is available in the **[Local Development Approaches](./DEVELOPMENT_APPROACHES.md)** document.
 
 ## Development Workflows
 
@@ -55,8 +60,11 @@ This guide explains how to use the Makefile commands for development and testing
 For developing both frontend and backend with live reload:
 
 ```bash
-# Start everything (MySQL + backend + frontend)
+# For backend developers (default mode)
 make run
+
+# For frontend developers (no local Java required)
+make run-prod
 ```
 
 **Access Services:**
@@ -113,49 +121,32 @@ make coverage
 ```
 
 ## Environment Requirements
-
-### For `make run` and `make stop`
-- Docker and Docker Compose
-- No local MySQL needed
-
-### For `make test` and `make all-tests`
-- Docker (for Testcontainers)
-- No Docker Compose needed
-- No local MySQL needed
-
-### For `make boot`
-- Local MySQL 8.0+ running
-- Database: `phoebe_db`
-- User: `root` / Password: `root`
-- Or configure via environment variables
+- **For `make run-hybrid`**: Docker and Java (JDK).
+- **For `make run-prod`**: Only Docker.
+- **For `make test` and `make all-tests`**: Docker (for Testcontainers) and Java (JDK) to run Gradle.
+- **For `make boot`**: Local MySQL and Java (JDK).
 
 ## Configuration Details
 
-### Docker Compose (`make run`)
-- **MySQL**: Persistent data in Docker volume
-- **Backend**: Hot reload with Spring Boot DevTools
-- **Frontend**: Live reload (if configured)
+### Docker Compose (`make run-*`)
+- **MySQL**: Persistent data in Docker volume.
+- **Backend**: In hybrid mode (`run-hybrid`), hot reload is used with Spring Boot DevTools.
+- **Frontend**: Live reload (if configured).
 
 ### Testcontainers (`make test`)
-- **MySQL**: Fresh container per test run
-- **Isolation**: Each test gets clean database
-- **Performance**: Optimized for CI/CD
+- **MySQL**: Fresh container per test run.
+- **Isolation**: Each test gets a clean database.
+- **Performance**: Optimized for CI/CD.
 
 ### Local Development (`make boot`)
-- **MySQL**: Your local installation
-- **Flexibility**: Direct database access
-- **Speed**: No container overhead
+- **MySQL**: Your local installation.
+- **Flexibility**: Direct database access.
+- **Speed**: No container overhead.
 
 ## Troubleshooting
 
 ### Build and Cache Issues
-If the application behaves unexpectedly after code changes (especially in `build.gradle`),
-try these commands in order:
-
-1.  **`make rebuild`**: Rebuilds the backend without cache. This solves most dependency-related problems.
-2.  **`make hard-rebuild`**: If `rebuild` doesn't help, this command performs a deeper clean before rebuilding.
-3.  **`make reset`**: **CAUTION!** Use as a last resort. It removes containers and **all database data**,
-    returning the environment to its initial state.
+If the application behaves unexpectedly after code changes (especially in `build.gradle`), try `make reset` to completely clean the environment. **Warning: this will delete your DB data.**
 
 ### Docker Issues
 ```bash
@@ -188,23 +179,23 @@ mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS phoebe_db;"
 
 ## Best Practices
 
-1. **Use `make test` for quick feedback** during development
-2. **Use `make all-tests` before commits** for full validation
-3. **Use `make run` for manual testing** with frontend
-4. **Use `make boot` only if you have local MySQL** and need direct access
-5. **Always `make stop`** to clean up Docker resources
+1. **Use `make test` for quick feedback** during development.
+2. **Use `make all-tests` before commits** for full validation.
+3. **Use `make run-hybrid` (or `make run`) for backend development.**
+4. **Use `make run-prod` for frontend development or testing.**
+5. **Always `make stop`** to clean up Docker resources.
 
 ## Integration with IDEs
 
 ### IntelliJ IDEA
-- Run configurations can use `make` commands
-- Terminal integration: `Tools > Terminal`
-- External tools: `Tools > External Tools`
+- Run configurations can use `make` commands.
+- Terminal integration: `Tools > Terminal`.
+- External tools: `Tools > External Tools`.
 
 ### VS Code
-- Tasks can be configured to run `make` commands
-- Integrated terminal supports `make`
-- Extensions available for Makefile syntax
+- Tasks can be configured to run `make` commands.
+- Integrated terminal supports `make`.
+- Extensions available for Makefile syntax.
 
 ## CI/CD Integration
 

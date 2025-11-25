@@ -1,0 +1,28 @@
+# Base docker-compose file
+# Contains common services and configurations needed for all environments.
+
+services:
+  phoebe-mysql:
+    image: mysql:8.0
+    container_name: phoebe-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-phoebe_db}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      # This healthcheck is more reliable as it waits for the server to be fully ready.
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  mysql_data:
+  gradle_cache: # Define the named volume for Gradle cache.
+  nextjs_cache: # Define the named volume for Next.js .next folder.
+  node_modules: # Define the named volume for node_modules.

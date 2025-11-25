@@ -14,6 +14,7 @@ and what will be automatically executed in GitHub Actions (CI/CD).
 
 ## Table of Contents
 - [Initial Project Setup](#initial-project-setup)
+- [Choosing a Development Mode](#choosing-a-development-mode)
 - [Daily Local Workflow](#daily-local-workflow)
 - [Setting Up Code Auto-formatter](#setting-up-code-auto-formatter)
 - [Before Pushing to GitHub](#before-pushing-to-github)
@@ -25,7 +26,25 @@ and what will be automatically executed in GitHub Actions (CI/CD).
 
 ## Initial Project Setup
 
-For the first-time setup of the project, please refer to the **[Setup Guide](./SETUP_GUIDED.md)**.
+For the first-time setup of the project, please refer to the **[Setup Guide](./SETUP_GUIDE.md)**.
+
+---
+
+## Choosing a Development Mode
+
+The project supports two launch modes for local development. Choose the one that best suits your current task.
+
+### Mode 1: Hybrid (`make run` or `make run-hybrid`)
+- **For whom:** Ideal for **backend developers** actively working on Java code.
+- **Requirements:** Docker and a locally installed JDK.
+- **Advantages:** Allows you to quickly run unit tests and use all code analysis features directly in your IDE.
+
+### Mode 2: Production-Like (`make run-prod`)
+- **For whom:** Ideal for **frontend developers, testers,** or for final checks before a commit.
+- **Requirements:** Only Docker.
+- **Advantages:** Does not require Java to be installed on your local machine, providing a "clean" environment identical to CI/CD.
+
+> A detailed comparison of the approaches is available in the **[Local Development Approaches](./DEVELOPMENT_APPROACHES.md)** document.
 
 ---
 
@@ -34,9 +53,13 @@ For the first-time setup of the project, please refer to the **[Setup Guide](./S
 ### Recommended Process (via Makefile)
 The entire primary workflow is built around the `Makefile` for simplicity.
 
-- **Run the full environment** (DB + backend):
+- **Run the full environment** (DB + backend + frontend):
   ```bash
+  # For backend development (default mode)
   make run
+
+  # For frontend development
+  make run-prod
   ```
 - **Run all tests** (unit + integration):
   ```bash
@@ -60,9 +83,10 @@ The `make` commands are wrappers around `docker-compose` and `gradlew`. You can 
   ```bash
   cd backend && ./gradlew integrationTest
   ```
-- **Run the application manually**:
-  1. Start the database: `docker-compose up -d phoebe-mysql`
-  2. Run the application: `cd backend && ./gradlew bootRun`
+- **Run the application manually** (requires local MySQL):
+  ```bash
+  cd backend && ./gradlew bootRun
+  ```
 
 ---
 

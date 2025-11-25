@@ -1,0 +1,53 @@
+# Docker-compose for PRODUCTION-LIKE development.
+# This mode uses a multi-stage build to create a lightweight, self-contained backend image.
+# No local JDK is required. This is ideal for frontend developers or for final testing.
+
+services:
+  phoebe-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.multistage # Use the multi-stage build Dockerfile.
+    container_name: phoebe-app
+    restart: always
+    depends_on:
+      phoebe-mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: local # Still uses local profile for DB connection, etc.
+      DB_HOST: phoebe-mysql
+    ports:
+      - "8080:8080"
+    healthcheck:
+      # This healthcheck waits for the Spring Boot app to be ready.
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 420s # IMPORTANT: Increased to 7 minutes to allow for slow initial multi-stage builds.
+    # No source code volumes are needed here, as the app is a self-contained .jar.
+    command: >
+      sh -c "
+        echo 'PROD-LIKE MODE: Waiting for MySQL to be ready...'
+        while ! nc -z phoebe-mysql 3306; do
+          sleep 1
+        done
+        echo 'PROD-LIKE MODE: MySQL is ready, starting Spring Boot app...'
+        java -jar /app/app.jar
+      "
+
+  nextjs-app:
+    build:
+      context: ./frontends/nextjs
+      dockerfile: Dockerfile
+    container_name: phoebe-nextjs
+    restart: always
+    depends_on:
+      phoebe-app:
+        condition: service_healthy # This now correctly waits for the backend to be fully ready.
+    ports:
+      - "3000:3000"
+    # Volumes are still useful for frontend development to allow hot-reloading.
+    volumes:
+      - ./frontends/nextjs:/app
+      - node_modules:/app/node_modules
+      - nextjs_cache:/app/.next

@@ -1,0 +1,54 @@
+# Docker-compose for HYBRID development.
+# This mode builds the backend from source inside the container and uses volumes for hot-reloading.
+# Requires a local JDK for full IDE support (e.g., running unit tests locally).
+
+services:
+  phoebe-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: phoebe-app
+    restart: always
+    depends_on:
+      phoebe-mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      DB_HOST: phoebe-mysql
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app/backend # Mount backend source for hot-reloading.
+      - gradle_cache:/root/.gradle # Use named volume for Gradle cache.
+    healthcheck:
+      # This healthcheck waits for the Spring Boot app to be ready.
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 420s # IMPORTANT: Increased to 7 minutes to allow for slow initial Gradle builds.
+    command: >
+      sh -c "
+        echo 'HYBRID MODE: Waiting for MySQL to be ready...'
+        while ! nc -z phoebe-mysql 3306; do
+          sleep 1
+        done
+        echo 'HYBRID MODE: MySQL is ready, starting Spring Boot app...'
+        ./gradlew bootRun --no-daemon
+      "
+
+  nextjs-app:
+    build:
+      context: ./frontends/nextjs
+      dockerfile: Dockerfile
+    container_name: phoebe-nextjs
+    restart: always
+    depends_on:
+      phoebe-app:
+        condition: service_healthy # This now correctly waits for the backend to be fully ready.
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontends/nextjs:/app # Mount frontend source for hot-reloading.
+      - node_modules:/app/node_modules
+      - nextjs_cache:/app/.next

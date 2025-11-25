@@ -17,6 +17,11 @@ reference.
 
 ## File Descriptions
 
+### `docker-compose.yml` (Legacy)
+- **Original location**: Project root directory (`/docker-compose.yml`)
+- **Description**: This was the single file used to run all services (MySQL, backend, frontend). It did not provide flexibility for different development modes.
+- **Status**: OBSOLETE. Replaced by a modular structure with `docker-compose.base.yml`, `docker-compose.hybrid.yml`, and `docker-compose.prod.yml`. Preserved here for historical context.
+
 ### `legacy-gradle-ci.yml`
 A legacy version of the GitHub Actions workflow file.
 - **Key Differences**: Split into multiple `jobs`, manual DB management via `services`, automated `gitleaks` scan.
@@ -99,7 +104,4 @@ Docker volume migration scripts used during the news-platform → phoebe renamin
 
 ## Current Development
 
-For current development, use:
-- Main `docker-compose.yml` in the project root
-- API examples in `docs/API_REFERENCE.md`
-- Standard Spring Boot configuration profiles
+For current development, use the `Makefile` and the modular `docker-compose.*.yml` files in the project root.

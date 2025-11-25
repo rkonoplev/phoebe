@@ -1,0 +1,41 @@
+# Dockerfile for fully containerized, multi-stage builds
+# This file is used for the "prod-like" local development approach.
+# No local JDK is required on the host machine.
+
+# --- STAGE 1: BUILD ---
+# Use an official Gradle image with a JDK as a builder stage.
+# Use an alias "builder" for this stage.
+FROM gradle:8.7-jdk21 AS builder
+
+# Set the working directory.
+WORKDIR /home/gradle/src
+
+# Copy the entire project context to the build stage.
+# This includes backend, frontend, etc.
+COPY . .
+
+# Run the Gradle build to create the executable jar.
+# The --no-daemon flag is recommended for CI/CD and containerized environments.
+# This command specifically builds the 'backend' subproject.
+RUN gradle :backend:build --no-daemon
+
+# --- STAGE 2: RUN ---
+# Use a lightweight JRE image for the final stage.
+FROM openjdk:21-jre-slim
+
+# Install netcat for the wait-for-it script.
+RUN apt-get update && apt-get install -y netcat-openbsd && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory in the final container.
+WORKDIR /app
+
+# Magic happens here:
+# Copy ONLY the built jar from the "builder" stage into the final image.
+COPY --from=builder /home/gradle/src/backend/build/libs/*.jar app.jar
+
+# Expose the port the application runs on.
+EXPOSE 8080
+
+# The command to run the application is now handled in docker-compose.yml
+# to include the wait-for-it logic.
+# ENTRYPOINT ["java","-jar","/app/app.jar"]
