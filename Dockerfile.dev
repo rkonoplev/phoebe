@@ -13,6 +13,10 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Removed wait-for-it.sh as Spring Boot will handle retries
+# ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /wait-for-it.sh
+# RUN chmod +x /wait-for-it.sh
+
 WORKDIR /app
 
 # Copy backend source code to container
@@ -23,5 +27,5 @@ RUN chmod +x ./gradlew
 
 EXPOSE 8080
 
-# Run Spring Boot application with Gradle
-CMD ["./gradlew", "bootRun", "--no-daemon"]
+# The command to run the application is now handled in docker-compose.yml
+# CMD ["./gradlew", "bootRun", "--no-daemon"]

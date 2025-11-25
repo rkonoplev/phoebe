@@ -23,8 +23,13 @@ RUN gradle :backend:build --no-daemon
 # Use a lightweight JRE image for the final stage.
 FROM openjdk:21-jre-slim
 
-# Install netcat for the wait-for-it script.
-RUN apt-get update && apt-get install -y netcat-openbsd && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install curl for health checks and netcat for the wait-for-it script
+# netcat is still needed for the docker-compose command, but wait-for-it.sh is removed.
+RUN apt-get update && apt-get install -y curl netcat-openbsd && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Removed wait-for-it.sh as Spring Boot will handle retries
+# ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /wait-for-it.sh
+# RUN chmod +x /wait-for-it.sh
 
 # Set the working directory in the final container.
 WORKDIR /app
@@ -37,5 +42,4 @@ COPY --from=builder /home/gradle/src/backend/build/libs/*.jar app.jar
 EXPOSE 8080
 
 # The command to run the application is now handled in docker-compose.yml
-# to include the wait-for-it logic.
 # ENTRYPOINT ["java","-jar","/app/app.jar"]

@@ -4,12 +4,12 @@ WORKDIR /app
 
 COPY package*.json ./
 RUN npm install --registry https://registry.npmjs.org/ --verbose
-VOLUME /app/node_modules # Declare node_modules as a volume for caching
+# Removed VOLUME /app/node_modules - Docker will manage this internally
 
 COPY . .
 
 RUN npm run build
-VOLUME /app/.next # Declare .next as a volume for caching
+# Removed VOLUME /app/.next - Docker will manage this internally
 
 EXPOSE 3000
 

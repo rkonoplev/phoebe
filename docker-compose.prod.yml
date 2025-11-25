@@ -25,15 +25,7 @@ services:
       retries: 10
       start_period: 420s # IMPORTANT: Increased to 7 minutes to allow for slow initial multi-stage builds.
     # No source code volumes are needed here, as the app is a self-contained .jar.
-    command: >
-      sh -c "
-        echo 'PROD-LIKE MODE: Waiting for MySQL to be ready...'
-        while ! nc -z phoebe-mysql 3306; do
-          sleep 1
-        done
-        echo 'PROD-LIKE MODE: MySQL is ready, starting Spring Boot app...'
-        java -jar /app/app.jar
-      "
+    command: "java -jar /app/app.jar" # Removed wait-for-it.sh, Spring Boot will handle retries.
 
   nextjs-app:
     build:
@@ -48,5 +40,5 @@ services:
       - "3000:3000"
     volumes:
       - ./frontends/nextjs:/app
-      - /app/node_modules # Anonymous volume to prevent host node_modules from interfering.
-      - /app/.next # Anonymous volume for Next.js build cache.
+      # Removed anonymous volumes for node_modules and .next to prevent conflicts.
+      # Docker will manage these internally based on the Dockerfile.

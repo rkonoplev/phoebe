@@ -27,15 +27,7 @@ services:
       timeout: 10s
       retries: 10
       start_period: 420s # IMPORTANT: Increased to 7 minutes to allow for slow initial Gradle builds.
-    command: >
-      sh -c "
-        echo 'HYBRID MODE: Waiting for MySQL to be ready...'
-        while ! nc -z phoebe-mysql 3306; do
-          sleep 1
-        done
-        echo 'HYBRID MODE: MySQL is ready, starting Spring Boot app...'
-        ./gradlew bootRun --no-daemon
-      "
+    command: "./gradlew bootRun --no-daemon" # Removed wait-for-it.sh, Spring Boot will handle retries.
 
   nextjs-app:
     build:
@@ -50,5 +42,5 @@ services:
       - "3000:3000"
     volumes:
       - ./frontends/nextjs:/app # Mount frontend source for hot-reloading.
-      - /app/node_modules # Anonymous volume to prevent host node_modules from interfering.
-      - /app/.next # Anonymous volume for Next.js build cache.
+      # Removed anonymous volumes for node_modules and .next to prevent conflicts.
+      # Docker will manage these internally based on the Dockerfile.
