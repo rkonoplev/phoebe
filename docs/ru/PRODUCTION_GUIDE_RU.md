@@ -27,37 +27,56 @@ SPRING_PROFILES_ACTIVE=prod
 - Устанавливает `ddl-auto: validate`, чтобы предотвратить случайное изменение схемы базы данных.
 - Ожидает, что все чувствительные данные будут переданы через переменные окружения.
 
-### Docker
-Хотя `docker-compose.yml` в корне проекта предназначен для локальной разработки, его можно адаптировать для продакшена с помощью `override`-файла.
+### Docker Compose для продакшена
+Для продакшен-развертывания рекомендуется использовать `docker-compose.prod.yml` в сочетании с `docker-compose.base.yml`.
+Это позволяет использовать ту же модульную структуру, что и для локальной разработки, но с продакшен-настройками.
 
-**Пример `docker-compose.override.yml` для продакшена:**
+**Пример `docker-compose.prod.yml` (с учетом продакшен-настроек):**
 ```yaml
-version: '3.8'
+# docker-compose.prod.yml
 services:
   phoebe-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.multistage # Используем многостадийную сборку
+    container_name: phoebe-app
+    restart: always
+    depends_on:
+      phoebe-mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod # Активируем продакшен-профиль
+      DB_HOST: your_external_db_host # Указываем хост внешней БД
+      # ... другие переменные окружения для продакшена
     ports:
       - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:mysql://your_external_db_host:3306/phoebe_db
-      - SPRING_DATASOURCE_USERNAME=your_db_user
-      - SPRING_DATASOURCE_PASSWORD_FILE=/run/secrets/db_password
-      - ADMIN_USERNAME=your_admin_user
-      - ADMIN_PASSWORD_FILE=/run/secrets/admin_password
-    secrets:
-      - db_password
-      - admin_password
+    # В продакшене не монтируем исходники, только готовый JAR
+    # volumes:
+    #   - ./backend:/app/backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 8
+      start_period: 120s # Время на запуск приложения
 
-secrets:
-  db_password:
-    file: ./db_password.txt
-  admin_password:
-    file: ./admin_password.txt
+  nextjs-app:
+    build:
+      context: ./frontends/nextjs
+      dockerfile: Dockerfile # Используем тот же Dockerfile для фронтенда
+    container_name: phoebe-nextjs
+    restart: always
+    depends_on:
+      - phoebe-app
+    ports:
+      - "3000:3000"
+    # В продакшене не монтируем исходники, только готовый билд
+    # volumes:
+    #   - ./frontends/nextjs:/app
+    #   - /app/node_modules
+    #   - /app/.next
 ```
-В этом примере:
-- Используется профиль `prod`.
-- Приложение подключается к внешней базе данных.
-- Пароли передаются через **Docker Secrets**, что является более безопасным способом, чем переменные окружения.
+**Примечание:** В продакшен-среде `phoebe-mysql` из `docker-compose.base.yml` должен быть заменен на внешнюю базу данных. Это достигается путем переопределения переменных окружения для `phoebe-app` или использованием другого `docker-compose.base.yml` для продакшена.
 
 ---
 

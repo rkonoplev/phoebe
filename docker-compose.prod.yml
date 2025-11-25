@@ -46,8 +46,7 @@ services:
         condition: service_healthy # This now correctly waits for the backend to be fully ready.
     ports:
       - "3000:3000"
-    # Volumes are still useful for frontend development to allow hot-reloading.
     volumes:
       - ./frontends/nextjs:/app
-      - node_modules:/app/node_modules
-      - nextjs_cache:/app/.next
+      - /app/node_modules # Anonymous volume to prevent host node_modules from interfering.
+      - /app/.next # Anonymous volume for Next.js build cache.

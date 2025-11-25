@@ -25,37 +25,56 @@ This profile activates settings from `application-prod.yml`, which:
 - Sets `ddl-auto: validate` to prevent accidental schema changes.
 - Expects all sensitive data to be passed via environment variables.
 
-### Docker
-While the `docker-compose.yml` in the project root is designed for local development, it can be adapted for production using an `override` file.
+### Docker Compose for Production
+For production deployment, it is recommended to use `docker-compose.prod.yml` in conjunction with `docker-compose.base.yml`.
+This allows using the same modular structure as for local development, but with production settings.
 
-**Example `docker-compose.override.yml` for production:**
+**Example `docker-compose.prod.yml` (with production settings):**
 ```yaml
-version: '3.8'
+# docker-compose.prod.yml
 services:
   phoebe-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.multistage # Use the multi-stage build
+    container_name: phoebe-app
+    restart: always
+    depends_on:
+      phoebe-mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod # Activate production profile
+      DB_HOST: your_external_db_host # Specify external DB host
+      # ... other environment variables for production
     ports:
       - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:mysql://your_external_db_host:3306/phoebe_db
-      - SPRING_DATASOURCE_USERNAME=your_db_user
-      - SPRING_DATASOURCE_PASSWORD_FILE=/run/secrets/db_password
-      - ADMIN_USERNAME=your_admin_user
-      - ADMIN_PASSWORD_FILE=/run/secrets/admin_password
-    secrets:
-      - db_password
-      - admin_password
+    # In production, do not mount source code, only the built JAR
+    # volumes:
+    #   - ./backend:/app/backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 8
+      start_period: 120s # Time for application startup
 
-secrets:
-  db_password:
-    file: ./db_password.txt
-  admin_password:
-    file: ./admin_password.txt
+  nextjs-app:
+    build:
+      context: ./frontends/nextjs
+      dockerfile: Dockerfile # Use the same Dockerfile for the frontend
+    container_name: phoebe-nextjs
+    restart: always
+    depends_on:
+      - phoebe-app
+    ports:
+      - "3000:3000"
+    # In production, do not mount source code, only the built artifact
+    # volumes:
+    #   - ./frontends/nextjs:/app
+    #   - /app/node_modules
+    #   - /app/.next
 ```
-In this example:
-- The `prod` profile is used.
-- The application connects to an external database.
-- Passwords are passed via **Docker Secrets**, which is a more secure method than environment variables.
+**Note:** In a production environment, `phoebe-mysql` from `docker-compose.base.yml` should be replaced with an external database. This is achieved by overriding environment variables for `phoebe-app` or by using a different `docker-compose.base.yml` for production.
 
 ---
 

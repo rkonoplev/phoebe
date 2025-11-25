@@ -50,5 +50,5 @@ services:
       - "3000:3000"
     volumes:
       - ./frontends/nextjs:/app # Mount frontend source for hot-reloading.
-      - node_modules:/app/node_modules
-      - nextjs_cache:/app/.next
+      - /app/node_modules # Anonymous volume to prevent host node_modules from interfering.
+      - /app/.next # Anonymous volume for Next.js build cache.

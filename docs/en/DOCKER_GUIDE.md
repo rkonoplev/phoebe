@@ -2,115 +2,139 @@
 
 # Docker Guide
 
-> For a definition of key terms and technologies, please refer to the **[Glossary](./GLOSSARY.md)**.
+> For definitions of key terms and technologies, please refer to the **[Glossary](./GLOSSARY.md)**.
 
 ## Table of Contents
-- [Docker Compose Strategy](#docker-compose-strategy)
-- [Practical Scenarios and Commands](#practical-scenarios-and-commands)
-- [Production Build with Docker](#production-build-with-docker)
-- [Best Practices](#best-practices)
-
-This document explains how to work with Docker in Phoebe CMS, both for local development
-and production deployment.
+- [Docker Philosophy in the Project](#docker-philosophy-in-the-project)
+- [Docker Compose File Structure](#docker-compose-file-structure)
+  - [`docker-compose.base.yml`](#docker-composebaseyml)
+  - [`docker-compose.hybrid.yml`](#docker-composehybridyml)
+  - [`docker-compose.prod.yml`](#docker-composeprodyml)
+- [Choosing a Development Mode](#choosing-a-development-mode)
+- [Direct Usage of Docker Compose](#direct-usage-of-docker-compose)
+- [Building for Production](#building-for-production)
+- [Data and Cache Management](#data-and-cache-management)
 
 ---
 
-## Docker Compose Strategy
+## Docker Philosophy in the Project
 
-The project uses a two-file approach for Docker Compose to separate the core application architecture
-from local development conveniences.
+The project uses Docker to create a consistent, isolated, and easy-to-use development environment. The main goal is to minimize the number of dependencies that need to be installed on a developer's local machine.
 
-### `docker-compose.yml` (The Architectural Blueprint)
--   **Purpose**: Defines the fundamental services that make up the application (`backend`, `database`, `frontend`).
--   **Analogy**: Think of this file as the architectural plan for a building. It describes the foundation,
-    the number of floors, and the main structure. It is essential and universal for any environment.
+Ideally, all you need is **Docker Desktop**.
 
-### `docker-compose.override.yml` (The Developer's Scaffolding)
--   **Purpose**: Provides local, development-specific overrides. This file is automatically and transparently
-    used by Docker Compose when you run `docker-compose up`.
--   **Analogy**: This is the temporary scaffolding used to construct the building. It's essential for the
-    development process but is not part of the final structure.
--   **Content**: It typically includes configurations that are only useful for local development, such as:
-    -   **Port Mapping**: Exposing the database port to the host machine for direct access (`3306:3306`).
-    -   **Volume Mounts**: Mounting local source code into the container for "hot-reloading".
+The project offers two main operating modes to meet the needs of both backend and frontend developers.
 
-This separation ensures that the base `docker-compose.yml` remains clean, while developers have the
-flexibility to customize their local environment.
+---
 
-To start the backend and database together for local development, run:
+## Docker Compose File Structure
+
+Instead of a single monolithic `docker-compose.yml`, we use a modular approach, splitting the configuration into several files. This allows for flexible combination of services for different scenarios.
+
+### `docker-compose.base.yml`
+- **Purpose**: A base file that defines common services and resources for all modes.
+- **Contents**:
+  - The `phoebe-mysql` database service.
+  - Named volumes for data persistence: `mysql_data`, `gradle_cache`, `node_modules`, `nextjs_cache`.
+
+### `docker-compose.hybrid.yml`
+- **Purpose**: Describes the **hybrid development mode**.
+- **For whom**: For backend developers.
+- **How it works**:
+  - Uses `Dockerfile.dev` to build the backend.
+  - The backend source code is mounted into the container (`volumes`), allowing Spring Boot DevTools to instantly pick up changes in Java code.
+  - **Requires a local JDK** for full IDE support (code analysis, running unit tests).
+
+### `docker-compose.prod.yml`
+- **Purpose**: Describes the **production-like development mode**.
+- **For whom**: For frontend developers, testers, and CI/CD.
+- **How it works**:
+  - Uses `Dockerfile.multistage` to create a lightweight, optimized backend image.
+  - Only the compiled `.jar` file is included in the final image, with no source code.
+  - **Does not require a local JDK**.
+
+---
+
+## Choosing a Development Mode
+
+Modes are managed via the `Makefile`, which automatically substitutes the necessary `docker-compose` files.
+
+- **Hybrid Mode (default):**
+  ```bash
+  make run  # or make run-hybrid
+  ```
+  This command will execute: `docker compose -f docker-compose.base.yml -f docker-compose.hybrid.yml up --build`
+
+- **Production-Like Mode:**
+  ```bash
+  make run-prod
+  ```
+  This command will execute: `docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up --build`
+
+> For a more detailed comparison of the modes, refer to **[Local Development Approaches](./DEVELOPMENT_APPROACHES.md)**.
+
+---
+
+## Direct Usage of Docker Compose
+
+If you prefer to work without `Makefile`, you can run `docker compose` directly, specifying the required configuration files with the `-f` flag.
+
+- **Running in Hybrid Mode:**
+  ```bash
+  docker compose -f docker-compose.base.yml -f docker-compose.hybrid.yml up --build
+  ```
+
+- **Running in Production-Like Mode:**
+  ```bash
+  docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up --build
+  ```
+
+- **Stopping:**
+  ```bash
+  # It's sufficient to stop with one of the scenarios to shut everything down
+  docker compose -f docker-compose.base.yml -f docker-compose.hybrid.yml down
+  ```
+
+---
+
+## Building for Production
+
+To create the final Docker image that will be deployed to a server, `Dockerfile.multistage` is used.
+
+1.  **Ensure your code is committed**, as the build will take place in a clean environment.
+
+2.  **Run the build command from the project root:**
+    ```bash
+    docker build -t phoebe-cms:latest -f Dockerfile.multistage .
+    ```
+    - `-t phoebe-cms:latest`: Sets the name and tag for your image. Versioning is recommended (e.g., `phoebe-cms:1.0.0`).
+    - `-f Dockerfile.multistage`: Explicitly specifies which Dockerfile to use.
+    - `.`: The build context (the entire project).
+
+3.  **Run the built image:**
+    ```bash
+    # Example of running with environment variables
+    docker run -d -p 8080:8080 \
+      -e SPRING_PROFILES_ACTIVE=prod \
+      -e DB_HOST=your_db_host \
+      -e DB_USER=your_db_user \
+      -e DB_PASSWORD=your_db_password \
+      phoebe-cms:latest
+    ```
+
+---
+
+## Data and Cache Management
+
+The project uses named volumes to persist data between runs.
+
+- **`mysql_data`**: Stores your MySQL database data.
+- **`gradle_cache`**: Stores the downloaded Gradle and all its dependencies. This significantly speeds up subsequent backend builds.
+- **`node_modules`**: Stores JavaScript dependencies for the frontend.
+- **`nextjs_cache`**: Stores the Next.js build cache.
+
+To completely reset the environment, including all this data, use the command:
 ```bash
-docker-compose up --build
+make reset
 ```
-*   **Note**: The recommended way to start the local development environment is to use the `make run` command, which automates this process.
-
----
-
-## Practical Scenarios and Commands
-
-While `make` is the primary interface, understanding the underlying `docker compose` commands provides more flexibility.
-
-### Recommendations for Common Tasks
-
-| Goal | Commands |
-|:---|:---|
-| Quickly restart with updated code | `docker compose up --build phoebe-app` |
-| Completely clean and recreate | `docker compose down -v`<br>`docker compose build --no-cache phoebe-app`<br>`docker compose up` |
-| Test only one service | `docker compose up phoebe-app` |
-| Full rebuild of all services | `docker compose build --no-cache`<br>`docker compose up` |
-
-### `docker compose` vs. `make` Commands
-
-| `docker compose` Command | What it does | `make` Equivalent | Notes |
-|:---|:---|:---|:---|
-| `docker compose up` | Starts containers. Builds if images are missing (with cache). | `make run` (old version) | A fast command for normal development. |
-| `docker compose up --build` | Always rebuilds images before starting, but uses cache. | `make run` | Ensures code changes are applied. |
-| `docker compose up --build phoebe-app` | Rebuilds only `phoebe-app` (with cache) and starts services. | - | Faster if you only need to update the backend. |
-| `docker compose build --no-cache phoebe-app` | Rebuilds the `phoebe-app` image from scratch, ignoring cache. | `make rebuild` | Useful for changes in `Dockerfile` or `build.gradle`. |
-| `docker compose down` | Stops and removes containers, but keeps volumes. | `make stop` | **Safe**: MySQL data is preserved. |
-| `docker compose down -v` | Stops everything and removes volumes. | `make reset` | **Dangerous**: Resets the database. Use for a "clean slate." |
-
-### What's the difference: `--build` vs. `--no-cache`?
-
-- **`--build`** = Update with cache (fast).
-  - Docker rebuilds only the image layers that have changed. Ideal for daily development.
-  - Command: `docker compose up --build`
-
-- **`--no-cache`** = Rebuild from scratch (clean, but slow).
-  - Docker ignores all cache and builds the image from the very beginning.
-  - Use this when changing the `Dockerfile`, dependencies in `build.gradle`, or when the cache causes issues.
-  - Command: `docker compose build --no-cache phoebe-app`
-
----
-
-## Production Build with Docker
-
-1.  **Build application JAR**:
-    ```bash
-    cd backend
-    ./gradlew bootJar
-    ```
-
-2.  **Build production Docker image**:
-    ```bash
-    docker build -t phoebe-cms:1.0.0 -f Dockerfile .
-    ```
-    *   **Note**: It is recommended to use specific versions (e.g., `phoebe-cms:1.0.0`) instead of the `:latest` tag.
-
-3.  **Run production container**:
-    ```bash
-    docker run -d -p 8080:8080 --env-file .env.prod phoebe-cms:1.0.0
-    ```
-    *   **Note**: For production, it is recommended to use secret managers (e.g., Kubernetes Secrets, Vault) instead of `--env-file`.
-
-   - Based on a lightweight JRE runtime image.
-   - Contains only the compiled JAR (no source code).
-   - Configuration comes from environment variables.
-
----
-
-## Best Practices
-- Keep the production Dockerfile minimal (no Gradle, only the JAR).
-- Use `Dockerfile.dev` for developer productivity (mounted source, `bootRun`).
-- **Store database dumps in the `./db_dumps` directory** for easy import/export.
-- Manage all secrets via `.env` (local) and a secret manager (CI/CD/Prod).
-- Ensure secrets and `.env` files are excluded from git.
+**Warning:** This command will permanently delete your local database.
