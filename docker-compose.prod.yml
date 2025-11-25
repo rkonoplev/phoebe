@@ -40,5 +40,5 @@ services:
       - "3000:3000"
     volumes:
       - ./frontends/nextjs:/app
-      # Removed anonymous volumes for node_modules and .next to prevent conflicts.
-      # Docker will manage these internally based on the Dockerfile.
+      - /app/node_modules # Anonymous volume to prevent host node_modules from interfering.
+      # Removed /app/.next as it's not needed for development mode.
