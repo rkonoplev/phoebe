@@ -28,6 +28,8 @@ This directory contains all English project documentation for **Phoebe CMS**.
 
 ## 🏗️ Architecture & Setup
 
+- **[Local Development Approaches](./DEVELOPMENT_APPROACHES.md)**  
+  Describes and compares hybrid and fully containerized development approaches.
 - **[Design Principles](./PRINCIPLES.md)**  
   Fundamental design principles (SOLID, KISS).
 - **[Design Patterns](./DESIGN_PATTERNS.md)**  
