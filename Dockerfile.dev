@@ -7,9 +7,9 @@
 
 FROM eclipse-temurin:21-jdk
 
-# Install curl for health checks and basic tools
+# Install curl for health checks and netcat for the wait-for-it script
 RUN apt-get update && \
-    apt-get install -y curl && \
+    apt-get install -y curl netcat-openbsd && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
