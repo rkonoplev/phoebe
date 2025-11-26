@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    include: mysql
   datasource:
     url: jdbc:mysql://${DB_HOST}:3306/phoebe_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
