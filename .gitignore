@@ -96,6 +96,9 @@ legacy/archived_migration_scripts/clean_schema.sql
 /backend/logs/
 /db_dumps/*.sql
 
+# IntelliJ Task file
+@Task
+
 # -------------------------------
 # Frontend / Node.js
 # -------------------------------
