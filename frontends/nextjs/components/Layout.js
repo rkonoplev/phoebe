@@ -11,9 +11,8 @@ import AdminBar from './AdminBar';
 const FooterLink = ({ href, children, ...props }) => (
   <Link href={href} passHref>
     <Typography 
-      component="a" 
       variant="body2" 
-      sx={{ color: 'white', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+      sx={{ color: 'white', textDecoration: 'none', '&:hover': { textDecoration: 'underline' }, cursor: 'pointer' }}
       {...props}
     >
       {children}
