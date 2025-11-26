@@ -20,7 +20,7 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Quick Start Guide](./QUICK_START.md)**  
   Brief instructions for **getting started quickly and performing daily tasks** with an already
   configured project.
-- **[Developer Guide](./DEVELOPER.md)**  
+- **[Developer Guide](./DEVELOPER_GUIDE.md)**  
   A detailed description of the **full development workflow** for developers, including IDE setup,
   testing, and CI/CD integration.
 - **[API Reference](./API_REFERENCE.md)**  
