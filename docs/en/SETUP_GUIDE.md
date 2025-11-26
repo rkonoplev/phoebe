@@ -12,6 +12,11 @@ It describes all possible scenarios: from migrating an existing site to a clean 
 -   **Docker**: Required to run the environment.
 -   **Git**: For cloning the repository.
 -   **Make**: (Recommended) For executing commands from the `Makefile`.
+    -   **macOS**:
+        -   **Method 1 (Recommended)**: Install the Xcode Command Line Tools by running `xcode-select --install`. This is a lightweight installation and does not require the full Xcode IDE.
+        -   **Method 2 (Homebrew)**: If you use Homebrew, you can install `make` with the command `brew install make`.
+    -   **Linux (Debian/Ubuntu)**: Install with `sudo apt-get install build-essential`.
+    -   **Windows**: Can be installed using Chocolatey (`choco install make`) or by using the Windows Subsystem for Linux (WSL).
 -   **Java (JDK) 21+**: (Optional) Only required for the **hybrid development mode** (`make run-hybrid`), which is convenient for backend developers. For frontend development or testing, a local JDK is not needed.
 
 ---
