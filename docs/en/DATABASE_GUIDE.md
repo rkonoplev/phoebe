@@ -208,17 +208,30 @@ docker run -it --rm --name temp_mysql_explorer \
     location inside the container.
 *   `-e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_ROOT_PASSWORD=`: Starts MySQL with an empty password for the
     `root` user. This guarantees access to the data, even if you don't know the old volume's password.
+*   **Important Note on MySQL Versions**: If you encounter errors like `InnoDB: Table flags are 0 in the data dictionary but the flags in file ./ibdata1 are 0x4800!` or similar `InnoDB` corruption messages, it likely means the Docker Volume was created with a different MySQL version. Try changing `mysql:5.7` to `mysql:8.0` (or the version you suspect was used) in the `docker run` command.
 *   **Keep this terminal open!** The container will run until you close it.
 
 ### Step 2: Interactively Explore Databases
 
-Open your **second terminal window** and connect to the running MySQL container:
+Open your **second terminal window** and connect to the running MySQL container.
 
 ```bash
+# Connect to MySQL with an empty password (if the container was started with MYSQL_ROOT_PASSWORD=)
 docker exec -it temp_mysql_explorer mysql -uroot
+
+# Connect to MySQL with a known password (if the container was started with MYSQL_ROOT_PASSWORD=<password>)
+# In this case, after executing the command, MySQL will prompt for the password.
+# docker exec -it temp_mysql_explorer mysql -uroot -p
+
+# Alternative way to find the container if you don't know its name or ID
+# (Can select the wrong container if multiple are running)
+# docker exec -it $(docker ps -q --filter ancestor=mysql:5.7) mysql -uroot -p
 ```
 
-*   Since we started the container with an empty `root` password, you don't need to specify `-p`.
+**Explanation for connecting:**
+*   **`docker exec -it <CONTAINER_NAME> mysql -uroot`**: This is the preferred method if you started the container with an empty password for `root` (as in Step 1). The `-p` flag is omitted, and MySQL will attempt to connect without a password.
+*   **`docker exec -it <CONTAINER_NAME> mysql -uroot -p`**: Use this option if you know `root` has a password. MySQL will prompt for it after executing the command.
+*   **`$(docker ps -q --filter ancestor=mysql:5.7)`**: This construct dynamically finds the ID of a running container using the `mysql:5.7` image. **Be cautious:** if multiple such containers are running, this command might pick any of them. It's recommended to use the specific container name if known.
 
 Inside the MySQL client, you can:
 
@@ -262,6 +275,7 @@ execute the `mysqldump` commands.
     ```
     *   Replace `<FIRST_DATABASE_NAME>` with the actual database name (e.g., `dniester`).
     *   The dump file will be created in your current host machine directory.
+    *   If `root` has a password, add `-p<PASSWORD>` (e.g., `-proot`) after `-uroot`.
 
 2.  **Dump the second database (if needed):**
     ```bash
@@ -269,11 +283,25 @@ execute the `mysqldump` commands.
       --single-transaction --quick --routines > <SECOND_DATABASE_NAME>_dump.sql
     ```
     *   Replace `<SECOND_DATABASE_NAME>` with the actual database name (e.g., `a264971_dniester`).
+    *   If `root` has a password, add `-p<PASSWORD>` (e.g., `-proot`) after `-uroot`.
 
-### Step 4: Stop the Temporary Container
+### Step 4: Stop and Remove the Temporary Container
 
-After you have obtained all necessary dumps, simply close the **first terminal window** where `docker run ...`
-was executed. The container will automatically be removed due to the `--rm` flag.
+After you have obtained all necessary dumps or finished your investigation:
+
+1.  **Stop the container:**
+    *   If you started the container with the `--rm` flag (as in Step 1), simply **close the terminal window** where `docker run ...` was executed. The container will automatically stop and be removed.
+    *   If you started the container without `--rm` or want to stop it from another terminal, use:
+        ```bash
+        docker stop temp_mysql_explorer
+        ```
+        (Replace `temp_mysql_explorer` with the actual name or ID of your container).
+
+2.  **Remove the container (if it was started without `--rm`):**
+    ```bash
+    docker rm temp_mysql_explorer
+    ```
+    (Replace `temp_mysql_explorer` with the actual name or ID of your container).
 
 ---
 
@@ -551,7 +579,7 @@ If you have MySQL installed directly on your machine (not in Docker), you can us
 
 ---
 
-## Рекомендации по работе с продакшен-базами данных
+## Recommendations for Working with Production Databases
 
 Working with databases in a production environment requires special attention to security, stability, and auditing. Direct access to a production database from outside (e.g., from a local machine via terminal) is strongly discouraged for routine operations.
 
@@ -563,8 +591,7 @@ Working with databases in a production environment requires special attention to
 2.  **Human Factor:**
     *   **Errors:** Manually executing commands in production can lead to accidental data deletion or corruption.
     *   **Lack of Testing:** Changes made directly often do not go through standard testing and review processes.
-3.  **Lack of Auditing and Control:**
-    *   **Difficulty in Tracking:** It is difficult to track who made what changes to the database and when.
+    *   **Lack of Auditing and Control:** It is difficult to track who made what changes to the database and when.
     *   **CI/CD Violation:** Direct changes violate the "single source of truth" principle (Git) and can lead to schema desynchronization.
 
 ### Recommended Practices
@@ -588,7 +615,7 @@ To connect to a remote MySQL database via an SSH tunnel, you will need:
 *   SSH access to the server where the database is running.
 *   A private SSH key for authentication.
 *   The IP address or domain name of the server.
-*   Ucredentials for the MySQL database on the remote server.
+*   Credentials for the MySQL database on the remote server.
 
 **Step 1: Create an SSH Tunnel**
 
