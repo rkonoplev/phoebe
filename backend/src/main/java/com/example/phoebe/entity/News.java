@@ -55,13 +55,13 @@ public class News {
     private String title;
 
     /** Full body text of the article. Lazy loading for performance. */
-    @Lob
+    @Column(columnDefinition = "TEXT")
     @Basic(fetch = FetchType.LAZY)
     private String body;
 
     /** Short teaser text for listing views. */
     @Size(max = 250, message = "Teaser must not exceed 250 characters")
-    @Lob
+    @Column(columnDefinition = "TEXT")
     @Basic(fetch = FetchType.LAZY)
     private String teaser;
 
@@ -160,6 +160,8 @@ public class News {
     public void setId(Long id) {
         this.id = id;
     }
+
+
 
     public void setTitle(String title) {
         this.title = title;
