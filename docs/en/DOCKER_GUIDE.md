@@ -14,6 +14,7 @@
 - [Direct Usage of Docker Compose](#direct-usage-of-docker-compose)
 - [Building for Production](#building-for-production)
 - [Data and Cache Management](#data-and-cache-management)
+- [Full Docker Cleanup](#full-docker-cleanup)
 - [Troubleshooting](#troubleshooting)
 
 ---
@@ -144,6 +145,98 @@ To completely reset the environment, including all this data, use the command:
 make reset
 ```
 **Warning:** This command will permanently delete your local database.
+
+---
+
+## Full Docker Cleanup
+
+Sometimes it's necessary to completely clean Docker of all unused containers, images, networks, and volumes.
+This frees up space or allows starting with a "clean slate."
+**Be careful:** these commands will delete all data not associated with running containers.
+They might affect other Docker projects on your machine.
+
+### 1. Removing Current Project Containers and Volumes
+
+Before a full cleanup, stop and remove the containers and associated volumes of the current project.
+Navigate to the project's root directory (where `docker-compose.yml` is located) and execute:
+
+```bash
+cd /Users/rk/dev/java/phoebe # Ensure you are in the project root
+docker-compose down --volumes
+```
+This command will stop and remove all services, networks, and named volumes
+defined in your project's `docker-compose.*.yml` files.
+
+### 2. Removing All Running Containers
+
+Stop all running containers (if any):
+```bash
+docker stop $(docker ps -aq)
+```
+*   `docker ps -aq` lists the IDs of all containers (running and stopped).
+*   `docker stop` stops them.
+
+### 3. Removing All Stopped Containers
+
+Remove all stopped containers:
+```bash
+docker rm $(docker ps -aq)
+```
+*   This command will remove all containers that were stopped in the previous step.
+
+### 4. Removing All Unused Docker Resources (Images, Networks, Build Cache)
+
+To remove all stopped containers, unused images (dangling images),
+unused networks, and the build cache:
+
+```bash
+docker system prune
+```
+Docker will ask for confirmation. Type `y` and press Enter.
+
+### 5. Removing All Unused Docker Volumes
+
+`docker system prune` does not remove volumes by default to prevent accidental data loss.
+To remove all volumes that are not used by any container:
+
+```bash
+docker volume prune
+```
+Docker will ask for confirmation. Type `y` and press Enter.
+
+### 6. Removing All Docker Images
+
+If you want to remove **all** images, even those that might be used in other projects:
+```bash
+docker rmi -f $(docker images -aq)
+```
+*   `docker images -aq` lists the IDs of all images.
+*   `docker rmi -f` forcibly removes them.
+*   **Be careful with this command**, as it will delete all downloaded images,
+    and Docker will have to re-download them on the next run.
+
+### Recommended Order of Actions for Full Cleanup
+
+1.  Navigate to the `phoebe` project root folder:
+    ```bash
+    cd /Users/rk/dev/java/phoebe
+    ```
+2.  Stop and remove containers and volumes associated with your project:
+    ```bash
+    docker-compose down --volumes
+    ```
+3.  Perform a general Docker cleanup (removes unused containers, images, networks, and build cache):
+    ```bash
+    docker system prune
+    ```
+    When asked `Are you sure you want to continue? [y/N]`, type `y` and press Enter.
+4.  Perform unused volumes cleanup:
+    ```bash
+    docker volume prune
+    ```
+    When asked `Are you sure you want to continue? [y/N]`, type `y` and press Enter.
+
+After these steps, your Docker will be maximally cleaned.
 
 ---
 
