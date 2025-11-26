@@ -21,6 +21,12 @@ services:
       retries: 10
       start_period: 30s
 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+
 volumes:
   mysql_data:
   gradle_cache: # Define the named volume for Gradle cache.

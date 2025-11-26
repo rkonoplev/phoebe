@@ -91,6 +91,17 @@ For more detailed instructions on setup, migration, and daily development, pleas
 - **CI/CD**: GitHub Actions pipeline with automated testing and code quality checks.
 - **Archived Migration History**: Includes legacy scripts from the original Drupal 6 migration for historical context.
 
+## 🧰 Helper Tools
+
+For easier database management and inspection during local development, Adminer is included:
+
+- **Adminer (Database Management UI)**: Access at [http://localhost:8081](http://localhost:8081)
+  - **System**: `MySQL`
+  - **Server**: `phoebe-mysql`
+  - **Username**: `root`
+  - **Password**: `root`
+  - **Database**: `phoebe_db`
+
 ## 🌟 Use Cases
 
 ### For Development Teams & Agencies

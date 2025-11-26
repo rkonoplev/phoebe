@@ -11,6 +11,7 @@ The schema supports both **clean installations** and **migrated data from Drupal
 ## Table of Contents
 - [Database Schema](#database-schema)
 - [Quick Setup](#quick-setup)
+- [Helper Tools](#helper-tools)
 - [Migration from Drupal 6 (Historical/Manual Process)](#migration-from-drupal-6-historicalmanual-process)
 - [Migration Scripts Reference](#migration-scripts-reference)
 - [Spring Boot Migrations](#spring-boot-migrations)
@@ -177,6 +178,19 @@ If you need to create an admin user manually (e.g., if you disabled V3 migration
 mysql phoebe_db < db_data/create_admin_user.sql
 ```
 *   **Note**: This script creates an `admin` user with password `admin`. It is intended **for development only** and should not be used in production.
+
+---
+
+## Helper Tools
+
+For easier database management and inspection during local development, Adminer is included:
+
+- **Adminer (Database Management UI)**: Access at [http://localhost:8081](http://localhost:8081)
+  - **System**: `MySQL`
+  - **Server**: `phoebe-mysql` (this is the Docker service name)
+  - **Username**: `root`
+  - **Password**: `root`
+  - **Database**: `phoebe_db`
 
 ---
 
@@ -413,7 +427,7 @@ If your MySQL database is running in Docker via `docker-compose` (`phoebe-mysql`
 
 ### For Local MySQL
 
-If you have MySQL installed directly on your machine, you can use the standard `mysql` client:
+If you have MySQL installed directly on your machine (not in Docker), you can use the standard `mysql` client:
 
 1.  **Connect to local MySQL:**
     ```bash
