@@ -11,6 +11,7 @@ The schema supports both **clean installations** and **migrated data from Drupal
 ## Table of Contents
 - [Database Schema](#database-schema)
 - [Quick Setup](#quick-setup)
+- [Recovering/Investigating Data from Arbitrary MySQL Docker Volume](#recoveringinvestigating-data-from-arbitrary-mysql-docker-volume)
 - [Helper Tools](#helper-tools)
 - [Migration from Drupal 6 (Historical/Manual Process)](#migration-from-drupal-6-historicalmanual-process)
 - [Migration Scripts Reference](#migration-scripts-reference)
@@ -181,16 +182,98 @@ mysql phoebe_db < db_data/create_admin_user.sql
 
 ---
 
-## Helper Tools
+## Recovering/Investigating Data from Arbitrary MySQL Docker Volume
 
-For easier database management and inspection during local development, Adminer is included:
+This section describes how to access data from an existing MySQL Docker Volume that is not necessarily part of the
+current `docker-compose` project. This is useful for "rescuing" data, investigating the contents of old volumes,
+or when you don't know the `root` password or database name.
 
-- **Adminer (Database Management UI)**: Access at [http://localhost:8081](http://localhost:8081)
-  - **System**: `MySQL`
-  - **Server**: `phoebe-mysql` (this is the Docker service name)
-  - **Username**: `root`
-  - **Password**: `root`
-  - **Database**: `phoebe_db`
+### Step 1: Launch a Temporary MySQL Container with Volume Mounted
+
+Open your **first terminal window** and run the following command. It will launch a temporary MySQL 5.7 container
+that mounts your target Docker Volume.
+
+```bash
+docker run -it --rm --name temp_mysql_explorer \
+  -v <YOUR_VOLUME_NAME>:/var/lib/mysql \
+  -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
+  -e MYSQL_ROOT_PASSWORD= \
+  mysql:5.7
+```
+
+*   Replace `<YOUR_VOLUME_NAME>` with the actual name of the Docker Volume you want to investigate
+    (e.g., `news-platform_mysql_data_drupal6`).
+*   `--name temp_mysql_explorer`: Assigns a temporary name to the container for easy reference.
+*   `-v <YOUR_VOLUME_NAME>:/var/lib/mysql`: Mounts your Docker Volume to the standard MySQL data storage
+    location inside the container.
+*   `-e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_ROOT_PASSWORD=`: Starts MySQL with an empty password for the
+    `root` user. This guarantees access to the data, even if you don't know the old volume's password.
+*   **Keep this terminal open!** The container will run until you close it.
+
+### Step 2: Interactively Explore Databases
+
+Open your **second terminal window** and connect to the running MySQL container:
+
+```bash
+docker exec -it temp_mysql_explorer mysql -uroot
+```
+
+*   Since we started the container with an empty `root` password, you don't need to specify `-p`.
+
+Inside the MySQL client, you can:
+
+1.  **List all databases:**
+    ```sql
+    SHOW DATABASES;
+    ```
+    Look for databases that might contain the data you need (e.g., `dniester`, `a264971_dniester`, `drupal`, etc.).
+
+2.  **Select a database to investigate:**
+    ```sql
+    USE <FOUND_DATABASE_NAME>;
+    ```
+    Replace `<FOUND_DATABASE_NAME>` with the name you found.
+
+3.  **List tables in the selected database:**
+    ```sql
+    SHOW TABLES;
+    ```
+
+4.  **Check the number of records in a table (e.g., `node` or `content`):**
+    ```sql
+    SELECT COUNT(*) FROM <TABLE_NAME>;
+    ```
+    This helps you confirm that the database contains data.
+
+5.  **Exit the MySQL client:**
+    ```sql
+    exit
+    ```
+
+### Step 3: Create a Dump of the Desired Databases
+
+Once you have identified the names of the databases you want to save, open your **third terminal window** and
+execute the `mysqldump` commands.
+
+1.  **Dump the first database:**
+    ```bash
+    docker exec temp_mysql_explorer mysqldump -uroot <FIRST_DATABASE_NAME> \
+      --single-transaction --quick --routines > <FIRST_DATABASE_NAME>_dump.sql
+    ```
+    *   Replace `<FIRST_DATABASE_NAME>` with the actual database name (e.g., `dniester`).
+    *   The dump file will be created in your current host machine directory.
+
+2.  **Dump the second database (if needed):**
+    ```bash
+    docker exec temp_mysql_explorer mysqldump -uroot <SECOND_DATABASE_NAME> \
+      --single-transaction --quick --routines > <SECOND_DATABASE_NAME>_dump.sql
+    ```
+    *   Replace `<SECOND_DATABASE_NAME>` with the actual database name (e.g., `a264971_dniester`).
+
+### Step 4: Stop the Temporary Container
+
+After you have obtained all necessary dumps, simply close the **first terminal window** where `docker run ...`
+was executed. The container will automatically be removed due to the `--rm` flag.
 
 ---
 
@@ -468,7 +551,7 @@ If you have MySQL installed directly on your machine (not in Docker), you can us
 
 ---
 
-## Recommendations for Working with Production Databases
+## Рекомендации по работе с продакшен-базами данных
 
 Working with databases in a production environment requires special attention to security, stability, and auditing. Direct access to a production database from outside (e.g., from a local machine via terminal) is strongly discouraged for routine operations.
 
