@@ -13,7 +13,7 @@ services:
       phoebe-mysql:
         condition: service_healthy
     environment:
-      SPRING_PROFILES_ACTIVE: local
+      SPRING_PROFILES_ACTIVE: local,mysql
       DB_HOST: phoebe-mysql
     ports:
       - "8080:8080"
