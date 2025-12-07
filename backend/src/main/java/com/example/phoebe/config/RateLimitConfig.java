@@ -41,4 +41,16 @@ public class RateLimitConfig {
                 .build()
         );
     }
+
+    /**
+     * Get or create bucket for IP address with authentication limits.
+     * Limit: 5 login attempts per 5 minutes (strict protection against brute-force).
+     */
+    public Bucket getAuthBucket(String ipAddress) {
+        return buckets.computeIfAbsent("auth:" + ipAddress, key ->
+            Bucket.builder()
+                .addLimit(Bandwidth.builder().capacity(5).refillIntervally(5, Duration.ofMinutes(5)).build())
+                .build()
+        );
+    }
 }

@@ -40,6 +40,10 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Login failed:', error);
       logout(); // Clear any partial auth state
+      
+      if (error.response?.status === 429) {
+        return { error: 'Too many login attempts. Please wait 5 minutes and try again.' };
+      }
       return false;
     }
   };

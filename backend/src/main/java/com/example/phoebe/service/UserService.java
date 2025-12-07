@@ -50,11 +50,12 @@ public class UserService {
     }
 
     public UserDto createUser(UserCreateRequestDto dto) {
-        User user = new User();
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setActive(dto.isActive());
+        User user = new User(
+            dto.getUsername(),
+            passwordEncoder.encode(dto.getPassword()),
+            dto.getEmail(),
+            dto.isActive()
+        );
 
         if (dto.getRoleIds() != null && !dto.getRoleIds().isEmpty()) {
             Set<Role> roles = new HashSet<>(roleRepository.findAllById(dto.getRoleIds()));
@@ -69,9 +70,6 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
-        if (dto.getUsername() != null) {
-            user.setUsername(dto.getUsername());
-        }
         if (dto.getEmail() != null) {
             user.setEmail(dto.getEmail());
         }

@@ -3,19 +3,18 @@ package com.example.phoebe.controller;
 import com.example.phoebe.dto.request.UserCreateRequestDto;
 import com.example.phoebe.dto.request.UserUpdateRequestDto;
 import com.example.phoebe.dto.response.UserDto;
-import com.example.phoebe.security.RequireRole;
-import com.example.phoebe.security.RoleConstants;
 import com.example.phoebe.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/users")
-@RequireRole(RoleConstants.ADMIN)
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 
     private final UserService userService;

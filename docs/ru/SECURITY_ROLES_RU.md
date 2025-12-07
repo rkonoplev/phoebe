@@ -24,6 +24,49 @@
 
 ## Реализация безопасности
 
+### 0. Защита от перебора паролей (Rate Limiting)
+
+**Предотвращение brute-force атак:**
+
+Phoebe CMS реализует строгое ограничение частоты запросов для защиты от атак перебора паролей:
+
+```java
+// RateLimitConfig.java
+public Bucket getAuthBucket(String ipAddress) {
+    return buckets.computeIfAbsent("auth:" + ipAddress, key ->
+        Bucket.builder()
+            .addLimit(Bandwidth.builder()
+                .capacity(5)
+                .refillIntervally(5, Duration.ofMinutes(5))
+                .build())
+            .build()
+    );
+}
+```
+
+**Лимиты запросов:**
+- **Эндпоинт аутентификации** (`/api/admin/auth/me`): 5 попыток за 5 минут с одного IP
+- **Admin API**: 50 запросов в минуту с одного IP
+- **Public API**: 100 запросов в минуту с одного IP
+
+**Реализация:**
+```java
+@GetMapping("/me")
+public ResponseEntity<UserDto> getCurrentUser(Authentication authentication, HttpServletRequest request) {
+    String ipAddress = getClientIp(request);
+    Bucket bucket = rateLimitConfig.getAuthBucket(ipAddress);
+    
+    if (!bucket.tryConsume(1)) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
+    }
+    // ... логика аутентификации
+}
+```
+
+**Обработка на фронтенде:**
+- HTTP 429 (Too Many Requests) отображает: "Слишком много попыток входа. Пожалуйста, подождите 5 минут и попробуйте снова."
+- Понятные сообщения об ошибках помогают пользователям понять, когда можно повторить попытку
+
 ### 1. Безопасность на уровне сервисов
 
 #### Методы NewsService - Правильная авторизация

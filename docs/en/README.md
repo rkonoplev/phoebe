@@ -75,6 +75,8 @@ This directory contains all English project documentation for **Phoebe CMS**.
   Technical specification for the Next.js implementation.
 - **[Admin Panel Specification](./ADMIN_PANEL_SPEC.md)**  
   Technical requirements for the admin panel UI.
+- **[Static Pages Architecture](./STATIC_PAGES_ARCHITECTURE.md)**  
+  Database-driven technical pages implementation instead of static files.
 - **[Frontend Frameworks Guide](./FRONTEND_FRAMEWORKS_GUIDE.md)**  
   A comparative overview of frontend frameworks.
 

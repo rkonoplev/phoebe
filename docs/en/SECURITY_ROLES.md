@@ -21,6 +21,49 @@ This document outlines the **correct** implementation requirements for ADMIN and
 
 ## Security Implementation
 
+### 0. Rate Limiting Protection
+
+**Brute-Force Attack Prevention:**
+
+Phoebe CMS implements strict rate limiting to protect against brute-force password attacks:
+
+```java
+// RateLimitConfig.java
+public Bucket getAuthBucket(String ipAddress) {
+    return buckets.computeIfAbsent("auth:" + ipAddress, key ->
+        Bucket.builder()
+            .addLimit(Bandwidth.builder()
+                .capacity(5)
+                .refillIntervally(5, Duration.ofMinutes(5))
+                .build())
+            .build()
+    );
+}
+```
+
+**Rate Limits:**
+- **Authentication endpoint** (`/api/admin/auth/me`): 5 attempts per 5 minutes per IP
+- **Admin API**: 50 requests per minute per IP
+- **Public API**: 100 requests per minute per IP
+
+**Implementation:**
+```java
+@GetMapping("/me")
+public ResponseEntity<UserDto> getCurrentUser(Authentication authentication, HttpServletRequest request) {
+    String ipAddress = getClientIp(request);
+    Bucket bucket = rateLimitConfig.getAuthBucket(ipAddress);
+    
+    if (!bucket.tryConsume(1)) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
+    }
+    // ... authentication logic
+}
+```
+
+**Frontend Handling:**
+- HTTP 429 (Too Many Requests) displays: "Too many login attempts. Please wait 5 minutes and try again."
+- User-friendly error messages guide users to wait before retrying
+
 ### 1. Service Layer Security
 
 #### NewsService Methods - Proper Authorization

@@ -1,11 +1,15 @@
 package com.example.phoebe.controller;
 
+import com.example.phoebe.config.RateLimitConfig;
 import com.example.phoebe.dto.response.UserDto;
 import com.example.phoebe.entity.User;
 import com.example.phoebe.mapper.UserMapper;
 import com.example.phoebe.repository.UserRepository;
+import io.github.bucket4j.Bucket;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -23,10 +27,12 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final RateLimitConfig rateLimitConfig;
 
-    public AuthController(UserRepository userRepository, UserMapper userMapper) {
+    public AuthController(UserRepository userRepository, UserMapper userMapper, RateLimitConfig rateLimitConfig) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.rateLimitConfig = rateLimitConfig;
     }
 
     /**
@@ -35,11 +41,26 @@ public class AuthController {
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     @Operation(summary = "Get current user", description = "Returns information about the currently authenticated user")
-    public ResponseEntity<UserDto> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<UserDto> getCurrentUser(Authentication authentication, HttpServletRequest request) {
+        String ipAddress = getClientIp(request);
+        Bucket bucket = rateLimitConfig.getAuthBucket(ipAddress);
+        
+        if (!bucket.tryConsume(1)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
+        }
+        
         String username = authentication.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
         
         return ResponseEntity.ok(userMapper.toDto(user));
+    }
+    
+    private String getClientIp(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 }

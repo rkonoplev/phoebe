@@ -28,10 +28,12 @@ const LoginPage = () => {
     setSubmitError('');
 
     if (validate()) {
-      const success = await login(username, password);
+      const result = await login(username, password);
 
-      if (success) {
+      if (result === true) {
         router.push('/admin'); 
+      } else if (result?.error) {
+        setSubmitError(result.error);
       } else {
         setSubmitError('Invalid username or password. Please try again.');
       }
