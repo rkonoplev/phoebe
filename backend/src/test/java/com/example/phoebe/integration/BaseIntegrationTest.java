@@ -24,8 +24,7 @@ public abstract class BaseIntegrationTest {
     static final MySQLContainer<?> MYSQL_CONTAINER = new MySQLContainer<>("mysql:8.0")
             .withDatabaseName("phoebe_test")
             .withUsername("test")
-            .withPassword("test")
-            .withReuse(false); // Each test run gets fresh container
+            .withPassword("test");
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {

@@ -24,8 +24,8 @@ class RoleTest {
     }
 
     @Test
-    void singleArgConstructorShouldWork() {
-        Role role = new Role("ADMIN");
+    void constructorWithNullDescriptionShouldWork() {
+        Role role = new Role("ADMIN", null);
         assertEquals("ADMIN", role.getName());
         assertNull(role.getDescription());
     }
@@ -44,7 +44,7 @@ class RoleTest {
 
     @Test
     void settersAndGettersShouldWork() {
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         role.setId(1L);
         role.setDescription("Administrator role");
         
@@ -66,14 +66,14 @@ class RoleTest {
 
     @Test
     void addUserWithNullShouldNotThrowException() {
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         assertDoesNotThrow(() -> role.addUser(null));
         assertTrue(role.getUsers().isEmpty());
     }
 
     @Test
     void addUserTwiceShouldBeIdempotent() {
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         User user = new User("testuser", "pass", "email", true);
         
         role.addUser(user);
@@ -84,7 +84,7 @@ class RoleTest {
 
     @Test
     void removeUserShouldRemoveBidirectionalRelationship() {
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         User user = new User("testuser", "pass", "email", true);
         role.addUser(user);
         
@@ -96,7 +96,7 @@ class RoleTest {
 
     @Test
     void removeUserWithNullShouldNotThrowException() {
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         assertDoesNotThrow(() -> role.removeUser(null));
     }
 
@@ -113,14 +113,14 @@ class RoleTest {
 
     @Test
     void addPermissionWithNullShouldNotThrowException() {
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         assertDoesNotThrow(() -> role.addPermission(null));
         assertTrue(role.getPermissions().isEmpty());
     }
 
     @Test
     void addPermissionTwiceShouldBeIdempotent() {
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         Permission permission = new Permission("news:create");
         
         role.addPermission(permission);
@@ -131,7 +131,7 @@ class RoleTest {
 
     @Test
     void removePermissionShouldRemoveBidirectionalRelationship() {
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         Permission permission = new Permission("news:create");
         role.addPermission(permission);
         
@@ -143,7 +143,7 @@ class RoleTest {
 
     @Test
     void removePermissionWithNullShouldNotThrowException() {
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         assertDoesNotThrow(() -> role.removePermission(null));
     }
 
@@ -160,27 +160,27 @@ class RoleTest {
 
     @Test
     void testEqualsSameObject() {
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         assertEquals(role, role);
     }
 
     @Test
     void testEqualsNull() {
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         assertNotEquals(role, null);
     }
 
     @Test
     void testEqualsDifferentClass() {
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         assertNotEquals(role, "ADMIN");
     }
 
     @Test
     void testEqualsWithNullName() {
-        Role role1 = new Role(null);
-        Role role2 = new Role(null);
-        Role role3 = new Role("ADMIN");
+        Role role1 = new Role(null, null);
+        Role role2 = new Role(null, null);
+        Role role3 = new Role("ADMIN", null);
         
         assertNotEquals(role1, role2);
         assertNotEquals(role1, role3);
@@ -188,7 +188,7 @@ class RoleTest {
 
     @Test
     void testHashCodeWithNullName() {
-        Role role = new Role(null);
+        Role role = new Role(null, null);
         assertNotNull(role.hashCode());
     }
 

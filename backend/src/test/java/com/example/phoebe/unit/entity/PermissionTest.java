@@ -96,7 +96,7 @@ class PermissionTest {
     @Test
     void addRoleShouldEstablishBidirectionalRelationship() {
         Permission permission = new Permission("news:read");
-        Role role = new Role("EDITOR");
+        Role role = new Role("EDITOR", null);
         
         permission.addRole(role);
         
@@ -114,7 +114,7 @@ class PermissionTest {
     @Test
     void addRoleTwiceShouldBeIdempotent() {
         Permission permission = new Permission("news:read");
-        Role role = new Role("EDITOR");
+        Role role = new Role("EDITOR", null);
         
         permission.addRole(role);
         permission.addRole(role);
@@ -125,7 +125,7 @@ class PermissionTest {
     @Test
     void removeRoleShouldRemoveBidirectionalRelationship() {
         Permission permission = new Permission("news:read");
-        Role role = new Role("EDITOR");
+        Role role = new Role("EDITOR", null);
         permission.addRole(role);
         
         permission.removeRole(role);

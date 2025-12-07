@@ -45,8 +45,8 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
         userRepository.deleteAll();
         roleRepository.deleteAll();
 
-        Role adminRole = new Role("ADMIN");
-        Role editorRole = new Role("EDITOR");
+        Role adminRole = new Role("ADMIN", null);
+        Role editorRole = new Role("EDITOR", null);
         roleRepository.save(adminRole);
         roleRepository.save(editorRole);
 

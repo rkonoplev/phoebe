@@ -84,7 +84,7 @@ class UserTest {
     @Test
     void addRoleTwiceShouldBeIdempotent() {
         User user = new User("testuser", "pass", "email@test.com", true);
-        Role role = new Role("ADMIN");
+        Role role = new Role("ADMIN", null);
         
         user.addRole(role);
         user.addRole(role);
@@ -210,8 +210,8 @@ class UserTest {
     @Test
     void canAddMultipleRoles() {
         User user = new User("testuser", "pass", "email@test.com", true);
-        Role role1 = new Role("ADMIN");
-        Role role2 = new Role("EDITOR");
+        Role role1 = new Role("ADMIN", null);
+        Role role2 = new Role("EDITOR", null);
         
         user.addRole(role1);
         user.addRole(role2);
@@ -222,13 +222,13 @@ class UserTest {
     @Test
     void setRolesShouldReplaceCollection() {
         User user = new User("testuser", "pass", "email@test.com", true);
-        Role role1 = new Role("ADMIN");
+        Role role1 = new Role("ADMIN", null);
         user.addRole(role1);
         
         assertEquals(1, user.getRoles().size());
         
         java.util.Set<Role> newRoles = new java.util.HashSet<>();
-        Role role2 = new Role("EDITOR");
+        Role role2 = new Role("EDITOR", null);
         newRoles.add(role2);
         
         user.setRoles(newRoles);
