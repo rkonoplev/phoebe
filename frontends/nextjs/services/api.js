@@ -70,6 +70,7 @@ export const admin = {
   createNews: (data) => api.post('/admin/news', data),
   updateNews: (id, data) => api.put(`/admin/news/${id}`, data),
   deleteNews: (id) => api.delete(`/admin/news/${id}`),
+  bulkAction: (data) => api.post('/admin/news/bulk', data),
 
   // Taxonomy
   getTerms: () => api.get('/admin/terms'),
