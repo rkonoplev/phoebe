@@ -10,25 +10,25 @@ const api = axios.create({
 // --- Public API ---
 
 export const getNews = (page = 0, size = 10) => {
-  return api.get(`/news?page=${page}&size=${size}`);
+  return api.get(`/public/news?page=${page}&size=${size}`);
 };
 
 export const getNewsById = (id) => {
-  return api.get(`/news/${id}`);
+  return api.get(`/public/news/${id}`);
 };
 
 export const getNewsByTerm = (termId, page = 0, size = 10) => {
-  return api.get(`/news/term/${termId}?page=${page}&size=${size}`);
+  return api.get(`/public/news/term/${termId}?page=${page}&size=${size}`);
 };
 
 export const searchPublicNews = (query) => {
-  return api.get(`/news/search?q=${encodeURIComponent(query)}`);
+  return api.get(`/public/news/search?q=${encodeURIComponent(query)}`);
 };
 
 
 // --- Admin API ---
 
-// Interceptor to add auth token to every admin request
+// Request interceptor to add auth token to every admin request
 api.interceptors.request.use(config => {
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('authToken');
@@ -39,6 +39,25 @@ api.interceptors.request.use(config => {
     }
     return config;
 });
+
+// Response interceptor to handle auth errors globally
+api.interceptors.response.use(
+    response => response,
+    error => {
+        if (typeof window !== 'undefined' && error.response) {
+            if (error.response.status === 401 || error.response.status === 403) {
+                // Clear auth data
+                localStorage.removeItem('authToken');
+                // Redirect to login if on admin page
+                if (window.location.pathname.startsWith('/admin') && 
+                    window.location.pathname !== '/admin/login') {
+                    window.location.href = '/admin/login';
+                }
+            }
+        }
+        return Promise.reject(error);
+    }
+);
 
 
 export const admin = {

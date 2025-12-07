@@ -23,7 +23,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (token) {
-      api.defaults.headers.common['Authorization'] = `Basic ${token}`;
       fetchUser();
     } else {
       setLoading(false);
@@ -33,11 +32,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const token = btoa(`${username}:${password}`);
-      api.defaults.headers.common['Authorization'] = `Basic ${token}`;
+      localStorage.setItem('authToken', token);
       
       const response = await admin.getMe(); // Test login and get user data in one go
       setUser(response.data);
-      localStorage.setItem('authToken', token);
       return true;
     } catch (error) {
       console.error('Login failed:', error);
@@ -48,7 +46,6 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('authToken');
-    delete api.defaults.headers.common['Authorization'];
     setUser(null);
   };
 
