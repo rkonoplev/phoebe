@@ -87,6 +87,10 @@ export const admin = {
 
   // Roles
   getRoles: () => api.get('/admin/roles'),
+
+  // Channel Settings
+  getChannelSettings: () => api.get('/admin/channel-settings'),
+  updateChannelSettings: (data) => api.put('/admin/channel-settings', data),
 };
 
 
