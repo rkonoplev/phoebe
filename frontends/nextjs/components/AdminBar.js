@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Button, Box } from '@mui/material';
+import { AppBar, Toolbar, Button, Box, Typography, Chip } from '@mui/material';
 import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/router';
@@ -10,16 +10,17 @@ const AdminBar = () => {
 
   const handleLogout = () => {
     logout();
-    router.push('/'); // Redirect to homepage after logout
+    router.push('/');
   };
 
   const isAdmin = user?.role?.name === 'ADMIN';
+  const roleName = user?.role?.name || 'USER';
+  const username = user?.username || 'Unknown';
 
   return (
     <AppBar position="static" sx={{ backgroundColor: '#000' }}>
       <Toolbar variant="dense">
         <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
-          {/* Links for both ADMIN and EDITOR */}
           <Link href="/" passHref>
             <Button sx={{ color: 'white' }}>Home</Button>
           </Link>
@@ -30,7 +31,6 @@ const AdminBar = () => {
             <Button sx={{ color: 'white' }}>News List</Button>
           </Link>
 
-          {/* Links for ADMIN only */}
           {isAdmin && (
             <>
               <Link href="/admin/taxonomy" passHref>
@@ -42,9 +42,23 @@ const AdminBar = () => {
             </>
           )}
         </Box>
-        <Button color="inherit" onClick={handleLogout}>
-          Logout
-        </Button>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="body2" sx={{ color: 'white' }}>
+            {username}
+          </Typography>
+          <Chip 
+            label={roleName} 
+            size="small" 
+            sx={{ 
+              backgroundColor: isAdmin ? '#cc0000' : '#1c355e',
+              color: 'white',
+              fontWeight: 'bold'
+            }} 
+          />
+          <Button color="inherit" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Box>
       </Toolbar>
     </AppBar>
   );
