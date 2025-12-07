@@ -1,4 +1,6 @@
-package com.example.phoebe.controller;
+package com.example.phoebe.unit.controller;
+
+import com.example.phoebe.controller.PublicNewsController;
 
 import com.example.phoebe.dto.response.NewsDto;
 import com.example.phoebe.service.NewsService;

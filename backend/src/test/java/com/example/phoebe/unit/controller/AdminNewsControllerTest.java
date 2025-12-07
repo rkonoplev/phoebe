@@ -1,4 +1,6 @@
-package com.example.phoebe.controller;
+package com.example.phoebe.unit.controller;
+
+import com.example.phoebe.controller.AdminNewsController;
 
 import com.example.phoebe.dto.request.BulkActionRequestDto;
 import com.example.phoebe.dto.request.NewsCreateRequestDto;
