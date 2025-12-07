@@ -49,18 +49,18 @@ const TaxonomyListPage = () => {
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell>ID</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Vocabulary</TableCell>
-                <TableCell>Description</TableCell> {/* Added Description column */}
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {terms.map((term) => (
                 <TableRow key={term.id}>
+                  <TableCell>{term.id}</TableCell>
                   <TableCell>{term.name}</TableCell>
                   <TableCell>{term.vocabulary}</TableCell>
-                  <TableCell>{term.description}</TableCell> {/* Display Description */}
                   <TableCell align="right">
                     <Link href={`/admin/taxonomy/edit/${term.id}`} passHref>
                       <IconButton color="primary"><EditIcon /></IconButton>

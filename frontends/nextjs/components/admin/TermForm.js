@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { admin } from '../../services/api';
 
 const TermForm = ({ term: initialTerm }) => {
-  const [term, setTerm] = useState({ name: '', vocabulary: '', description: '' }); // Added description
+  const [term, setTerm] = useState({ name: '', vocabulary: '' });
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
   const router = useRouter();
@@ -24,9 +24,6 @@ const TermForm = ({ term: initialTerm }) => {
     // Assuming 'vocabulary' maps to a field with max 50 chars on backend, e.g., Role.name or similar string field
     tempErrors.vocabulary = term.vocabulary.length >= 2 && term.vocabulary.length <= 50 ? '' : 'Vocabulary must be between 2 and 50 characters.';
     if (!term.vocabulary) tempErrors.vocabulary = 'Vocabulary is required.';
-
-    // Description is optional, max 500 characters
-    tempErrors.description = term.description.length <= 500 ? '' : 'Description must not exceed 500 characters.';
 
     setErrors(tempErrors);
     return Object.values(tempErrors).every(x => x === '');
@@ -80,18 +77,6 @@ const TermForm = ({ term: initialTerm }) => {
         fullWidth
         error={!!errors.vocabulary}
         helperText={errors.vocabulary}
-      />
-      <TextField
-        name="description"
-        label="Description"
-        value={term.description}
-        onChange={handleChange}
-        onBlur={validate}
-        multiline
-        rows={3}
-        fullWidth
-        error={!!errors.description}
-        helperText={errors.description}
       />
       {submitError && <Alert severity="error" sx={{ width: '100%', mt: 2 }}>{submitError}</Alert>}
       <Box>
