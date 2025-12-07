@@ -390,6 +390,7 @@ When using Flyway, it is recommended to set `ddl-auto: validate` or `none`, as F
 | V8 | Setup permissions | Populate permissions and assign to roles | `mysql/postgresql` |
 | V9 | Add indexes | Performance indexes and unique constraints | `mysql/postgresql` |
 | V10 | Site URL field | Added site_url field to channel_settings table | `common` |
+| V11 | Static pages | Added static/technical pages (About, Contact, Privacy, etc.) with page_type vocabulary | `common` |
 
 ### Migration V3 Default Data
 

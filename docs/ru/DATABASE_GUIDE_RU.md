@@ -399,6 +399,7 @@ docker exec -it temp_mysql_explorer mysql -uroot
 | V8 | Настройка разрешений | Заполнение разрешений и назначение ролям | `mysql/postgresql` |
 | V9 | Добавление индексов | Индексы производительности и уникальные ограничения | `mysql/postgresql` |
 | V10 | Поле URL сайта | Добавлено поле site_url в таблицу channel_settings | `common` |
+| V11 | Технические страницы | Добавлены статические страницы (About, Contact, Privacy и т.д.) с vocabulary page_type | `common` |
 
 ### Данные по умолчанию миграции V3
 
