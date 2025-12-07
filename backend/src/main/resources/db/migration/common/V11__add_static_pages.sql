@@ -37,7 +37,7 @@ ON DUPLICATE KEY UPDATE title = VALUES(title);
 INSERT INTO content (title, body, teaser, publication_date, author_id, created_at, updated_at, published)
 VALUES
   ('Privacy Policy',
-   '<h2>Privacy Policy</h2><p>Last updated: ' || CURRENT_DATE || '</p><p>We respect your privacy and are committed to protecting your personal data.</p><p>This privacy policy explains how we collect, use, and safeguard your information when you visit our website.</p>',
+   CONCAT('<h2>Privacy Policy</h2><p>Last updated: ', CURRENT_DATE, '</p><p>We respect your privacy and are committed to protecting your personal data.</p><p>This privacy policy explains how we collect, use, and safeguard your information when you visit our website.</p>'),
    'Our commitment to protecting your privacy',
    NOW(), 100, NOW(), NOW(), 1)
 ON DUPLICATE KEY UPDATE title = VALUES(title);
