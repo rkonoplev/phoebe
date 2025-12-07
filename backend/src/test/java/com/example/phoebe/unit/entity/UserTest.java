@@ -1,109 +1,240 @@
 package com.example.phoebe.entity;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-
+/**
+ * Unit tests for the User entity.
+ */
 class UserTest {
-
-    // This test class focuses on the User entity's behavior,
-    // especially its business key-based equals and hashCode.
 
     @Test
     void constructorShouldNormalizeAndSetFields() {
-        // Given: input strings with extra spaces and mixed case
         String username = "  TestUser  ";
         String email = "  TestEmail@Example.COM  ";
 
-        // When: creating a new User
         User user = new User(username, "password", email, true);
 
-        // Then: the fields should be normalized and correctly set
-        assertEquals("testuser", user.getUsername(), "Username should be trimmed and lowercased.");
-        assertEquals("testemail@example.com", user.getEmail(), "Email should be trimmed and lowercased.");
+        assertEquals("testuser", user.getUsername());
+        assertEquals("testemail@example.com", user.getEmail());
         assertEquals("password", user.getPassword());
         assertTrue(user.isActive());
         assertNotNull(user.getRoles());
         assertTrue(user.getRoles().isEmpty());
     }
 
+    @Test
+    void constructorWithNullsShouldSetNull() {
+        User user = new User(null, null, null, false);
+        
+        assertNull(user.getUsername());
+        assertNull(user.getPassword());
+        assertNull(user.getEmail());
+        assertFalse(user.isActive());
+    }
 
+    @Test
+    void defaultConstructorShouldInitializeFields() {
+        User user = new User();
+        
+        assertNull(user.getId());
+        assertNull(user.getUsername());
+        assertNull(user.getPassword());
+        assertNull(user.getEmail());
+        assertFalse(user.isActive());
+        assertNotNull(user.getRoles());
+        assertTrue(user.getRoles().isEmpty());
+    }
+
+    @Test
+    void settersAndGettersShouldWork() {
+        User user = new User();
+        
+        user.setId(1L);
+        user.setPassword("newpass");
+        user.setEmail("new@test.com");
+        user.setActive(true);
+        
+        assertEquals(1L, user.getId());
+        assertEquals("newpass", user.getPassword());
+        assertEquals("new@test.com", user.getEmail());
+        assertTrue(user.isActive());
+    }
 
     @Test
     void addRoleShouldMaintainBidirectionalConsistency() {
-        // Given
         User user = new User("testuser", "pass", "email@test.com", true);
         Role role = new Role("ADMIN", "Admin role");
 
-        // When
         user.addRole(role);
 
-        // Then
-        assertTrue(user.getRoles().contains(role), "User should have the role.");
-        assertTrue(role.getUsers().contains(user), "Role should contain the user.");
+        assertTrue(user.getRoles().contains(role));
+        assertTrue(role.getUsers().contains(user));
+    }
+
+    @Test
+    void addRoleWithNullShouldNotThrowException() {
+        User user = new User("testuser", "pass", "email@test.com", true);
+        
+        assertDoesNotThrow(() -> user.addRole(null));
+        assertTrue(user.getRoles().isEmpty());
+    }
+
+    @Test
+    void addRoleTwiceShouldBeIdempotent() {
+        User user = new User("testuser", "pass", "email@test.com", true);
+        Role role = new Role("ADMIN");
+        
+        user.addRole(role);
+        user.addRole(role);
+        
+        assertEquals(1, user.getRoles().size());
     }
 
     @Test
     void removeRoleShouldMaintainBidirectionalConsistency() {
-        // Given
         User user = new User("testuser", "pass", "email@test.com", true);
         Role role = new Role("ADMIN", "Admin role");
         user.addRole(role);
 
-        // When
         user.removeRole(role);
 
-        // Then
-        assertFalse(user.getRoles().contains(role), "User should not have the role anymore.");
-        assertFalse(role.getUsers().contains(user), "Role should not contain the user anymore.");
+        assertFalse(user.getRoles().contains(role));
+        assertFalse(role.getUsers().contains(user));
+    }
+
+    @Test
+    void removeRoleWithNullShouldNotThrowException() {
+        User user = new User("testuser", "pass", "email@test.com", true);
+        
+        assertDoesNotThrow(() -> user.removeRole(null));
     }
 
     @Test
     void equalsAndHashCodeShouldBeBasedOnUsername() {
-        // Given: two User objects with the same username but different other fields
         User user1 = new User("testuser", "password123", "email1@test.com", true);
         User user2 = new User("testuser", "password456", "email2@test.com", false);
         User user3 = new User("anotheruser", "password123", "email1@test.com", true);
 
-        // When & Then:
-        // 1. Test equals contract
-        assertEquals(user1, user2, "Users with the same username should be equal.");
-        assertNotEquals(user1, user3, "Users with different usernames should not be equal.");
-        assertNotEquals(user1, null, "User should not be equal to null.");
-        assertNotEquals(user1, new Object(), "User should not be equal to an object of a different type.");
+        assertEquals(user1, user2);
+        assertNotEquals(user1, user3);
+        assertEquals(user1.hashCode(), user2.hashCode());
+    }
 
-        // 2. Test hashCode contract
-        assertEquals(user1.hashCode(), user2.hashCode(), "Hash codes should be the same for equal objects.");
+    @Test
+    void testEqualsSameObject() {
+        User user = new User("testuser", "pass", "email@test.com", true);
+        assertEquals(user, user);
+    }
+
+    @Test
+    void testEqualsNull() {
+        User user = new User("testuser", "pass", "email@test.com", true);
+        assertNotEquals(user, null);
+    }
+
+    @Test
+    void testEqualsDifferentClass() {
+        User user = new User("testuser", "pass", "email@test.com", true);
+        assertNotEquals(user, "testuser");
     }
 
     @Test
     void equalsShouldReturnFalseForTransientEntityWithNullUsername() {
-        // Given: two transient entities created with the default constructor
         User user1 = new User();
         User user2 = new User();
 
-        // When & Then
-        assertNotEquals(user1, user2, "Two new entities with null business keys should not be equal.");
+        assertNotEquals(user1, user2);
+    }
+
+    @Test
+    void testEqualsWithNullUsername() {
+        User user1 = new User(null, "pass", "email@test.com", true);
+        User user2 = new User(null, "pass", "email@test.com", true);
+        User user3 = new User("testuser", "pass", "email@test.com", true);
+        
+        assertNotEquals(user1, user2);
+        assertNotEquals(user1, user3);
+    }
+
+    @Test
+    void testHashCodeWithNullUsername() {
+        User user = new User(null, "pass", "email@test.com", true);
+        assertNotNull(user.hashCode());
+    }
+
+    @Test
+    void testHashCodeConsistency() {
+        User user = new User("testuser", "pass", "email@test.com", true);
+        int hash1 = user.hashCode();
+        int hash2 = user.hashCode();
+        assertEquals(hash1, hash2);
     }
 
     @Test
     void toStringShouldContainKeyFields() {
-        // Given
         User user = new User("testuser", "password", "test@example.com", true);
-        user.setId(1L); // Simulate being persisted
+        user.setId(1L);
 
-        // When
         String toString = user.toString();
 
-        // Then
         assertTrue(toString.contains("id=1"));
         assertTrue(toString.contains("username='testuser'"));
         assertTrue(toString.contains("email='test@example.com'"));
         assertTrue(toString.contains("active=true"));
+    }
+
+    @Test
+    void toStringShouldHandleNullFields() {
+        User user = new User();
+        
+        assertDoesNotThrow(() -> user.toString());
+        String result = user.toString();
+        assertTrue(result.contains("User{"));
+    }
+
+    @Test
+    void activeDefaultsToFalse() {
+        User user = new User();
+        assertFalse(user.isActive());
+    }
+
+    @Test
+    void rolesCollectionIsInitialized() {
+        User user = new User();
+        assertNotNull(user.getRoles());
+        assertEquals(0, user.getRoles().size());
+    }
+
+    @Test
+    void canAddMultipleRoles() {
+        User user = new User("testuser", "pass", "email@test.com", true);
+        Role role1 = new Role("ADMIN");
+        Role role2 = new Role("EDITOR");
+        
+        user.addRole(role1);
+        user.addRole(role2);
+        
+        assertEquals(2, user.getRoles().size());
+    }
+
+    @Test
+    void setRolesShouldReplaceCollection() {
+        User user = new User("testuser", "pass", "email@test.com", true);
+        Role role1 = new Role("ADMIN");
+        user.addRole(role1);
+        
+        assertEquals(1, user.getRoles().size());
+        
+        java.util.Set<Role> newRoles = new java.util.HashSet<>();
+        Role role2 = new Role("EDITOR");
+        newRoles.add(role2);
+        
+        user.setRoles(newRoles);
+        
+        assertEquals(1, user.getRoles().size());
+        assertTrue(user.getRoles().contains(role2));
+        assertFalse(user.getRoles().contains(role1));
     }
 }
