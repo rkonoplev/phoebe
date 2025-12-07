@@ -98,45 +98,87 @@
 
 ---
 
-## 5. Implemented Features
+## 5. Backend API Integration
 
-### 5.1 Core Setup & Infrastructure
+### 5.1 API Configuration
+- **Base URL**: `http://phoebe-app:8080/api` (for Docker) or `http://localhost:8080/api` (locally)
+- **Public endpoints**: `/api/public/*` - accessible without authentication
+- **Admin endpoints**: `/api/admin/*` - require Basic Auth
+- **CORS**: Configured for localhost:3000, localhost:3001, and Docker container
+
+### 5.2 Authentication
+- **Method**: Basic Authentication with username and password
+- **Token storage**: localStorage (base64 encoded credentials)
+- **Verification endpoint**: `/api/admin/auth/me` - get current user data
+- **Automatic error handling**: Redirect to login on 401/403
+
+### 5.3 Request Structure
+
+**Public requests** (no authentication):
+```javascript
+GET /api/public/news?page=0&size=10
+GET /api/public/news/{id}
+GET /api/public/news/term/{termId}
+GET /api/public/news/search?q=query
+```
+
+**Admin requests** (with Basic Auth header):
+```javascript
+GET /api/admin/auth/me
+GET /api/admin/news?page=0&size=20
+POST /api/admin/news
+PUT /api/admin/news/{id}
+DELETE /api/admin/news/{id}
+GET /api/admin/terms
+POST /api/admin/terms
+```
+
+### 5.4 Error Handling
+- **401 Unauthorized**: Automatic logout and redirect to `/admin/login`
+- **403 Forbidden**: Automatic logout and redirect to `/admin/login`
+- **Network errors**: Display error message to user
+
+---
+
+## 6. Implemented Features
+
+### 6.1 Core Setup & Infrastructure
 - **Project Setup**: Next.js with React, Material UI (MUI), and Axios.
 - **Docker Integration**: Dockerfile for Next.js app and updated docker-compose.yml
   with nextjs-app service on port 3000.
 - **Environment Variables**: Configuration for backend API base URL (.env.local).
 
-### 5.2 User Interface & Theming
+### 6.2 User Interface & Theming
 - **Custom Material UI Theme**: Light and dark mode support with toggle in footer.
 - **Global Layout Component**: Consistent header, main content area, and footer.
 - **Custom 404 Page**: For unhandled routes.
 
-### 5.3 Authentication & Authorization
+### 6.3 Authentication & Authorization
 - **AuthContext**: Global management of authentication status and roles (ADMIN/EDITOR).
 - **Login Page** (/admin/login): With frontend validation for username and password.
 - **Protected Routes**: ProtectedRoute and AdminRoute components for access control.
 - **Dynamic AdminBar**: Displayed only for authenticated users.
 
-### 5.4 Public Content Pages
+### 6.4 Public Content Pages
 - **Homepage** (/): SSR display of latest news articles.
 - **Article Detail Page** (/node/[id]): SSG with ISR for optimal performance and SEO.
 - **Category Page** (/category/[id]): SSR list of articles for specific category.
 - **Search Page** (/search): Search form integrated with backend API.
 - **Informational Pages**: Placeholder pages for footer links.
 
-### 5.5 Admin Panel (CRUD Operations)
+### 6.5 Admin Panel (CRUD Operations)
 - **News Management**: List, create, edit, and delete articles.
 - **Taxonomy Management**: Full CRUD for terms and categories.
 - **User Management**: View and edit user roles (ADMIN only).
 - **Frontend Validation**: Comprehensive form validation according to VALIDATION_GUIDE.md.
 
-### 5.6 Content Handling
+### 6.6 Content Handling
 - **HTML Rendering**: Support for HTML content (allowed tags only) and YouTube embeds in teaser and body fields.
 - **Safe Processing**: Using backend's SafeHtml processing.
 
 ---
 
-## 6. Future Enhancements (Optional)
+## 7. Future Enhancements (Optional)
 - Full-text search with auto-suggestions (e.g., using Pagefind).
 - Lazy loading for images and infinite scroll on category pages.
 - Push notifications for breaking news.
@@ -180,7 +222,7 @@ To run the Next.js frontend on your local machine:
 
 ---
 
-## 7. Troubleshooting
+## 8. Troubleshooting
 
 ### Problem: `Module not found: Can't resolve '@mui/icons-material/Search'` (or other MUI icons)
 
@@ -260,7 +302,7 @@ once for Docker to pick up the new layer.
 
 ---
 
-## 8. Building the Docker Image
+## 9. Building the Docker Image
 
 For a successful build of the Next.js application Docker image, it is crucial to execute commands from the correct directory so that Docker can find all necessary files (such as `Dockerfile`, `package.json`, and `package-lock.json`).
 
