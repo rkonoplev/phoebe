@@ -2,9 +2,7 @@ package com.example.phoebe.entity;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for the Role entity, focusing on its business key-based equals/hashCode and helper methods.
@@ -13,52 +11,196 @@ class RoleTest {
 
     @Test
     void constructorShouldNormalizeName() {
-        // Given
         Role role = new Role("  editor  ", "Test Description");
-
-        // Then
         assertEquals("EDITOR", role.getName());
         assertEquals("Test Description", role.getDescription());
     }
 
     @Test
+    void constructorWithNullNameShouldSetNull() {
+        Role role = new Role(null, "Description");
+        assertNull(role.getName());
+        assertEquals("Description", role.getDescription());
+    }
+
+    @Test
+    void singleArgConstructorShouldWork() {
+        Role role = new Role("ADMIN");
+        assertEquals("ADMIN", role.getName());
+        assertNull(role.getDescription());
+    }
+
+    @Test
+    void defaultConstructorShouldInitializeFields() {
+        Role role = new Role();
+        assertNull(role.getId());
+        assertNull(role.getName());
+        assertNull(role.getDescription());
+        assertNotNull(role.getUsers());
+        assertNotNull(role.getPermissions());
+        assertTrue(role.getUsers().isEmpty());
+        assertTrue(role.getPermissions().isEmpty());
+    }
+
+    @Test
+    void settersAndGettersShouldWork() {
+        Role role = new Role("ADMIN");
+        role.setId(1L);
+        role.setDescription("Administrator role");
+        
+        assertEquals(1L, role.getId());
+        assertEquals("ADMIN", role.getName());
+        assertEquals("Administrator role", role.getDescription());
+    }
+
+    @Test
     void testAddUser() {
-        // Given
         Role role = new Role("ADMIN", null);
         User user = new User("testuser", "pass", "email", true);
 
-        // When
         role.addUser(user);
 
-        // Then
         assertTrue(role.getUsers().contains(user));
         assertTrue(user.getRoles().contains(role));
     }
 
     @Test
+    void addUserWithNullShouldNotThrowException() {
+        Role role = new Role("ADMIN");
+        assertDoesNotThrow(() -> role.addUser(null));
+        assertTrue(role.getUsers().isEmpty());
+    }
+
+    @Test
+    void addUserTwiceShouldBeIdempotent() {
+        Role role = new Role("ADMIN");
+        User user = new User("testuser", "pass", "email", true);
+        
+        role.addUser(user);
+        role.addUser(user);
+        
+        assertEquals(1, role.getUsers().size());
+    }
+
+    @Test
+    void removeUserShouldRemoveBidirectionalRelationship() {
+        Role role = new Role("ADMIN");
+        User user = new User("testuser", "pass", "email", true);
+        role.addUser(user);
+        
+        role.removeUser(user);
+        
+        assertFalse(role.getUsers().contains(user));
+        assertFalse(user.getRoles().contains(role));
+    }
+
+    @Test
+    void removeUserWithNullShouldNotThrowException() {
+        Role role = new Role("ADMIN");
+        assertDoesNotThrow(() -> role.removeUser(null));
+    }
+
+    @Test
     void testAddPermission() {
-        // Given
         Role role = new Role("ADMIN", null);
         Permission permission = new Permission("news:create");
 
-        // When
         role.addPermission(permission);
 
-        // Then
         assertTrue(role.getPermissions().contains(permission));
         assertTrue(permission.getRoles().contains(role));
     }
 
     @Test
+    void addPermissionWithNullShouldNotThrowException() {
+        Role role = new Role("ADMIN");
+        assertDoesNotThrow(() -> role.addPermission(null));
+        assertTrue(role.getPermissions().isEmpty());
+    }
+
+    @Test
+    void addPermissionTwiceShouldBeIdempotent() {
+        Role role = new Role("ADMIN");
+        Permission permission = new Permission("news:create");
+        
+        role.addPermission(permission);
+        role.addPermission(permission);
+        
+        assertEquals(1, role.getPermissions().size());
+    }
+
+    @Test
+    void removePermissionShouldRemoveBidirectionalRelationship() {
+        Role role = new Role("ADMIN");
+        Permission permission = new Permission("news:create");
+        role.addPermission(permission);
+        
+        role.removePermission(permission);
+        
+        assertFalse(role.getPermissions().contains(permission));
+        assertFalse(permission.getRoles().contains(role));
+    }
+
+    @Test
+    void removePermissionWithNullShouldNotThrowException() {
+        Role role = new Role("ADMIN");
+        assertDoesNotThrow(() -> role.removePermission(null));
+    }
+
+    @Test
     void testEqualsAndHashCode() {
-        // Given
         Role role1 = new Role("  ADMIN  ", "First description");
-        Role role2 = new Role("ADMIN", "Second description"); // Same business key
+        Role role2 = new Role("ADMIN", "Second description");
         Role role3 = new Role("EDITOR", "First description");
 
-        // Then
-        assertEquals(role1, role2, "Roles with the same name should be equal.");
-        assertEquals(role1.hashCode(), role2.hashCode(), "Hash codes should be the same for equal objects.");
-        assertNotEquals(role1, role3, "Roles with different names should not be equal.");
+        assertEquals(role1, role2);
+        assertEquals(role1.hashCode(), role2.hashCode());
+        assertNotEquals(role1, role3);
+    }
+
+    @Test
+    void testEqualsSameObject() {
+        Role role = new Role("ADMIN");
+        assertEquals(role, role);
+    }
+
+    @Test
+    void testEqualsNull() {
+        Role role = new Role("ADMIN");
+        assertNotEquals(role, null);
+    }
+
+    @Test
+    void testEqualsDifferentClass() {
+        Role role = new Role("ADMIN");
+        assertNotEquals(role, "ADMIN");
+    }
+
+    @Test
+    void testEqualsWithNullName() {
+        Role role1 = new Role(null);
+        Role role2 = new Role(null);
+        Role role3 = new Role("ADMIN");
+        
+        assertNotEquals(role1, role2);
+        assertNotEquals(role1, role3);
+    }
+
+    @Test
+    void testHashCodeWithNullName() {
+        Role role = new Role(null);
+        assertNotNull(role.hashCode());
+    }
+
+    @Test
+    void toStringShouldContainKeyFields() {
+        Role role = new Role("ADMIN", "Administrator");
+        role.setId(1L);
+        
+        String result = role.toString();
+        
+        assertTrue(result.contains("Role"));
+        assertTrue(result.contains("id=1"));
+        assertTrue(result.contains("name='ADMIN'"));
     }
 }

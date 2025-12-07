@@ -2,9 +2,7 @@ package com.example.phoebe.entity;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for the Term entity, focusing on its business key-based equals and hashCode.
@@ -13,60 +11,138 @@ class TermTest {
 
     @Test
     void constructorShouldNormalizeAndSetFields() {
-        // Given: input strings with extra spaces and mixed case
         String name = "  Technology  ";
         String vocabulary = "  Category  ";
 
-        // When: creating a new Term
         Term term = new Term(name, vocabulary);
 
-        // Then: the fields should be normalized and correctly set
-        assertEquals("Technology", term.getName(), "Name should be trimmed.");
-        assertEquals("category", term.getVocabulary(), "Vocabulary should be trimmed and lowercased.");
+        assertEquals("Technology", term.getName());
+        assertEquals("category", term.getVocabulary());
+    }
+
+    @Test
+    void constructorWithNullsShouldSetNull() {
+        Term term = new Term(null, null);
+        assertNull(term.getName());
+        assertNull(term.getVocabulary());
+    }
+
+    @Test
+    void defaultConstructorShouldInitializeFields() {
+        Term term = new Term();
+        assertNull(term.getId());
+        assertNull(term.getName());
+        assertNull(term.getVocabulary());
+    }
+
+    @Test
+    void settersAndGettersShouldWork() {
+        Term term = new Term("Technology", "category");
+        term.setId(1L);
+        
+        assertEquals(1L, term.getId());
+        assertEquals("Technology", term.getName());
+        assertEquals("category", term.getVocabulary());
     }
 
     @Test
     void equalsAndHashCodeShouldBeBasedOnBusinessKey() {
-        // Given: two Term objects with the same business key (name + vocabulary)
         Term term1 = new Term("  Technology  ", "  CATEGORY  ");
         Term term2 = new Term("Technology", "category");
-
-        // And a term with a different name
         Term term3 = new Term("Sports", "category");
-
-        // And a term with a different vocabulary
         Term term4 = new Term("Technology", "tag");
 
-        // When & Then: test equals and hashCode contracts
-        assertEquals(term1, term2, "Terms with the same name and vocabulary should be equal.");
-        assertEquals(term1.hashCode(), term2.hashCode(), "Hash codes should be the same for equal objects.");
+        assertEquals(term1, term2);
+        assertEquals(term1.hashCode(), term2.hashCode());
+        assertNotEquals(term1, term3);
+        assertNotEquals(term1, term4);
+    }
 
-        assertNotEquals(term1, term3, "Terms with different names should not be equal.");
-        assertNotEquals(term1, term4, "Terms with different vocabularies should not be equal.");
+    @Test
+    void testEqualsSameObject() {
+        Term term = new Term("Technology", "category");
+        assertEquals(term, term);
+    }
+
+    @Test
+    void testEqualsNull() {
+        Term term = new Term("Technology", "category");
+        assertNotEquals(term, null);
+    }
+
+    @Test
+    void testEqualsDifferentClass() {
+        Term term = new Term("Technology", "category");
+        assertNotEquals(term, "Technology");
     }
 
     @Test
     void equalsShouldReturnFalseForTransientEntityWithNullKeys() {
-        // Given: two transient entities created with the default constructor
         Term term1 = new Term();
         Term term2 = new Term();
+        assertNotEquals(term1, term2);
+    }
 
-        // When & Then
-        assertNotEquals(term1, term2, "Two new entities with null business keys should not be equal.");
+    @Test
+    void testEqualsWithNullName() {
+        Term term1 = new Term(null, "category");
+        Term term2 = new Term(null, "category");
+        Term term3 = new Term("Technology", "category");
+        
+        assertNotEquals(term1, term2);
+        assertNotEquals(term1, term3);
+    }
+
+    @Test
+    void testEqualsWithNullVocabulary() {
+        Term term1 = new Term("Technology", null);
+        Term term2 = new Term("Technology", null);
+        Term term3 = new Term("Technology", "category");
+        
+        assertNotEquals(term1, term2);
+        assertNotEquals(term1, term3);
+    }
+
+    @Test
+    void testEqualsWithBothNull() {
+        Term term1 = new Term(null, null);
+        Term term2 = new Term(null, null);
+        
+        assertNotEquals(term1, term2);
+    }
+
+    @Test
+    void testHashCodeWithNullFields() {
+        Term term = new Term(null, null);
+        assertNotNull(term.hashCode());
+    }
+
+    @Test
+    void testHashCodeConsistency() {
+        Term term = new Term("Technology", "category");
+        int hash1 = term.hashCode();
+        int hash2 = term.hashCode();
+        assertEquals(hash1, hash2);
     }
 
     @Test
     void toStringShouldContainKeyFields() {
-        // Given
         Term term = new Term("Technology", "category");
-        term.setId(1L); // Simulate persistence
+        term.setId(1L);
 
-        // When
         String toString = term.toString();
 
-        // Then
         assertTrue(toString.contains("id=1"));
         assertTrue(toString.contains("name='Technology'"));
         assertTrue(toString.contains("vocabulary='category'"));
+    }
+
+    @Test
+    void toStringShouldHandleNullFields() {
+        Term term = new Term();
+        String result = term.toString();
+        
+        assertTrue(result.contains("Term"));
+        assertDoesNotThrow(() -> term.toString());
     }
 }
