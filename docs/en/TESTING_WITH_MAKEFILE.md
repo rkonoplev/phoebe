@@ -31,6 +31,7 @@ This guide explains how to use the Makefile commands for development and testing
 | `make run` | Alias for `make run-hybrid`. | Quick start in the default mode. |
 | `make stop` | Stop the project. | Clean shutdown. |
 | `make reset` | **Delete all containers and DB data**. | Complete environment reset. |
+| `make run-no-cache` | **Rebuild images without cache**. | Fix issues with stale Docker cache. |
 | `make test` | Run integration tests (Testcontainers). | Quick test feedback. |
 | `make all-tests` | Run all tests (unit + integration). | Full validation. |
 | `make boot` | Start backend locally. | Development with local MySQL. |
@@ -146,7 +147,18 @@ make coverage
 ## Troubleshooting
 
 ### Build and Cache Issues
-If the application behaves unexpectedly after code changes (especially in `build.gradle`), try `make reset` to completely clean the environment. **Warning: this will delete your DB data.**
+If the application behaves unexpectedly after code changes (especially in `build.gradle` or migration files), Docker might be using a stale, cached version of the files.
+
+1.  **Complete environment reset (deletes DB data):**
+    ```bash
+    make reset
+    ```
+
+2.  **Forced rebuild without cache:**
+    ```bash
+    make run-no-cache
+    ```
+    This command forces Docker to rebuild the images from scratch, ignoring the cache. The build will be slower, but it resolves issues with "stuck" files.
 
 ### Docker Issues
 ```bash

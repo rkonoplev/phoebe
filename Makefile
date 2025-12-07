@@ -44,6 +44,12 @@ reset:
 	docker compose $(COMPOSE_HYBRID) down -v
 	docker compose $(COMPOSE_PROD) down -v --remove-orphans
 
+# Force a full rebuild of images without using cache.
+# Useful for fixing issues with stale or corrupted Docker cache.
+run-no-cache:
+	docker compose $(COMPOSE_HYBRID) build --no-cache
+	docker compose $(COMPOSE_HYBRID) up
+
 # --- Testing & Analysis ---
 
 # Run integration tests (Testcontainers).
@@ -84,6 +90,7 @@ help:
 	@echo "Standard Commands:"
 	@echo "  stop          - Stop all project containers."
 	@echo "  reset         - Stop and remove all containers, volumes, and networks (deletes data)."
+	@echo "  run-no-cache  - Force a full rebuild of images without using cache."
 	@echo ""
 	@echo "Testing & Analysis:"
 	@echo "  test          - Run integration tests (uses Testcontainers)."
@@ -96,4 +103,4 @@ help:
 	@echo "Other:"
 	@echo "  help          - Show this help message."
 
-.PHONY: run-hybrid run-prod run stop reset test all-tests boot clean lint coverage help
+.PHONY: run-hybrid run-prod run stop reset run-no-cache test all-tests boot clean lint coverage help

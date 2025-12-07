@@ -2,21 +2,19 @@
 
 # Technical Debt and Improvement History
 
-This document tracks the history of significant improvements, current tasks, and future plans for the project.
+This document tracks the history of significant improvements, current tasks, and potential future directions for the project.
 
 ---
 
 ## Completed Tasks and Architectural Decisions
 
-This section serves as a changelog, documenting key implemented features and refactorings based on an analysis
-of the current codebase.
+This section serves as a changelog, documenting key implemented features and refactorings.
 
 ### Architecture & Design
 - **Layered Architecture**: A clear separation between Controller, Service, and Repository layers has been
   implemented.
 - **Single Responsibility Principle**: Logic is separated by domain (news, roles, authorization).
-- **DTO Pattern**: Data Transfer Objects are used for all API requests and responses, ensuring the internal
-  model is decoupled.
+- **DTO Pattern**: Data Transfer Objects are used for all API requests and responses.
 - **Centralized Authorization**: Access control logic has been extracted into a dedicated `AuthorizationService`.
 - **Automated Mapping**: MapStruct is integrated for automatic conversion between DTOs and entities.
 
@@ -25,6 +23,8 @@ of the current codebase.
 - **Role-Based Access Control (RBAC)**: A system with roles (ADMIN, EDITOR) and granular permissions is
   implemented.
 - **Endpoint Protection**: Administrative APIs are secured and require appropriate roles.
+- **Next.js Vulnerability Fixed**: Updated the `next` package to patch a critical RCE (Remote Code Execution)
+  vulnerability.
 
 ### Performance
 - **Caching**: Method-level caching (`@Cacheable`) is implemented using Caffeine for frequently accessed data.
@@ -35,8 +35,9 @@ of the current codebase.
 - **Data Access**: The project currently uses the blocking **Spring Data JPA** stack for simplicity and
   reliability.
 - **Migration Management**: The database schema is version-controlled using Flyway.
-- **MySQL as Single Database**: The project uses MySQL for all environments (development, testing, production)
-  to ensure consistency.
+- **Migration Compatibility Fix**: Resolved an issue in the `V11` migration to support MySQL syntax
+  (replacing `||` with `CONCAT()`), ensuring cross-database compatibility.
+- **MySQL as Single Database**: The project uses MySQL for all environments to ensure consistency.
 
 ### Code Quality & CI/CD
 - **Static Analysis**: Checkstyle and PMD are configured and integrated to maintain code quality.
@@ -44,19 +45,11 @@ of the current codebase.
 - **Test Structure Refactoring**: A full separation of tests into `unit/` and `integration/` directories has
   been completed.
 - **Gradle Configuration**: `build.gradle` is configured to run unit and integration tests separately.
-- **Unified Testcontainers Architecture**: Migrated to single `BaseIntegrationTest` class using Testcontainers
-  MySQL for all environments (local and CI).
+- **Unified Testcontainers Architecture**: Migrated to a single `BaseIntegrationTest` class.
 - **Simplified CI Pipeline**: Removed Docker Compose dependency from CI, using Testcontainers everywhere.
-- **Consistent Test Environments**: Achieved identical test behavior across all platforms.
-- **Checkstyle Violations Fixed**: Resolved import rule violations (AvoidStarImport) in test files.
-- **Database Schema Extension**: Added `site_url` field to `channel_settings` table for storing the base
-  site URL (migration V10).
-- **CI/CD Optimization**: Implemented unified Testcontainers strategy:
-  - Complete migration to MySQL in all environments
-  - Unified integration testing with Testcontainers everywhere
-  - Simplified CI pipeline without Docker Compose dependencies
-  - Removed environment-specific test configurations
-  - Achieved production parity in all test environments
+- **Project Cleanup**: Removed obsolete files (`Task`, root `docker-compose.yml`) from the repository.
+- **Improved Docker Workflow**: Added a `make run-no-cache` command to force the rebuilding of Docker images
+  without cache, resolving issues with stale files.
 
 ---
 
@@ -67,9 +60,10 @@ of the current codebase.
 
 ---
 
-## Future Plans
+## Potential Enhancements and Future Directions
 
-This section outlines planned features and improvements, categorized by priority.
+This section outlines potential improvements and architectural vectors that could be considered for the
+project's future development. The ideas are grouped by priority to form a hypothetical roadmap.
 
 ### Security (High Priority)
 
@@ -92,12 +86,10 @@ This section outlines planned features and improvements, categorized by priority
 - **Search Functionality**: Develop a search system for public and administrative parts of the application.
   - **Purpose**: To provide users with a fast and effective way to find content.
   - **Phase 1 (Angular & Next.js)**: Implement a basic, server-side search. The backend will expose a new API
-    endpoint that uses SQL `LIKE` or `ILIKE` (for case-insensitivity in PostgreSQL) to search through
-    article titles and content.
+    endpoint that uses SQL `LIKE` or `ILIKE` to search through article titles and content.
   - **Phase 2 (Next.js - Perspective)**: For the Next.js frontend, consider implementing a client-side
     search using **Pagefind**. This tool creates a static search index during the build process, allowing for
-    instant, offline-capable search without any load on the backend API. This is a potential improvement
-    to be evaluated after Phase 1 is complete.
+    instant search without any load on the backend API.
 
 - **Webhooks**: Develop a system for event-driven notifications.
   - **Purpose**: To notify external services of specific events within the application.
@@ -106,13 +98,12 @@ This section outlines planned features and improvements, categorized by priority
 - **Telegram Integration**: Automatically post article previews to a Telegram channel.
   - **Purpose**: To expand content distribution and provide timely updates to subscribers.
   - **Components**: A Telegram Bot client, a service to listen for article creation/publication events,
-    message formatting (preview, link), and secure storage for the bot token.
+    message formatting, and secure storage for the bot token.
 
 ### Architecture & Performance (Low Priority)
 
-- **Reactive Stack Migration**: Consider migrating public-facing, high-traffic endpoints to a non-blocking stack.
-  - **Purpose**: To maximize scalability and resource efficiency under high load.
-  - **Components**: Spring WebFlux and R2DBC for specific, performance-critical parts of the application.
+- **Reactive Stack Migration**: Consider migrating public-facing, high-traffic endpoints to a non-blocking stack
+  (Spring WebFlux and R2DBC) to maximize scalability.
 
 ### Implementation Sequence
 
@@ -124,15 +115,11 @@ This section outlines planned features and improvements, categorized by priority
 
 ### Supporting Infrastructure and Services
 
-- **Email Service (e.g., SMTP, Mailgun)**
-  - **Purpose**: Required for user notifications, registration confirmation, and 2FA/password recovery.
-- **File Storage (e.g., S3, MinIO)**
-  - **Purpose**: For storing user-uploaded content like images and documents. To be evaluated based on final
-    feature requirements.
-- **Monitoring and Logging (Grafana Cloud)**
-  - **Purpose**: Centralized application monitoring (Prometheus) and log aggregation (Loki). Recommended for
-    production environments. Compatible with free-tier cloud hosting platforms as it does not require a local
-    persistent disk.
+- **Email Service (e.g., SMTP, Mailgun)**: Required for user notifications, registration confirmation, and
+  2FA/password recovery.
+- **File Storage (e.g., S3, MinIO)**: For storing user-uploaded content like images and documents.
+- **Monitoring and Logging (Grafana Cloud)**: Centralized application monitoring (Prometheus) and log
+  aggregation (Loki), which is especially useful in a production environment.
 
 ### Reference Frontend Implementations
 
@@ -140,4 +127,4 @@ This section outlines planned features and improvements, categorized by priority
   required.
 - **Next.js Frontend**: Implemented and ready for use.
 - **Dependency**: Full implementation of the frontends will proceed after the final backend debugging,
-  configuration, and verification. **Next.js frontend successfully integrated and tested with the backend.**
+  configuration, and verification.
