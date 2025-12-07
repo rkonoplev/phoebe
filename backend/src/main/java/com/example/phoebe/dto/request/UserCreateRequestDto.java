@@ -18,6 +18,10 @@ public class UserCreateRequestDto {
     @Email(message = "Email must be valid")
     private String email;
 
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
+    private String password;
+
     private boolean active = true;
 
     private Set<Long> roleIds;
@@ -53,5 +57,13 @@ public class UserCreateRequestDto {
 
     public void setRoleIds(Set<Long> roleIds) {
         this.roleIds = roleIds;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

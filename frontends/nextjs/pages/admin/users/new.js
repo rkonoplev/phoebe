@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import AdminRoute from '../../../../components/AdminRoute';
-import { admin } from '../../../../services/api';
+import AdminRoute from '../../../components/AdminRoute';
+import { admin } from '../../../services/api';
 import {
   Container, TextField, Button, Typography, Box, FormControl,
   InputLabel, Select, MenuItem, FormControlLabel, Checkbox, Alert
 } from '@mui/material';
 
-const EditUserPage = () => {
+const NewUserPage = () => {
   const router = useRouter();
-  const { id } = router.query;
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -20,32 +19,10 @@ const EditUserPage = () => {
   const [roles, setRoles] = useState([]);
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (id) {
-      fetchUser();
-      fetchRoles();
-    }
-  }, [id]);
-
-  const fetchUser = async () => {
-    try {
-      const response = await admin.getUserById(id);
-      const user = response.data;
-      setFormData({
-        username: user.username,
-        email: user.email,
-        password: '',
-        active: user.active,
-        roleIds: user.roles?.map(r => r.id) || []
-      });
-      setLoading(false);
-    } catch (error) {
-      console.error('Failed to fetch user:', error);
-      setLoading(false);
-    }
-  };
+    fetchRoles();
+  }, []);
 
   const fetchRoles = async () => {
     try {
@@ -58,14 +35,17 @@ const EditUserPage = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (formData.username && (formData.username.length < 3 || formData.username.length > 100)) {
+    if (!formData.username || formData.username.length < 3 || formData.username.length > 100) {
       newErrors.username = 'Username must be between 3 and 100 characters';
     }
-    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Valid email is required';
     }
-    if (formData.password && formData.password.length < 8) {
+    if (!formData.password || formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters';
+    }
+    if (!formData.roleIds || formData.roleIds.length === 0) {
+      newErrors.roleIds = 'At least one role must be selected';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -78,24 +58,18 @@ const EditUserPage = () => {
     if (!validate()) return;
 
     try {
-      const updateData = { ...formData };
-      if (!updateData.password) {
-        delete updateData.password;
-      }
-      await admin.updateUser(id, updateData);
+      await admin.createUser(formData);
       router.push('/admin/users');
     } catch (error) {
-      console.error('Failed to update user:', error);
-      setSubmitError(error.response?.data?.message || 'Failed to update user');
+      console.error('Failed to create user:', error);
+      setSubmitError(error.response?.data?.message || 'Failed to create user');
     }
   };
-
-  if (loading) return <Typography>Loading...</Typography>;
 
   return (
     <Container maxWidth="md">
       <Box sx={{ mt: 4 }}>
-        <Typography variant="h4" gutterBottom>Edit User</Typography>
+        <Typography variant="h4" gutterBottom>Create New User</Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <TextField
             fullWidth
@@ -105,6 +79,7 @@ const EditUserPage = () => {
             error={!!errors.username}
             helperText={errors.username}
             margin="normal"
+            required
           />
           <TextField
             fullWidth
@@ -115,18 +90,20 @@ const EditUserPage = () => {
             error={!!errors.email}
             helperText={errors.email}
             margin="normal"
+            required
           />
           <TextField
             fullWidth
-            label="New Password (leave empty to keep current)"
+            label="Password"
             type="password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             error={!!errors.password}
-            helperText={errors.password || 'Leave empty to keep current password'}
+            helperText={errors.password}
             margin="normal"
+            required
           />
-          <FormControl fullWidth margin="normal">
+          <FormControl fullWidth margin="normal" error={!!errors.roleIds}>
             <InputLabel>Roles</InputLabel>
             <Select
               multiple
@@ -138,6 +115,7 @@ const EditUserPage = () => {
                 <MenuItem key={role.id} value={role.id}>{role.name}</MenuItem>
               ))}
             </Select>
+            {errors.roleIds && <Typography color="error" variant="caption">{errors.roleIds}</Typography>}
           </FormControl>
           <FormControlLabel
             control={
@@ -150,7 +128,7 @@ const EditUserPage = () => {
           />
           {submitError && <Alert severity="error" sx={{ mt: 2 }}>{submitError}</Alert>}
           <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-            <Button type="submit" variant="contained" color="primary">Update User</Button>
+            <Button type="submit" variant="contained" color="primary">Create User</Button>
             <Button variant="outlined" onClick={() => router.push('/admin/users')}>Cancel</Button>
           </Box>
         </Box>
@@ -161,6 +139,6 @@ const EditUserPage = () => {
 
 export default () => (
   <AdminRoute>
-    <EditUserPage />
+    <NewUserPage />
   </AdminRoute>
 );
