@@ -154,17 +154,48 @@ POST /api/admin/terms
 - **Custom 404 Page**: For unhandled routes.
 
 ### 6.3 Authentication & Authorization
-- **AuthContext**: Global management of authentication status and roles (ADMIN/EDITOR).
-- **Login Page** (/admin/login): With frontend validation for username and password.
-- **Protected Routes**: ProtectedRoute and AdminRoute components for access control.
-- **Dynamic AdminBar**: Displayed only for authenticated users.
+
+**System Login:**
+- **Login URL**: `/admin/login` (http://localhost:3000/admin/login)
+- **Default Credentials**: username: `admin`, password: `admin`
+- **Validation**: Frontend validation (username: 3-50 characters, password: minimum 8 characters)
+
+**Authentication Management:**
+- **AuthContext**: Global management of authentication status and roles (ADMIN/EDITOR)
+- **Session Storage**: localStorage with base64 encoded credentials
+- **Automatic Verification**: Checks for token presence on page load
+- **Automatic Logout**: On 401/403 errors with redirect to `/admin/login`
+
+**Route Protection:**
+- **ProtectedRoute**: Verifies authentication, redirects to `/admin/login` if not authorized
+- **AdminRoute**: Additionally checks for ADMIN role for administrative functions
+- **Loading Spinner**: Displayed during authentication status verification
+
+**AdminBar (Black Admin Panel):**
+- **Display**: Only for authenticated users (replaces regular header)
+- **Color**: Black background (#000) for visual distinction from public interface
+- **User Information**: Displays username and role (colored chip)
+  - 🔴 Red chip (#cc0000) for ADMIN role
+  - 🔵 Dark blue chip (#1c355e) for EDITOR role
+
+**AdminBar Links (Available to All Authorized Users):**
+- Home - return to homepage
+- Create News - create new article (`/admin/news/new`)
+- News List - list of all articles (`/admin/news`)
+
+**AdminBar Links (ADMIN Only):**
+- Taxonomy - manage categories and tags (`/admin/taxonomy`)
+- Users - manage users and roles (`/admin/users`)
+
+**Logout Button**: Exit system with redirect to homepage
 
 ### 6.4 Public Content Pages
-- **Homepage** (/): SSR display of latest news articles.
-- **Article Detail Page** (/node/[id]): SSG with ISR for optimal performance and SEO.
-- **Category Page** (/category/[id]): SSR list of articles for specific category.
-- **Search Page** (/search): Search form integrated with backend API.
-- **Informational Pages**: Placeholder pages for footer links.
+- **Homepage** (`/`): SSR display of latest news articles
+- **Article Detail Page** (`/node/[id]`): SSG with ISR for optimal performance and SEO
+- **Category Page** (`/category/[id]`): SSR list of articles for specific category
+- **Search Page** (`/search`): Search form integrated with backend API
+- **Technical Pages** (`/page/[slug]`): Dynamic pages from database (About, Contact, Privacy, etc.)
+- **404 Page**: Custom page for non-existent routes
 
 ### 6.5 Admin Panel (CRUD Operations)
 - **News Management**: List, create, edit, and delete articles.
