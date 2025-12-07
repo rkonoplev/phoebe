@@ -52,6 +52,28 @@ const NewsForm = ({ article: initialArticle }) => {
     }));
   };
 
+  const wrapSelection = (fieldName, openTag, closeTag) => {
+    const textarea = document.querySelector(`textarea[name="${fieldName}"]`);
+    if (!textarea) return;
+    
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = article[fieldName].substring(start, end);
+    
+    if (selectedText) {
+      const before = article[fieldName].substring(0, start);
+      const after = article[fieldName].substring(end);
+      const newValue = before + openTag + selectedText + closeTag + after;
+      
+      setArticle(prev => ({ ...prev, [fieldName]: newValue }));
+      
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + openTag.length, end + openTag.length);
+      }, 0);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError('');
@@ -109,32 +131,47 @@ const NewsForm = ({ article: initialArticle }) => {
         error={!!errors.title}
         helperText={errors.title}
       />
-      <TextField
-        name="teaser"
-        label="Teaser"
-        value={article.teaser}
-        onChange={handleChange}
-        onBlur={validate}
-        multiline
-        rows={3}
-        fullWidth
-        required
-        error={!!errors.teaser}
-        helperText={errors.teaser || "Supports HTML content, including image links (e.g., <img src='...' />) and YouTube embeds."} // Added helperText
-      />
-      <TextField
-        name="body"
-        label="Body"
-        value={article.body}
-        onChange={handleChange}
-        onBlur={validate}
-        multiline
-        rows={10}
-        fullWidth
-        required
-        error={!!errors.body}
-        helperText={errors.body || "Supports HTML content, including image links (e.g., <img src='...' />) and YouTube embeds."}
-      />
+      <Box>
+        <Box sx={{ mb: 1, display: 'flex', gap: 1 }}>
+          <Button size="small" variant="outlined" onClick={() => wrapSelection('teaser', '<strong>', '</strong>')}>Bold</Button>
+          <Button size="small" variant="outlined" onClick={() => wrapSelection('teaser', '<em>', '</em>')}>Italic</Button>
+          <Button size="small" variant="outlined" onClick={() => wrapSelection('teaser', '<u>', '</u>')}>Underline</Button>
+        </Box>
+        <TextField
+          name="teaser"
+          label="Teaser"
+          value={article.teaser}
+          onChange={handleChange}
+          onBlur={validate}
+          multiline
+          rows={3}
+          fullWidth
+          required
+          error={!!errors.teaser}
+          helperText={errors.teaser || "Supports HTML content, including image links (e.g., <img src='...' />) and YouTube embeds."}
+        />
+      </Box>
+      <Box>
+        <Box sx={{ mb: 1, display: 'flex', gap: 1 }}>
+          <Button size="small" variant="outlined" onClick={() => wrapSelection('body', '<strong>', '</strong>')}>Bold</Button>
+          <Button size="small" variant="outlined" onClick={() => wrapSelection('body', '<em>', '</em>')}>Italic</Button>
+          <Button size="small" variant="outlined" onClick={() => wrapSelection('body', '<u>', '</u>')}>Underline</Button>
+          <Button size="small" variant="outlined" onClick={() => wrapSelection('body', '<p>', '</p>')}>Paragraph</Button>
+        </Box>
+        <TextField
+          name="body"
+          label="Body"
+          value={article.body}
+          onChange={handleChange}
+          onBlur={validate}
+          multiline
+          rows={10}
+          fullWidth
+          required
+          error={!!errors.body}
+          helperText={errors.body || "Supports HTML content, including image links (e.g., <img src='...' />) and YouTube embeds."}
+        />
+      </Box>
       <FormControlLabel
         control={<Switch name="published" checked={article.published} onChange={handleChange} />}
         label="Published"
