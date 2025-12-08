@@ -100,6 +100,8 @@ This directory contains all English project documentation for **Phoebe CMS**.
 
 ## 🛠️ Development Tools
 
+- **[Performance Optimization Guide](./PERFORMANCE_OPTIMIZATION.md)**  
+  API performance optimizations, N+1 query prevention, and monitoring recommendations.
 - **[Code Style Setup](./CODE_STYLE_SETUP.md)**  
   A guide for automatic code formatting in IntelliJ IDEA.
 - **[Git and Bash Commands Guide](./GIT_BASH_COMMANDS.md)**  

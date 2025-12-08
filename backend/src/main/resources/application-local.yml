@@ -14,8 +14,22 @@ spring:
     hibernate:
       ddl-auto: validate # or 'none', if you manage the schema manually
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
   flyway:
     enabled: true
     # Added Flyway retry properties
     connect-retries: 60 # Number of times to retry connecting to the database.
     retry-interval: 5 # Interval in seconds between retries.
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.orm.jdbc.bind: TRACE

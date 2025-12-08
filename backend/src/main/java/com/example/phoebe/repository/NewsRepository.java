@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -29,14 +30,17 @@ public interface NewsRepository extends JpaRepository<News, Long> {
 
     // === Read Operations ===
 
+    @EntityGraph(attributePaths = {"author", "terms"})
     Page<News> findByPublished(boolean published, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"author", "terms"})
     Optional<News> findByIdAndPublished(Long id, boolean published);
 
     /**
      * Find news by term ID and publication status.
      * Uses DISTINCT to prevent duplicate rows caused by ManyToMany joins.
      */
+    @EntityGraph(attributePaths = {"author", "terms"})
     @Query(
             value =
                     "SELECT DISTINCT n FROM News n JOIN n.terms t " +
@@ -55,6 +59,7 @@ public interface NewsRepository extends JpaRepository<News, Long> {
      * Find news by multiple term IDs and publication status.
      * Uses DISTINCT and a correct count query for stable paging.
      */
+    @EntityGraph(attributePaths = {"author", "terms"})
     @Query(
             value =
                     "SELECT DISTINCT n FROM News n JOIN n.terms t " +
@@ -69,6 +74,7 @@ public interface NewsRepository extends JpaRepository<News, Long> {
             Pageable pageable
     );
 
+    @EntityGraph(attributePaths = {"author", "terms"})
     Page<News> findByAuthorId(Long authorId, Pageable pageable);
 
     boolean existsByIdAndAuthorId(Long id, Long authorId);
