@@ -58,6 +58,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
+    
+    // Security patches for transitive dependencies
+    implementation 'org.apache.commons:commons-compress:1.26.0'
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
 
     runtimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"
 
@@ -104,7 +108,7 @@ jacoco {
 
 tasks.jacocoTestReport {
     dependsOn test, integrationTest
-    executionData.setFrom(fileTree(buildDir).include("/jacoco/*.exec"))
+    executionData.setFrom(fileTree(layout.buildDirectory).include("jacoco/*.exec"))
     reports {
         xml.required.set(true)
         xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
@@ -160,7 +164,7 @@ test {
 }
 
 // Create a new task for integration tests
-task integrationTest(type: Test) {
+tasks.register('integrationTest', Test) {
     group = 'verification'
     description = 'Runs integration tests.'
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
