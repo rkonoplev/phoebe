@@ -103,7 +103,8 @@ jacoco {
 }
 
 tasks.jacocoTestReport {
-    dependsOn test
+    dependsOn test, integrationTest
+    executionData.setFrom(fileTree(buildDir).include("/jacoco/*.exec"))
     reports {
         xml.required.set(true)
         xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
@@ -178,6 +179,11 @@ task integrationTest(type: Test) {
     
     // Fix Gradle 9.0 deprecation warning
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+    
+    // Enable JaCoCo for integration tests
+    jacoco {
+        destinationFile = layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
+    }
 }
 
 // Ensure integration tests run during the 'check' phase
