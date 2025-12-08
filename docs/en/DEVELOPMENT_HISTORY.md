@@ -58,7 +58,13 @@ This section serves as a changelog, documenting key implemented features and ref
 
 ## In Progress
 
-- No active tasks.
+- **Homepage Layout System (HomePageBlock)**: Implementation of a flexible content block management system
+  for the homepage.
+  - **Purpose**: Provide the ability to structure the homepage through blocks with taxonomy term binding,
+    display order configuration (weight), news count, and display parameters (title/teaser).
+  - **Components**: New `HomePageBlock` entity, Public API endpoint `/api/public/homepage`, Admin API for
+    block management, UI in admin panel for creating and configuring blocks.
+  - **Estimate**: 4-6 days (Backend: 2-3 days, Frontend: 1-2 days, Testing: 1 day).
 
 ---
 
