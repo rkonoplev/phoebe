@@ -75,19 +75,53 @@
 ### Альтернативный/Низкоуровневый запуск
 Команды `make` являются оберткой над `docker-compose` и `gradlew`. Вы можете использовать их напрямую.
 
-- **Запуск только юнит-тестов** (не требует Docker):
-  В IDEA или командой:
-  ```bash
-  cd backend && ./gradlew test
-  ```
-- **Запуск интеграционных тестов** (требует запущенный Docker):
-  ```bash
-  cd backend && ./gradlew integrationTest
-  ```
-- **Запуск приложения вручную** (требует локальный MySQL):
-  ```bash
-  cd backend && ./gradlew bootRun
-  ```
+#### Gradle команды по уровням сложности
+
+**Быстрые проверки (без Docker):**
+```bash
+cd backend
+./gradlew test              # Только unit-тесты
+./gradlew checkstyleMain    # Проверка стиля кода в src/main/java
+./gradlew checkstyleTest    # Проверка стиля кода в src/test/java
+./gradlew checkstyle        # Проверка стиля всего кода
+```
+
+**Полные проверки (требуют Docker):**
+```bash
+cd backend
+./gradlew integrationTest   # Только интеграционные тесты (Testcontainers автоматически поднимет MySQL)
+./gradlew check             # Все тесты + Checkstyle + PMD (без сборки JAR)
+./gradlew build             # Полная сборка: check + создание JAR файла
+```
+
+**Запуск приложения:**
+```bash
+cd backend
+./gradlew bootRun           # Требует локальный MySQL или docker-compose up mysql
+```
+
+#### Что требует каждая команда
+
+| Команда | Docker | Приложение запущено | Что делает |
+|---------|--------|---------------------|------------|
+| `test` | ❌ | ❌ | Unit-тесты |
+| `checkstyle*` | ❌ | ❌ | Проверка стиля кода |
+| `integrationTest` | ✅ | ❌ | Интеграционные тесты (Testcontainers) |
+| `check` | ✅ | ❌ | Тесты + линтеры |
+| `build` | ✅ | ❌ | check + сборка JAR |
+| `bootRun` | ✅* | ❌ | Запуск приложения |
+
+*для `bootRun` нужна БД (через `docker-compose up mysql` или локально)
+
+#### Testcontainers - автоматическое управление БД
+
+Интеграционные тесты используют **Testcontainers**, который:
+- Автоматически скачивает и запускает MySQL контейнер
+- Запускает Spring Boot в тестовом контексте
+- Выполняет тесты с реальной БД
+- Останавливает и удаляет контейнер после тестов
+
+**Не нужно** запускать приложение или БД вручную для интеграционных тестов!
 
 ---
 

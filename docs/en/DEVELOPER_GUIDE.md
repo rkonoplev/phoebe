@@ -74,19 +74,53 @@ The entire primary workflow is built around the `Makefile` for simplicity.
 ### Alternative/Low-Level Launch
 The `make` commands are wrappers around `docker-compose` and `gradlew`. You can use them directly.
 
-- **Run unit tests only** (does not require Docker):
-  In IDEA or with the command:
-  ```bash
-  cd backend && ./gradlew test
-  ```
-- **Run integration tests** (requires Docker to be running):
-  ```bash
-  cd backend && ./gradlew integrationTest
-  ```
-- **Run the application manually** (requires local MySQL):
-  ```bash
-  cd backend && ./gradlew bootRun
-  ```
+#### Gradle Commands by Complexity Level
+
+**Quick Checks (without Docker):**
+```bash
+cd backend
+./gradlew test              # Unit tests only
+./gradlew checkstyleMain    # Code style check for src/main/java
+./gradlew checkstyleTest    # Code style check for src/test/java
+./gradlew checkstyle        # Code style check for all code
+```
+
+**Full Checks (require Docker):**
+```bash
+cd backend
+./gradlew integrationTest   # Integration tests only (Testcontainers auto-starts MySQL)
+./gradlew check             # All tests + Checkstyle + PMD (without JAR build)
+./gradlew build             # Full build: check + JAR creation
+```
+
+**Run Application:**
+```bash
+cd backend
+./gradlew bootRun           # Requires local MySQL or docker-compose up mysql
+```
+
+#### What Each Command Requires
+
+| Command | Docker | Application Running | What It Does |
+|---------|--------|---------------------|-------------|
+| `test` | ❌ | ❌ | Unit tests |
+| `checkstyle*` | ❌ | ❌ | Code style checks |
+| `integrationTest` | ✅ | ❌ | Integration tests (Testcontainers) |
+| `check` | ✅ | ❌ | Tests + linters |
+| `build` | ✅ | ❌ | check + JAR build |
+| `bootRun` | ✅* | ❌ | Run application |
+
+*for `bootRun` you need a DB (via `docker-compose up mysql` or locally)
+
+#### Testcontainers - Automatic Database Management
+
+Integration tests use **Testcontainers**, which:
+- Automatically downloads and starts a MySQL container
+- Starts Spring Boot in test context
+- Runs tests with a real database
+- Stops and removes the container after tests
+
+**No need** to manually start the application or database for integration tests!
 
 ---
 
