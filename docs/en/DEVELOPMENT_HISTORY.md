@@ -30,6 +30,9 @@ This section serves as a changelog, documenting key implemented features and ref
 - **Caching**: Method-level caching (`@Cacheable`) is implemented using Caffeine for frequently accessed data.
 - **Rate Limiting**: API flood protection is implemented using Bucket4j.
 - **Transaction Optimization**: All read-only service methods are annotated with `@Transactional(readOnly = true)`.
+- **N+1 Query Prevention**: Added `@EntityGraph` annotations for eager loading of related entities.
+- **SQL Logging and Diagnostics**: Configured detailed SQL logging with formatting and parameter tracing in `local` profile.
+- **Batch Operations**: Configured grouping of INSERT/UPDATE operations to reduce database round-trips.
 
 ### Database
 - **Data Access**: The project currently uses the blocking **Spring Data JPA** stack for simplicity and
@@ -55,8 +58,7 @@ This section serves as a changelog, documenting key implemented features and ref
 
 ## In Progress
 
-- **API Performance**: Analyze and optimize queries for high-traffic scenarios. SQL logging is now enabled
-  in the `local` profile to facilitate diagnostics (e.g., finding N+1 problems).
+- No active tasks.
 
 ---
 
