@@ -17,7 +17,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration-test")
 @Testcontainers
-@Transactional
 public abstract class BaseIntegrationTest {
 
     @Container
