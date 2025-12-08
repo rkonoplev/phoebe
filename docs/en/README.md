@@ -13,8 +13,8 @@ This directory contains all English project documentation for **Phoebe CMS**.
   A comprehensive overview of the project for new developers.
 - **[Glossary](./GLOSSARY.md)**  
   Definitions of key terms and technologies.
-- **[Technical Debt](./TECHNICAL_DEBT.md)**  
-  A list of known issues and planned improvements.
+- **[Development History and Improvements](./DEVELOPMENT_HISTORY.md)**  
+  A list of implemented improvements and potential future directions.
 - **[Setup Guide](./SETUP_GUIDE.md)**  
   Step-by-step instructions for the initial project setup.
 - **[Quick Start Guide](./QUICK_START.md)**  

@@ -1,6 +1,6 @@
 > [Back to Documentation Contents](./README.md)
 
-# Technical Debt and Improvement History
+# Development History and Improvements
 
 This document tracks the history of significant improvements, current tasks, and potential future directions for the project.
 
