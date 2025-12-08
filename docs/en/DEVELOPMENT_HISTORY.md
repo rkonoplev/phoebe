@@ -58,13 +58,41 @@ This section serves as a changelog, documenting key implemented features and ref
 
 ## In Progress
 
-- **Homepage Layout System (HomePageBlock)**: Implementation of a flexible content block management system
-  for the homepage.
-  - **Purpose**: Provide the ability to structure the homepage through blocks with taxonomy term binding,
-    display order configuration (weight), news count, and display parameters (title/teaser).
-  - **Components**: New `HomePageBlock` entity, Public API endpoint `/api/public/homepage`, Admin API for
-    block management, UI in admin panel for creating and configuring blocks.
-  - **Estimate**: 4-6 days (Backend: 2-3 days, Frontend: 1-2 days, Testing: 1 day).
+- **Homepage Layout System (HomePageBlock)**: Implementation of a universal content block management system
+  for the homepage with two display modes.
+  
+  - **Purpose**: Provide flexible homepage structure configuration through a block system, independent of
+    frontend implementation (Angular, Next.js, or custom frontend).
+  
+  - **Display Modes**:
+    - **Simple (Standard)**: Current representation - simple list of last 10 news items.
+    - **Custom (Configurable)**: Block-based layout with full configuration for each block.
+    - Mode switching available to users in theme settings (alongside dark/light mode).
+  
+  - **Block Parameters** (universal for all blocks):
+    - **Block Weight**: Determines display order (lower number = higher on page).
+    - **Taxonomy Terms**: Selection from 1 to all terms for filtering news in the block.
+    - **News Count**: Total number of news items displayed in the block.
+    - **Content Display**:
+      - Title (mandatory)
+      - Teaser (optional, checkbox)
+    - **Title Font Size**: Relative to base size (smaller than base).
+  
+  - **Limitations**: Maximum 50 blocks on homepage.
+  
+  - **Backend Components**:
+    - `HomePageBlock` entity with universal parameters
+    - `HomepageSettings` entity for storing display mode (Simple/Custom)
+    - Public API: `GET /api/public/homepage` (returns structure based on mode)
+    - Public API: `GET /api/public/homepage/mode` (get current mode)
+    - Public API: `PATCH /api/public/homepage/mode` (switch Simple/Custom mode)
+    - Admin API: CRUD operations for block management
+  
+  - **Frontend Components**:
+    - Mode switching UI in user settings
+    - Block rendering component for Custom mode
+    - Simple list component for Simple mode
+    - Admin UI for creating and configuring blocks
 
 ---
 
