@@ -106,30 +106,6 @@ jacoco {
     toolVersion = "0.8.11"
 }
 
-tasks.jacocoTestReport {
-    dependsOn test, integrationTest
-    executionData.setFrom(fileTree(layout.buildDirectory).include("jacoco/*.exec"))
-    reports {
-        xml.required.set(true)
-        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
-        html.required.set(true)
-    }
-}
-
-tasks.jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                counter = 'LINE'
-                value = 'COVEREDRATIO'
-                minimum = 0.0
-            }
-        }
-    }
-}
-
-tasks.check.dependsOn tasks.jacocoTestCoverageVerification
-
 pmd {
     toolVersion = "6.55.0"
     ignoreFailures = false
@@ -154,7 +130,6 @@ test {
         showCauses = true
         showStackTraces = true
     }
-    finalizedBy jacocoTestReport
     
     // Only run unit tests, exclude integration tests
     exclude '**/integration/**'
@@ -190,10 +165,33 @@ tasks.register('integrationTest', Test) {
     }
 }
 
+// Configure JaCoCo report after all test tasks are defined
+tasks.jacocoTestReport {
+    dependsOn test, integrationTest
+    executionData.setFrom(fileTree(layout.buildDirectory).include("jacoco/*.exec"))
+    reports {
+        xml.required.set(true)
+        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
+        html.required.set(true)
+    }
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.0
+            }
+        }
+    }
+}
+
 // Ensure integration tests run during the 'check' phase
 tasks.check.dependsOn integrationTest
 integrationTest.mustRunAfter test
+test.finalizedBy jacocoTestReport
 
-
-
+tasks.check.dependsOn tasks.jacocoTestCoverageVerification
 tasks.check.dependsOn 'checkstyleMain', 'pmdMain', 'checkstyleTest', 'pmdTest'
