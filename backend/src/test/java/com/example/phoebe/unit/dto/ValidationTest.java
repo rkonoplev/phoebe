@@ -78,6 +78,7 @@ class ValidationTest {
     void userCreateRequestDtoShouldValidateEmail() {
         UserCreateRequestDto dto = new UserCreateRequestDto();
         dto.setUsername("validuser");
+        dto.setPassword("somevalidpassword");
 
         // Test invalid email
         dto.setEmail("invalid-email");
@@ -101,6 +102,7 @@ class ValidationTest {
     void userCreateRequestDtoShouldValidateUsername() {
         UserCreateRequestDto dto = new UserCreateRequestDto();
         dto.setEmail("user@example.com");
+        dto.setPassword("somevalidpassword");
 
         // Test empty username
         dto.setUsername("");
