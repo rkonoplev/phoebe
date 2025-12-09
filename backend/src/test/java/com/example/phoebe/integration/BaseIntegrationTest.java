@@ -5,8 +5,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * Universal base class for all integration tests using Testcontainers.
@@ -15,14 +13,17 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration-test")
-@Testcontainers
 public abstract class BaseIntegrationTest {
 
-    @Container
-    static final MySQLContainer<?> MYSQL_CONTAINER = new MySQLContainer<>("mysql:8.0")
-            .withDatabaseName("phoebe_test")
-            .withUsername("test")
-            .withPassword("test");
+    private static final MySQLContainer<?> MYSQL_CONTAINER;
+
+    static {
+        MYSQL_CONTAINER = new MySQLContainer<>("mysql:8.0")
+                .withDatabaseName("phoebe_test")
+                .withUsername("test")
+                .withPassword("test");
+        MYSQL_CONTAINER.start();
+    }
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
