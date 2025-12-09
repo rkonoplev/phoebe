@@ -43,7 +43,7 @@ class AdminChannelSettingsControllerTest {
     }
 
     @Test
-    void getChannelSettings_ShouldReturnSettings() {
+    void getChannelSettingsShouldReturnSettings() {
         when(channelSettingsService.getSettings()).thenReturn(settingsDto);
 
         ResponseEntity<ChannelSettingsDto> response = controller.getChannelSettings();
@@ -53,7 +53,7 @@ class AdminChannelSettingsControllerTest {
     }
 
     @Test
-    void updateChannelSettings_ShouldReturnUpdatedSettings() {
+    void updateChannelSettingsShouldReturnUpdatedSettings() {
         ChannelSettingsUpdateDto updateDto = new ChannelSettingsUpdateDto(
                 "Updated Channel",
                 "Updated Description",

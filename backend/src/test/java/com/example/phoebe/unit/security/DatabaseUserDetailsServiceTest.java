@@ -16,8 +16,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DatabaseUserDetailsServiceTest {
@@ -49,7 +55,7 @@ class DatabaseUserDetailsServiceTest {
     }
 
     @Test
-    void loadUserByUsername_ExistingActiveUser_ReturnsUserDetails() {
+    void loadUserByUsernameExistingActiveUserReturnsUserDetails() {
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(activeUser));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername("admin");
@@ -66,7 +72,7 @@ class DatabaseUserDetailsServiceTest {
     }
 
     @Test
-    void loadUserByUsername_InactiveUser_ReturnsDisabledUserDetails() {
+    void loadUserByUsernameInactiveUserReturnsDisabledUserDetails() {
         when(userRepository.findByUsername("inactive")).thenReturn(Optional.of(inactiveUser));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername("inactive");
@@ -77,7 +83,7 @@ class DatabaseUserDetailsServiceTest {
     }
 
     @Test
-    void loadUserByUsername_NonExistingUser_ThrowsException() {
+    void loadUserByUsernameNonExistingUserThrowsException() {
         when(userRepository.findByUsername("nonexistent")).thenReturn(Optional.empty());
 
         UsernameNotFoundException exception = assertThrows(
@@ -89,7 +95,7 @@ class DatabaseUserDetailsServiceTest {
     }
 
     @Test
-    void loadUserByUsername_CallsRepository() {
+    void loadUserByUsernameCallsRepository() {
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(activeUser));
 
         userDetailsService.loadUserByUsername("admin");

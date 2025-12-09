@@ -1,21 +1,22 @@
 package com.example.phoebe.unit.mapper;
 
 import com.example.phoebe.dto.request.TermCreateRequestDto;
-import com.example.phoebe.dto.request.TermUpdateRequestDto;
 import com.example.phoebe.dto.response.TermResponseDto;
 import com.example.phoebe.entity.Term;
 import com.example.phoebe.mapper.TermMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class TermMapperTest {
 
     private final TermMapper mapper = Mappers.getMapper(TermMapper.class);
 
     @Test
-    void toResponse_ShouldMapEntityToDto() {
+    void toResponseShouldMapEntityToDto() {
         Term term = new Term("Category", "category");
         term.setId(1L);
 
@@ -27,7 +28,7 @@ class TermMapperTest {
     }
 
     @Test
-    void toEntity_ShouldCreateNewEntity() {
+    void toEntityShouldCreateNewEntity() {
         TermCreateRequestDto dto = new TermCreateRequestDto("Tag", "tag");
 
         Term entity = mapper.toEntity(dto);

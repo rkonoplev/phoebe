@@ -8,14 +8,14 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PermissionMapperTest {
 
     private final PermissionMapper mapper = Mappers.getMapper(PermissionMapper.class);
 
     @Test
-    void toDto_ShouldMapSinglePermission() {
+    void toDtoShouldMapSinglePermission() {
         Permission permission = new Permission("READ");
         permission.setId(1L);
 
@@ -25,7 +25,7 @@ class PermissionMapperTest {
     }
 
     @Test
-    void toDto_ShouldMapListOfPermissions() {
+    void toDtoShouldMapListOfPermissions() {
         Permission perm1 = new Permission("READ");
         perm1.setId(1L);
         Permission perm2 = new Permission("WRITE");

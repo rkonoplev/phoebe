@@ -15,8 +15,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthorVerificationTest {
@@ -58,67 +62,67 @@ class AuthorVerificationTest {
     }
 
     @Test
-    void hasAccessToNews_AdminUser_ReturnsTrue() {
+    void hasAccessToNewsAdminUserReturnsTrue() {
         // Admin has access without checking repository
         assertTrue(authorVerification.hasAccessToNews(adminUser, 100L));
         verify(newsRepository, never()).findById(any());
     }
 
     @Test
-    void hasAccessToNews_AuthorUser_ReturnsTrue() {
+    void hasAccessToNewsAuthorUserReturnsTrue() {
         when(newsRepository.findById(100L)).thenReturn(Optional.of(news));
 
         assertTrue(authorVerification.hasAccessToNews(editorUser, 100L));
     }
 
     @Test
-    void hasAccessToNews_NonAuthorUser_ReturnsFalse() {
+    void hasAccessToNewsNonAuthorUserReturnsFalse() {
         when(newsRepository.findById(100L)).thenReturn(Optional.of(news));
 
         assertFalse(authorVerification.hasAccessToNews(otherUser, 100L));
     }
 
     @Test
-    void hasAccessToNews_NullUser_ReturnsFalse() {
+    void hasAccessToNewsNullUserReturnsFalse() {
         assertFalse(authorVerification.hasAccessToNews(null, 100L));
         verify(newsRepository, never()).findById(any());
     }
 
     @Test
-    void hasAccessToNews_NullNewsId_ReturnsFalse() {
+    void hasAccessToNewsNullNewsIdReturnsFalse() {
         assertFalse(authorVerification.hasAccessToNews(editorUser, null));
         verify(newsRepository, never()).findById(any());
     }
 
     @Test
-    void hasAccessToNews_NewsNotFound_ReturnsFalse() {
+    void hasAccessToNewsNewsNotFoundReturnsFalse() {
         when(newsRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertFalse(authorVerification.hasAccessToNews(editorUser, 999L));
     }
 
     @Test
-    void isAuthor_SameUser_ReturnsTrue() {
+    void isAuthorSameUserReturnsTrue() {
         assertTrue(authorVerification.isAuthor(editorUser, news));
     }
 
     @Test
-    void isAuthor_DifferentUser_ReturnsFalse() {
+    void isAuthorDifferentUserReturnsFalse() {
         assertFalse(authorVerification.isAuthor(otherUser, news));
     }
 
     @Test
-    void isAuthor_NullUser_ReturnsFalse() {
+    void isAuthorNullUserReturnsFalse() {
         assertFalse(authorVerification.isAuthor(null, news));
     }
 
     @Test
-    void isAuthor_NullNews_ReturnsFalse() {
+    void isAuthorNullNewsReturnsFalse() {
         assertFalse(authorVerification.isAuthor(editorUser, null));
     }
 
     @Test
-    void isAuthor_NewsWithoutAuthor_ReturnsFalse() {
+    void isAuthorNewsWithoutAuthorReturnsFalse() {
         News newsWithoutAuthor = new News();
         newsWithoutAuthor.setId(200L);
 
@@ -126,7 +130,7 @@ class AuthorVerificationTest {
     }
 
     @Test
-    void isAuthor_UserWithoutId_ReturnsFalse() {
+    void isAuthorUserWithoutIdReturnsFalse() {
         User userWithoutId = new User("test", "password", "test@test.com", true);
         // ID is null by default
 

@@ -26,7 +26,7 @@ class PermissionControllerTest {
     private PermissionController controller;
 
     @Test
-    void getAllPermissions_ShouldReturnListOfPermissions() {
+    void getAllPermissionsShouldReturnListOfPermissions() {
         PermissionDto permissionDto = new PermissionDto("READ");
         when(permissionService.getAllPermissions()).thenReturn(List.of(permissionDto));
 

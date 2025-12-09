@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link BaseMapper}.
@@ -20,7 +22,7 @@ class BaseMapperTest {
     private final BaseMapper mapper = new BaseMapper() {};
 
     @Test
-    void termsToNames_ShouldMapTermsToNames() {
+    void termsToNamesShouldMapTermsToNames() {
         Term term1 = new Term("Technology", "category");
         Term term2 = new Term("Science", "category");
         Set<Term> terms = Set.of(term1, term2);
@@ -33,7 +35,7 @@ class BaseMapperTest {
     }
 
     @Test
-    void termsToNames_ShouldReturnEmptySetWhenNull() {
+    void termsToNamesShouldReturnEmptySetWhenNull() {
         Set<String> names = mapper.termsToNames(null);
 
         assertNotNull(names);
@@ -41,7 +43,7 @@ class BaseMapperTest {
     }
 
     @Test
-    void termsToNames_ShouldReturnEmptySetWhenEmpty() {
+    void termsToNamesShouldReturnEmptySetWhenEmpty() {
         Set<String> names = mapper.termsToNames(Collections.emptySet());
 
         assertNotNull(names);
@@ -49,7 +51,7 @@ class BaseMapperTest {
     }
 
     @Test
-    void rolesToNames_ShouldMapRolesToNames() {
+    void rolesToNamesShouldMapRolesToNames() {
         Role admin = new Role("ADMIN", "Administrator role");
         Role editor = new Role("EDITOR", "Editor role");
         Set<Role> roles = Set.of(admin, editor);
@@ -62,7 +64,7 @@ class BaseMapperTest {
     }
 
     @Test
-    void rolesToNames_ShouldReturnDefaultEditorWhenNull() {
+    void rolesToNamesShouldReturnDefaultEditorWhenNull() {
         Set<String> names = mapper.rolesToNames(null);
 
         assertNotNull(names);
@@ -71,7 +73,7 @@ class BaseMapperTest {
     }
 
     @Test
-    void rolesToNames_ShouldReturnDefaultEditorWhenEmpty() {
+    void rolesToNamesShouldReturnDefaultEditorWhenEmpty() {
         Set<String> names = mapper.rolesToNames(Collections.emptySet());
 
         assertNotNull(names);
@@ -80,7 +82,7 @@ class BaseMapperTest {
     }
 
     @Test
-    void permissionsToNames_ShouldMapPermissionsToNames() {
+    void permissionsToNamesShouldMapPermissionsToNames() {
         Permission read = new Permission("READ");
         Permission write = new Permission("WRITE");
         Set<Permission> permissions = Set.of(read, write);
@@ -93,7 +95,7 @@ class BaseMapperTest {
     }
 
     @Test
-    void permissionsToNames_ShouldReturnEmptySetWhenNull() {
+    void permissionsToNamesShouldReturnEmptySetWhenNull() {
         Set<String> names = mapper.permissionsToNames(null);
 
         assertNotNull(names);
@@ -101,7 +103,7 @@ class BaseMapperTest {
     }
 
     @Test
-    void permissionsToNames_ShouldReturnEmptySetWhenEmpty() {
+    void permissionsToNamesShouldReturnEmptySetWhenEmpty() {
         Set<String> names = mapper.permissionsToNames(Collections.emptySet());
 
         assertNotNull(names);

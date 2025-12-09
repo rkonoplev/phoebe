@@ -6,12 +6,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserDtoTest {
 
     @Test
-    void userCreateRequestDto_ShouldSetAndGetAllFields() {
+    void userCreateRequestDtoShouldSetAndGetAllFields() {
         UserCreateRequestDto dto = new UserCreateRequestDto();
         dto.setUsername("testuser");
         dto.setEmail("test@example.com");
@@ -25,14 +27,14 @@ class UserDtoTest {
     }
 
     @Test
-    void userCreateRequestDto_ShouldHaveDefaultActiveTrue() {
+    void userCreateRequestDtoShouldHaveDefaultActiveTrue() {
         UserCreateRequestDto dto = new UserCreateRequestDto();
 
         assertTrue(dto.isActive());
     }
 
     @Test
-    void userUpdateRequestDto_ShouldSetAndGetAllFields() {
+    void userUpdateRequestDtoShouldSetAndGetAllFields() {
         UserUpdateRequestDto dto = new UserUpdateRequestDto();
         dto.setUsername("updateduser");
         dto.setEmail("updated@example.com");

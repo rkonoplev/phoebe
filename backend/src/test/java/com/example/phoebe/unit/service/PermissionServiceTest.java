@@ -16,8 +16,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PermissionServiceTest {
@@ -43,7 +48,7 @@ class PermissionServiceTest {
     }
 
     @Test
-    void getAllPermissions_ReturnsListOfPermissions() {
+    void getAllPermissionsReturnsListOfPermissions() {
         when(permissionRepository.findAll()).thenReturn(List.of(permission));
         when(permissionMapper.toDto(permission)).thenReturn(permissionDto);
 
@@ -54,7 +59,7 @@ class PermissionServiceTest {
     }
 
     @Test
-    void getPermissionById_ExistingId_ReturnsPermission() {
+    void getPermissionByIdExistingIdReturnsPermission() {
         when(permissionRepository.findById(1L)).thenReturn(Optional.of(permission));
         when(permissionMapper.toDto(permission)).thenReturn(permissionDto);
 
@@ -65,7 +70,7 @@ class PermissionServiceTest {
     }
 
     @Test
-    void getPermissionById_NonExistingId_ReturnsNull() {
+    void getPermissionByIdNonExistingIdReturnsNull() {
         when(permissionRepository.findById(999L)).thenReturn(Optional.empty());
 
         PermissionDto result = service.getPermissionById(999L);
@@ -74,7 +79,7 @@ class PermissionServiceTest {
     }
 
     @Test
-    void getPermissionsByRoleId_ReturnsRolePermissions() {
+    void getPermissionsByRoleIdReturnsRolePermissions() {
         when(permissionRepository.findByRolesId(1L)).thenReturn(Set.of(permission));
         when(permissionMapper.toDto(permission)).thenReturn(permissionDto);
 
@@ -85,7 +90,7 @@ class PermissionServiceTest {
     }
 
     @Test
-    void existsByName_ExistingName_ReturnsTrue() {
+    void existsByNameExistingNameReturnsTrue() {
         when(permissionRepository.existsByName("READ")).thenReturn(true);
 
         boolean result = service.existsByName("READ");
@@ -94,7 +99,7 @@ class PermissionServiceTest {
     }
 
     @Test
-    void existsByName_NonExistingName_ReturnsFalse() {
+    void existsByNameNonExistingNameReturnsFalse() {
         when(permissionRepository.existsByName("INVALID")).thenReturn(false);
 
         boolean result = service.existsByName("INVALID");

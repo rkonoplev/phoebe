@@ -6,12 +6,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PagedResponseDtoTest {
 
     @Test
-    void pagedResponseDto_ShouldCreateWithContentAndPagination() {
+    void pagedResponseDtoShouldCreateWithContentAndPagination() {
         PaginationInfo pagination = new PaginationInfo(0, 10, 100L, 10, true, false);
         List<String> content = List.of("item1", "item2", "item3");
 
@@ -26,7 +27,7 @@ class PagedResponseDtoTest {
     }
 
     @Test
-    void pagedResponseDto_ShouldHandleEmptyContent() {
+    void pagedResponseDtoShouldHandleEmptyContent() {
         PaginationInfo pagination = new PaginationInfo(0, 0, 0L, 10, false, false);
         List<String> content = List.of();
 

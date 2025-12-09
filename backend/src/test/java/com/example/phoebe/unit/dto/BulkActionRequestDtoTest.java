@@ -5,12 +5,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BulkActionRequestDtoTest {
 
     @Test
-    void bulkActionRequestDto_ShouldSetAndGetAllFields() {
+    void bulkActionRequestDtoShouldSetAndGetAllFields() {
         BulkActionRequestDto dto = new BulkActionRequestDto();
         dto.setAction(BulkActionRequestDto.ActionType.DELETE);
         dto.setFilterType(BulkActionRequestDto.FilterType.BY_IDS);
@@ -28,21 +30,21 @@ class BulkActionRequestDtoTest {
     }
 
     @Test
-    void bulkActionResult_ShouldReturnAffectedCount() {
+    void bulkActionResultShouldReturnAffectedCount() {
         BulkActionRequestDto.BulkActionResult result = new BulkActionRequestDto.BulkActionResult(5);
 
         assertEquals(5, result.getAffectedCount());
     }
 
     @Test
-    void actionType_ShouldHaveDeleteAndUnpublish() {
+    void actionTypeShouldHaveDeleteAndUnpublish() {
         assertNotNull(BulkActionRequestDto.ActionType.DELETE);
         assertNotNull(BulkActionRequestDto.ActionType.UNPUBLISH);
         assertEquals(2, BulkActionRequestDto.ActionType.values().length);
     }
 
     @Test
-    void filterType_ShouldHaveAllTypes() {
+    void filterTypeShouldHaveAllTypes() {
         assertNotNull(BulkActionRequestDto.FilterType.BY_IDS);
         assertNotNull(BulkActionRequestDto.FilterType.BY_TERM);
         assertNotNull(BulkActionRequestDto.FilterType.BY_AUTHOR);

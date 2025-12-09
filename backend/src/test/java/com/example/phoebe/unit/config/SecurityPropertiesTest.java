@@ -3,12 +3,16 @@ package com.example.phoebe.unit.config;
 import com.example.phoebe.config.SecurityProperties;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SecurityPropertiesTest {
 
     @Test
-    void securityProperties_ShouldCreateWithAllFields() {
+    void securityPropertiesShouldCreateWithAllFields() {
         SecurityProperties properties = new SecurityProperties(
                 "secret-key",
                 3600000L,
@@ -23,7 +27,7 @@ class SecurityPropertiesTest {
     }
 
     @Test
-    void securityProperties_ShouldHandleNullValues() {
+    void securityPropertiesShouldHandleNullValues() {
         SecurityProperties properties = new SecurityProperties(
                 null,
                 0L,

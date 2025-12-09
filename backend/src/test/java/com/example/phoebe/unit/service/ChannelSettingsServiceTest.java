@@ -18,7 +18,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ChannelSettingsServiceTest {
@@ -54,7 +56,7 @@ class ChannelSettingsServiceTest {
     }
 
     @Test
-    void getSettings_ExistingSettings_ReturnsDto() {
+    void getSettingsExistingSettingsReturnsDto() {
         when(repository.findSingletonSettings()).thenReturn(Optional.of(settings));
         when(mapper.toDto(settings)).thenReturn(settingsDto);
 
@@ -66,7 +68,7 @@ class ChannelSettingsServiceTest {
     }
 
     @Test
-    void getSettings_NoSettings_CreatesDefault() {
+    void getSettingsNoSettingsCreatesDefault() {
         when(repository.findSingletonSettings()).thenReturn(Optional.empty());
         when(repository.save(any())).thenReturn(settings);
         when(mapper.toDto(any())).thenReturn(settingsDto);
@@ -78,7 +80,7 @@ class ChannelSettingsServiceTest {
     }
 
     @Test
-    void updateSettings_UpdatesAndReturnsDto() {
+    void updateSettingsUpdatesAndReturnsDto() {
         ChannelSettingsUpdateDto updateDto = new ChannelSettingsUpdateDto(
                 "Updated Site",
                 "Updated Description",

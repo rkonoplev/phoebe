@@ -18,7 +18,7 @@ class SecurityConfigTest {
     private DatabaseUserDetailsService userDetailsService;
 
     @Test
-    void passwordEncoder_ShouldReturnBCryptEncoder() {
+    void passwordEncoderShouldReturnBCryptEncoder() {
         SecurityConfig config = new SecurityConfig(userDetailsService);
 
         PasswordEncoder encoder = config.passwordEncoder();

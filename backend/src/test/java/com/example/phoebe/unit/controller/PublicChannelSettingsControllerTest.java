@@ -24,7 +24,7 @@ class PublicChannelSettingsControllerTest {
     private PublicChannelSettingsController controller;
 
     @Test
-    void getChannelSettings_ShouldReturnPublicSettings() {
+    void getChannelSettingsShouldReturnPublicSettings() {
         ChannelSettingsDto settingsDto = new ChannelSettingsDto(
                 "Public Channel",
                 "Public Description",

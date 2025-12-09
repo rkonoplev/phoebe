@@ -6,12 +6,13 @@ import org.springframework.data.domain.AuditorAware;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JpaAuditingConfigTest {
 
     @Test
-    void auditorAware_ShouldReturnEmptyOptional() {
+    void auditorAwareShouldReturnEmptyOptional() {
         JpaAuditingConfig config = new JpaAuditingConfig();
 
         AuditorAware<String> auditorAware = config.auditorAware();

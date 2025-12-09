@@ -7,14 +7,14 @@ import com.example.phoebe.mapper.ChannelSettingsMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ChannelSettingsMapperTest {
 
     private final ChannelSettingsMapper mapper = Mappers.getMapper(ChannelSettingsMapper.class);
 
     @Test
-    void toDto_ShouldMapEntityToDto() {
+    void toDtoShouldMapEntityToDto() {
         ChannelSettings entity = new ChannelSettings();
         entity.setId(1L);
         entity.setSiteTitle("Test Site");
@@ -39,7 +39,7 @@ class ChannelSettingsMapperTest {
     }
 
     @Test
-    void updateEntity_ShouldUpdateNonNullFields() {
+    void updateEntityShouldUpdateNonNullFields() {
         ChannelSettings entity = new ChannelSettings();
         entity.setId(1L);
         entity.setSiteTitle("Old Title");

@@ -21,9 +21,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RoleServiceTest {
@@ -56,7 +59,7 @@ class RoleServiceTest {
     }
 
     @Test
-    void getAllRoles_ReturnsListOfRoles() {
+    void getAllRolesReturnsListOfRoles() {
         when(roleRepository.findAll()).thenReturn(List.of(role));
         when(roleMapper.toDto(role)).thenReturn(roleDto);
 
@@ -67,7 +70,7 @@ class RoleServiceTest {
     }
 
     @Test
-    void getRoleById_ExistingId_ReturnsRole() {
+    void getRoleByIdExistingIdReturnsRole() {
         when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
         when(roleMapper.toDto(role)).thenReturn(roleDto);
 
@@ -78,14 +81,14 @@ class RoleServiceTest {
     }
 
     @Test
-    void getRoleById_NonExistingId_ThrowsException() {
+    void getRoleByIdNonExistingIdThrowsException() {
         when(roleRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> service.getRoleById(999L));
     }
 
     @Test
-    void createRole_SavesAndReturnsRole() {
+    void createRoleSavesAndReturnsRole() {
         RoleCreateRequestDto createDto = new RoleCreateRequestDto();
         createDto.setName("EDITOR");
         createDto.setDescription("Editor role");
@@ -102,7 +105,7 @@ class RoleServiceTest {
     }
 
     @Test
-    void updateRole_UpdatesAndReturnsRole() {
+    void updateRoleUpdatesAndReturnsRole() {
         RoleUpdateRequestDto updateDto = new RoleUpdateRequestDto();
         updateDto.setName("ADMIN");
         updateDto.setDescription("Updated description");
@@ -119,7 +122,7 @@ class RoleServiceTest {
     }
 
     @Test
-    void deleteRole_ExistingId_DeletesRole() {
+    void deleteRoleExistingIdDeletesRole() {
         when(roleRepository.existsById(1L)).thenReturn(true);
 
         service.deleteRole(1L);
@@ -128,14 +131,14 @@ class RoleServiceTest {
     }
 
     @Test
-    void deleteRole_NonExistingId_ThrowsException() {
+    void deleteRoleNonExistingIdThrowsException() {
         when(roleRepository.existsById(999L)).thenReturn(false);
 
         assertThrows(ResourceNotFoundException.class, () -> service.deleteRole(999L));
     }
 
     @Test
-    void assignPermission_AddsPermissionToRole() {
+    void assignPermissionAddsPermissionToRole() {
         when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
         when(permissionRepository.findById(1L)).thenReturn(Optional.of(permission));
         when(roleMapper.toDto(role)).thenReturn(roleDto);
@@ -148,7 +151,7 @@ class RoleServiceTest {
     }
 
     @Test
-    void removePermission_RemovesPermissionFromRole() {
+    void removePermissionRemovesPermissionFromRole() {
         when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
         when(permissionRepository.findById(1L)).thenReturn(Optional.of(permission));
         when(roleMapper.toDto(role)).thenReturn(roleDto);
@@ -161,7 +164,7 @@ class RoleServiceTest {
     }
 
     @Test
-    void findRolesByUserId_ReturnsUserRoles() {
+    void findRolesByUserIdReturnsUserRoles() {
         when(roleRepository.findByUsersId(1L)).thenReturn(Set.of(role));
         when(roleMapper.toDto(role)).thenReturn(roleDto);
 
