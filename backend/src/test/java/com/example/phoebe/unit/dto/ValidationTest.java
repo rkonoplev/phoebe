@@ -76,49 +76,59 @@ class ValidationTest {
 
     @Test
     void userCreateRequestDtoShouldValidateEmail() {
-        UserCreateRequestDto dto = new UserCreateRequestDto();
-        dto.setUsername("validuser");
-        dto.setPassword("somevalidpassword");
-
         // Test invalid email
-        dto.setEmail("invalid-email");
-        Set<ConstraintViolation<UserCreateRequestDto>> violations = validator.validate(dto);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Email must be valid")));
+        UserCreateRequestDto dto1 = new UserCreateRequestDto();
+        dto1.setUsername("validuser");
+        dto1.setPassword("somevalidpassword");
+        dto1.setEmail("invalid-email");
+        Set<ConstraintViolation<UserCreateRequestDto>> violations1 = validator.validate(dto1);
+        assertFalse(violations1.isEmpty());
+        assertTrue(violations1.stream().anyMatch(v -> v.getMessage().contains("Email must be valid")));
 
         // Test empty email
-        dto.setEmail("");
-        violations = validator.validate(dto);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Email is required")));
+        UserCreateRequestDto dto2 = new UserCreateRequestDto();
+        dto2.setUsername("validuser");
+        dto2.setPassword("somevalidpassword");
+        dto2.setEmail("");
+        Set<ConstraintViolation<UserCreateRequestDto>> violations2 = validator.validate(dto2);
+        assertFalse(violations2.isEmpty());
+        assertTrue(violations2.stream().anyMatch(v -> v.getMessage().contains("Email is required")));
 
         // Test valid email
-        dto.setEmail("user@example.com");
-        violations = validator.validate(dto);
-        assertTrue(violations.isEmpty());
+        UserCreateRequestDto dto3 = new UserCreateRequestDto();
+        dto3.setUsername("validuser");
+        dto3.setPassword("somevalidpassword");
+        dto3.setEmail("user@example.com");
+        Set<ConstraintViolation<UserCreateRequestDto>> violations3 = validator.validate(dto3);
+        assertTrue(violations3.isEmpty());
     }
 
     @Test
     void userCreateRequestDtoShouldValidateUsername() {
-        UserCreateRequestDto dto = new UserCreateRequestDto();
-        dto.setEmail("user@example.com");
-        dto.setPassword("somevalidpassword");
-
         // Test empty username
-        dto.setUsername("");
-        Set<ConstraintViolation<UserCreateRequestDto>> violations = validator.validate(dto);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Username is required")));
+        UserCreateRequestDto dto1 = new UserCreateRequestDto();
+        dto1.setEmail("user@example.com");
+        dto1.setPassword("somevalidpassword");
+        dto1.setUsername("");
+        Set<ConstraintViolation<UserCreateRequestDto>> violations1 = validator.validate(dto1);
+        assertFalse(violations1.isEmpty());
+        assertTrue(violations1.stream().anyMatch(v -> v.getMessage().contains("Username is required")));
 
         // Test username too short
-        dto.setUsername("ab");
-        violations = validator.validate(dto);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("between 3 and 100")));
+        UserCreateRequestDto dto2 = new UserCreateRequestDto();
+        dto2.setEmail("user@example.com");
+        dto2.setPassword("somevalidpassword");
+        dto2.setUsername("ab");
+        Set<ConstraintViolation<UserCreateRequestDto>> violations2 = validator.validate(dto2);
+        assertFalse(violations2.isEmpty());
+        assertTrue(violations2.stream().anyMatch(v -> v.getMessage().contains("between 3 and 100")));
 
         // Test valid username
-        dto.setUsername("validuser");
-        violations = validator.validate(dto);
-        assertTrue(violations.isEmpty());
+        UserCreateRequestDto dto3 = new UserCreateRequestDto();
+        dto3.setEmail("user@example.com");
+        dto3.setPassword("somevalidpassword");
+        dto3.setUsername("validuser");
+        Set<ConstraintViolation<UserCreateRequestDto>> violations3 = validator.validate(dto3);
+        assertTrue(violations3.isEmpty());
     }
 }
