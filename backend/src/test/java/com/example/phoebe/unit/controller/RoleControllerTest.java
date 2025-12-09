@@ -40,7 +40,7 @@ class RoleControllerTest {
     }
 
     @Test
-    void getAllRoles_ShouldReturnListOfRoles() {
+    void getAllRolesShouldReturnListOfRoles() {
         when(roleService.getAllRoles()).thenReturn(List.of(roleDto));
 
         ResponseEntity<List<RoleDto>> response = controller.getAllRoles();
@@ -50,7 +50,7 @@ class RoleControllerTest {
     }
 
     @Test
-    void getRoleById_ShouldReturnRole() {
+    void getRoleByIdShouldReturnRole() {
         when(roleService.getRoleById(1L)).thenReturn(roleDto);
 
         ResponseEntity<RoleDto> response = controller.getRoleById(1L);
@@ -60,7 +60,7 @@ class RoleControllerTest {
     }
 
     @Test
-    void createRole_ShouldReturnCreatedRole() {
+    void createRoleShouldReturnCreatedRole() {
         RoleCreateRequestDto createDto = new RoleCreateRequestDto();
         createDto.setName("EDITOR");
         createDto.setDescription("Editor role");
@@ -73,7 +73,7 @@ class RoleControllerTest {
     }
 
     @Test
-    void updateRole_ShouldReturnUpdatedRole() {
+    void updateRoleShouldReturnUpdatedRole() {
         RoleUpdateRequestDto updateDto = new RoleUpdateRequestDto();
         updateDto.setName("ADMIN");
         updateDto.setDescription("Updated description");
@@ -85,7 +85,7 @@ class RoleControllerTest {
     }
 
     @Test
-    void deleteRole_ShouldReturnNoContent() {
+    void deleteRoleShouldReturnNoContent() {
         ResponseEntity<Void> response = controller.deleteRole(1L);
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -93,7 +93,7 @@ class RoleControllerTest {
     }
 
     @Test
-    void getRolesByUserId_ShouldReturnUserRoles() {
+    void getRolesByUserIdShouldReturnUserRoles() {
         when(roleService.findRolesByUserId(1L)).thenReturn(Set.of(roleDto));
 
         ResponseEntity<Set<RoleDto>> response = controller.getRolesByUserId(1L);

@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 class PhoebeApplicationTest {
 
     @Test
-    void main_ShouldNotThrowException() {
+    void mainShouldNotThrowException() {
         // This test verifies that the main method exists and can be called
         // We don't actually run it as it would start the entire application
         assertDoesNotThrow(() -> {

@@ -23,7 +23,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AdminTermControllerTest {
@@ -49,7 +51,7 @@ class AdminTermControllerTest {
     }
 
     @Test
-    void getAllTerms_ShouldReturnPageOfTerms() {
+    void getAllTermsShouldReturnPageOfTerms() {
         Page<Term> termPage = new PageImpl<>(List.of(term));
         when(termService.findAll(any())).thenReturn(termPage);
         when(termMapper.toResponse(any())).thenReturn(termResponseDto);
@@ -61,7 +63,7 @@ class AdminTermControllerTest {
     }
 
     @Test
-    void getTermById_ShouldReturnTerm() {
+    void getTermByIdShouldReturnTerm() {
         when(termService.findById(1L)).thenReturn(term);
         when(termMapper.toResponse(term)).thenReturn(termResponseDto);
 
@@ -72,7 +74,7 @@ class AdminTermControllerTest {
     }
 
     @Test
-    void createTerm_ShouldReturnCreatedTerm() {
+    void createTermShouldReturnCreatedTerm() {
         TermCreateRequestDto createDto = new TermCreateRequestDto("New Term", "category");
         when(termMapper.toEntity(any())).thenReturn(term);
         when(termService.save(any())).thenReturn(term);
@@ -85,7 +87,7 @@ class AdminTermControllerTest {
     }
 
     @Test
-    void updateTerm_ShouldReturnUpdatedTerm() {
+    void updateTermShouldReturnUpdatedTerm() {
         TermUpdateRequestDto updateDto = new TermUpdateRequestDto("Updated Term", "category");
         when(termService.findById(1L)).thenReturn(term);
         when(termService.save(any())).thenReturn(term);
@@ -98,7 +100,7 @@ class AdminTermControllerTest {
     }
 
     @Test
-    void deleteTerm_ShouldReturnNoContent() {
+    void deleteTermShouldReturnNoContent() {
         ResponseEntity<Void> response = controller.deleteTerm(1L);
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());

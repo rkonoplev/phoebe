@@ -15,7 +15,7 @@ class HomeControllerTest {
     private HomeController controller;
 
     @Test
-    void home_ShouldReturnHealthCheckMessage() {
+    void homeShouldReturnHealthCheckMessage() {
         String result = controller.home();
         assertEquals("✅ Server is running!", result);
     }
