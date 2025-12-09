@@ -48,7 +48,7 @@ class UserTest {
         assertNull(user.getUsername());
         assertNull(user.getPassword());
         assertNull(user.getEmail());
-        assertFalse(user.isActive());
+        assertTrue(user.isActive());
         assertNotNull(user.getRoles());
         assertTrue(user.getRoles().isEmpty());
     }
@@ -201,9 +201,9 @@ class UserTest {
     }
 
     @Test
-    void activeDefaultsToFalse() {
+    void activeDefaultsToTrue() {
         User user = new User();
-        assertFalse(user.isActive());
+        assertTrue(user.isActive());
     }
 
     @Test
