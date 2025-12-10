@@ -37,6 +37,8 @@ class AuthControllerRateLimitTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        userRepository.deleteAll();
+        
         // Find the EDITOR role created by Flyway migration V3
         Role editorRole = roleRepository.findByName("EDITOR")
                 .orElseThrow(() -> new IllegalStateException("EDITOR role not found in test database"));

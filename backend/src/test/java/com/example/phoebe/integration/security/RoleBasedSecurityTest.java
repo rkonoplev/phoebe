@@ -49,6 +49,10 @@ class RoleBasedSecurityTest extends BaseIntegrationTest {
      */
     @BeforeEach
     void setUp() {
+        newsRepository.deleteAll();
+        userRepository.deleteAll();
+        roleRepository.deleteAll();
+        
         Role adminRole = new Role("ADMIN", "Admin role");
         roleRepository.save(adminRole);
 
