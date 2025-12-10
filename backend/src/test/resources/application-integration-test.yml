@@ -3,16 +3,14 @@
 spring:
   jpa:
     hibernate:
-      # For Testcontainers, let Hibernate create the schema
-      ddl-auto: create-drop
-    show-sql: false # Set to true for debugging SQL queries
+      ddl-auto: validate
+    show-sql: false
     database-platform: org.hibernate.dialect.MySQLDialect
 
-  # Defer datasource initialization until after Testcontainers has started
   sql:
     init:
       mode: never
 
-  # Flyway disabled for Testcontainers - Hibernate creates schema
   flyway:
-    enabled: false
+    enabled: true
+    baseline-on-migrate: true

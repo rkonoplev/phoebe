@@ -21,7 +21,9 @@ public abstract class BaseIntegrationTest {
         MYSQL_CONTAINER = new MySQLContainer<>("mysql:8.0")
                 .withDatabaseName("phoebe_test")
                 .withUsername("test")
-                .withPassword("test");
+                .withPassword("test")
+                .withReuse(true)
+                .withCommand("--max_connections=1000", "--innodb_buffer_pool_size=64M");
         MYSQL_CONTAINER.start();
     }
 

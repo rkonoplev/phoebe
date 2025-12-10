@@ -1,10 +1,8 @@
 package com.example.phoebe.integration.config;
 
-import com.example.phoebe.entity.Permission;
 import com.example.phoebe.entity.Role;
 import com.example.phoebe.entity.User;
 import com.example.phoebe.integration.BaseIntegrationTest;
-import com.example.phoebe.repository.PermissionRepository;
 import com.example.phoebe.repository.RoleRepository;
 import com.example.phoebe.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.HashSet;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
@@ -40,9 +36,6 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private PermissionRepository permissionRepository;
 
     private String adminAuthHeader;
     private String editorAuthHeader;
