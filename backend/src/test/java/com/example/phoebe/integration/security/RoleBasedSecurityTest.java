@@ -51,13 +51,11 @@ class RoleBasedSecurityTest extends BaseIntegrationTest {
     void setUp() {
         newsRepository.deleteAll();
         userRepository.deleteAll();
-        roleRepository.deleteAll();
         
-        Role adminRole = new Role("ADMIN", "Admin role");
-        roleRepository.save(adminRole);
-
-        Role editorRole = new Role("EDITOR", "Editor role");
-        roleRepository.save(editorRole);
+        Role adminRole = roleRepository.findByName("ADMIN")
+                .orElseThrow(() -> new IllegalStateException("ADMIN role not found"));
+        Role editorRole = roleRepository.findByName("EDITOR")
+                .orElseThrow(() -> new IllegalStateException("EDITOR role not found"));
 
         adminUser = new User("admin", "password", "admin@test.com", true);
         adminUser.setRoles(Set.of(adminRole));

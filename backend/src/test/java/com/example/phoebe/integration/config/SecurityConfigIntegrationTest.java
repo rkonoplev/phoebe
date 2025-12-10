@@ -50,34 +50,11 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
-        roleRepository.deleteAll();
-        permissionRepository.deleteAll();
-
-        Permission newsCreate = new Permission("news:create");
-        Permission newsRead = new Permission("news:read");
-        Permission newsUpdate = new Permission("news:update");
-        Permission newsDelete = new Permission("news:delete");
-        permissionRepository.saveAll(Arrays.asList(newsCreate, newsRead, newsUpdate, newsDelete));
-
-        Permission usersCreate = new Permission("users:create");
-        Permission usersRead = new Permission("users:read");
-        Permission usersUpdate = new Permission("users:update");
-        Permission usersDelete = new Permission("users:delete");
-        permissionRepository.saveAll(Arrays.asList(usersCreate, usersRead, usersUpdate, usersDelete));
-
-        Permission rolesCreate = new Permission("roles:create");
-        Permission rolesRead = new Permission("roles:read");
-        Permission rolesUpdate = new Permission("roles:update");
-        Permission rolesDelete = new Permission("roles:delete");
-        permissionRepository.saveAll(Arrays.asList(rolesCreate, rolesRead, rolesUpdate, rolesDelete));
-
-        Role adminRole = new Role("ADMIN", null);
-        adminRole.setPermissions(new HashSet<>(permissionRepository.findAll()));
-        roleRepository.save(adminRole);
-
-        Role editorRole = new Role("EDITOR", null);
-        editorRole.setPermissions(new HashSet<>(Arrays.asList(newsCreate, newsRead, newsUpdate, newsDelete)));
-        roleRepository.save(editorRole);
+        
+        Role adminRole = roleRepository.findByName("ADMIN")
+                .orElseThrow(() -> new IllegalStateException("ADMIN role not found"));
+        Role editorRole = roleRepository.findByName("EDITOR")
+                .orElseThrow(() -> new IllegalStateException("EDITOR role not found"));
 
         User admin = new User("admin", passwordEncoder.encode("admin123"), "admin@test.com", true);
         admin.addRole(adminRole);

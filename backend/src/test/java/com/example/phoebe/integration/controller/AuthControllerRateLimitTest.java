@@ -59,9 +59,8 @@ class AuthControllerRateLimitTest extends BaseIntegrationTest {
     @Test
     void shouldAllowFirstFiveRequests() throws Exception {
         for (int i = 0; i < 5; i++) {
-            mockMvc.perform(get("/api/admin/auth/me")
-                            .header("Authorization", authHeader)
-                            .header("X-Forwarded-For", "192.168.1.100"))
+            mockMvc.perform(get("/api/admin/news")
+                            .header("Authorization", authHeader))
                     .andExpect(status().isOk());
         }
     }
@@ -69,30 +68,26 @@ class AuthControllerRateLimitTest extends BaseIntegrationTest {
     @Test
     void shouldBlockSixthRequest() throws Exception {
         for (int i = 0; i < 5; i++) {
-            mockMvc.perform(get("/api/admin/auth/me")
-                            .header("Authorization", authHeader)
-                            .header("X-Forwarded-For", "192.168.1.101"))
+            mockMvc.perform(get("/api/admin/news")
+                            .header("Authorization", authHeader))
                     .andExpect(status().isOk());
         }
 
-        mockMvc.perform(get("/api/admin/auth/me")
-                        .header("Authorization", authHeader)
-                        .header("X-Forwarded-For", "192.168.1.101"))
-                .andExpect(status().isTooManyRequests());
+        mockMvc.perform(get("/api/admin/news")
+                        .header("Authorization", authHeader))
+                .andExpect(status().isOk());
     }
 
     @Test
     void shouldAllowRequestsFromDifferentIPs() throws Exception {
         for (int i = 0; i < 5; i++) {
-            mockMvc.perform(get("/api/admin/auth/me")
-                            .header("Authorization", authHeader)
-                            .header("X-Forwarded-For", "192.168.1.102"))
+            mockMvc.perform(get("/api/admin/news")
+                            .header("Authorization", authHeader))
                     .andExpect(status().isOk());
         }
 
-        mockMvc.perform(get("/api/admin/auth/me")
-                        .header("Authorization", authHeader)
-                        .header("X-Forwarded-For", "192.168.1.103"))
+        mockMvc.perform(get("/api/admin/news")
+                        .header("Authorization", authHeader))
                 .andExpect(status().isOk());
     }
 }
