@@ -1,4 +1,4 @@
-package com.example.phoebe.service.impl;
+package com.example.phoebe.integration.service.impl;
 
 import com.example.phoebe.dto.request.NewsCreateRequestDto;
 import com.example.phoebe.dto.response.NewsDto;
@@ -59,11 +59,11 @@ class NewsServiceImplIntegrationTest extends BaseIntegrationTest {
     void setUp() {
         // Clean up database to ensure test isolation
         newsRepository.deleteAll();
-        userRepository.deleteAll();
         termRepository.deleteAll();
 
-        // Create and save a test user to act as the author
-        testUser = new User("integration_user", "password", "integration@test.com", true);
+        // Create and save a test user with unique timestamp to avoid constraint violations
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        testUser = new User("integration_user_" + timestamp, "password", "integration_" + timestamp + "@test.com", true);
         userRepository.save(testUser);
 
         // Create and save a test term to be associated with news

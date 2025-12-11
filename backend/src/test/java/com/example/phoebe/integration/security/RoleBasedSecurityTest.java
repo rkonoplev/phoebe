@@ -1,4 +1,4 @@
-package com.example.phoebe.security;
+package com.example.phoebe.integration.security;
 
 import com.example.phoebe.entity.News;
 import com.example.phoebe.entity.Role;
@@ -7,6 +7,7 @@ import com.example.phoebe.integration.BaseIntegrationTest;
 import com.example.phoebe.repository.NewsRepository;
 import com.example.phoebe.repository.RoleRepository;
 import com.example.phoebe.repository.UserRepository;
+import com.example.phoebe.security.AuthorVerification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -52,19 +51,20 @@ class RoleBasedSecurityTest extends BaseIntegrationTest {
     @BeforeEach
     void setUp() {
         newsRepository.deleteAll();
-        userRepository.deleteAll();
         
         Role adminRole = roleRepository.findByName("ADMIN")
                 .orElseThrow(() -> new IllegalStateException("ADMIN role not found"));
         Role editorRole = roleRepository.findByName("EDITOR")
                 .orElseThrow(() -> new IllegalStateException("EDITOR role not found"));
 
-        adminUser = new User("admin", "password", "admin@test.com", true);
-        adminUser.setRoles(Set.of(adminRole));
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        
+        adminUser = new User("role_admin_" + uniqueId, "pass", "role_admin_" + uniqueId + "@test.com", true);
+        adminUser.setRoles(java.util.Set.of(adminRole));
         userRepository.save(adminUser);
 
-        editorUser = new User("editor", "password", "editor@test.com", true);
-        editorUser.setRoles(Set.of(editorRole));
+        editorUser = new User("role_editor_" + uniqueId, "pass", "role_editor_" + uniqueId + "@test.com", true);
+        editorUser.setRoles(java.util.Set.of(editorRole));
         userRepository.save(editorUser);
 
         editorsNews = new News();

@@ -39,26 +39,22 @@ class SecurityAspectIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
-        roleRepository.deleteAll();
+        Role adminRole = roleRepository.findByName("ADMIN")
+                .orElseThrow(() -> new IllegalStateException("ADMIN role not found"));
+        Role editorRole = roleRepository.findByName("EDITOR")
+                .orElseThrow(() -> new IllegalStateException("EDITOR role not found"));
 
-        Role adminRole = createAndSaveRole("ADMIN");
-        Role editorRole = createAndSaveRole("EDITOR");
-
-        adminUser = new User("sec_admin", "pass", "sec_admin@test.com", true);
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        
+        adminUser = new User("sec_admin_" + uniqueId, "pass", "sec_admin_" + uniqueId + "@test.com", true);
         adminUser.setRoles(Set.of(adminRole));
         userRepository.save(adminUser);
 
-        editorUser = new User("sec_editor", "pass", "sec_editor@test.com", true);
+        editorUser = new User("sec_editor_" + uniqueId, "pass", "sec_editor_" + uniqueId + "@test.com", true);
         editorUser.setRoles(Set.of(editorRole));
         userRepository.save(editorUser);
 
         SecurityContextHolder.clearContext();
-    }
-
-    private Role createAndSaveRole(String roleName) {
-        Role newRole = new Role(roleName, null);
-        return roleRepository.save(newRole);
     }
 
     @Test

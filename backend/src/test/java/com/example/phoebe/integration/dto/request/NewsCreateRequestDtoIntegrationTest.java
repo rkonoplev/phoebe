@@ -29,8 +29,8 @@ class NewsCreateRequestDtoIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
-        author = new User("creator_user", "pass", "creator@test.com", true);
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        author = new User("creator_user_" + uniqueId, "pass", "creator_" + uniqueId + "@test.com", true);
         userRepository.save(author);
     }
 
