@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Base64;
@@ -19,6 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class AuthControllerRateLimitTest extends BaseIntegrationTest {
 
     @Autowired
@@ -76,19 +78,27 @@ class AuthControllerRateLimitTest extends BaseIntegrationTest {
 
         mockMvc.perform(get("/api/admin/news")
                         .header("Authorization", authHeader))
-                .andExpect(status().isOk());
+                .andExpect(status().isTooManyRequests());
     }
 
     @Test
     void shouldAllowRequestsFromDifferentIPs() throws Exception {
         for (int i = 0; i < 5; i++) {
             mockMvc.perform(get("/api/admin/news")
-                            .header("Authorization", authHeader))
+                            .header("Authorization", authHeader)
+                            .with(request -> {
+                                request.setRemoteAddr("192.168.1.1");
+                                return request;
+                            }))
                     .andExpect(status().isOk());
         }
 
         mockMvc.perform(get("/api/admin/news")
-                        .header("Authorization", authHeader))
+                        .header("Authorization", authHeader)
+                        .with(request -> {
+                            request.setRemoteAddr("192.168.1.2");
+                            return request;
+                        }))
                 .andExpect(status().isOk());
     }
 }

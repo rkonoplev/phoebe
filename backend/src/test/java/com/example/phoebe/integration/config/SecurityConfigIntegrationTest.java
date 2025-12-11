@@ -1,8 +1,10 @@
 package com.example.phoebe.integration.config;
 
+import com.example.phoebe.entity.Permission;
 import com.example.phoebe.entity.Role;
 import com.example.phoebe.entity.User;
 import com.example.phoebe.integration.BaseIntegrationTest;
+import com.example.phoebe.repository.PermissionRepository;
 import com.example.phoebe.repository.RoleRepository;
 import com.example.phoebe.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,9 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashSet;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
@@ -23,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Integration tests for SecurityConfig to verify authentication, authorization, and CORS.
  */
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class SecurityConfigIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
@@ -37,17 +43,43 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private PermissionRepository permissionRepository;
+
     private String adminAuthHeader;
     private String editorAuthHeader;
 
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
-        
-        Role adminRole = roleRepository.findByName("ADMIN")
-                .orElseThrow(() -> new IllegalStateException("ADMIN role not found"));
-        Role editorRole = roleRepository.findByName("EDITOR")
-                .orElseThrow(() -> new IllegalStateException("EDITOR role not found"));
+        roleRepository.deleteAll();
+        permissionRepository.deleteAll();
+
+        Permission newsCreate = new Permission("news:create");
+        Permission newsRead = new Permission("news:read");
+        Permission newsUpdate = new Permission("news:update");
+        Permission newsDelete = new Permission("news:delete");
+        permissionRepository.saveAll(Arrays.asList(newsCreate, newsRead, newsUpdate, newsDelete));
+
+        Permission usersCreate = new Permission("users:create");
+        Permission usersRead = new Permission("users:read");
+        Permission usersUpdate = new Permission("users:update");
+        Permission usersDelete = new Permission("users:delete");
+        permissionRepository.saveAll(Arrays.asList(usersCreate, usersRead, usersUpdate, usersDelete));
+
+        Permission rolesCreate = new Permission("roles:create");
+        Permission rolesRead = new Permission("roles:read");
+        Permission rolesUpdate = new Permission("roles:update");
+        Permission rolesDelete = new Permission("roles:delete");
+        permissionRepository.saveAll(Arrays.asList(rolesCreate, rolesRead, rolesUpdate, rolesDelete));
+
+        Role adminRole = new Role("ADMIN", null);
+        adminRole.setPermissions(new HashSet<>(permissionRepository.findAll()));
+        roleRepository.save(adminRole);
+
+        Role editorRole = new Role("EDITOR", null);
+        editorRole.setPermissions(new HashSet<>(Arrays.asList(newsCreate, newsRead, newsUpdate, newsDelete)));
+        roleRepository.save(editorRole);
 
         User admin = new User("admin", passwordEncoder.encode("admin123"), "admin@test.com", true);
         admin.addRole(adminRole);
