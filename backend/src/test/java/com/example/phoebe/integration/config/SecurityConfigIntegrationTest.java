@@ -1,6 +1,5 @@
 package com.example.phoebe.integration.config;
 
-import com.example.phoebe.entity.Permission;
 import com.example.phoebe.entity.Role;
 import com.example.phoebe.entity.User;
 import com.example.phoebe.integration.BaseIntegrationTest;
@@ -15,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Base64;
