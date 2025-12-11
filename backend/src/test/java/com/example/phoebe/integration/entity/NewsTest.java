@@ -1,5 +1,8 @@
-package com.example.phoebe.entity;
+package com.example.phoebe.integration.entity;
 
+import com.example.phoebe.entity.News;
+import com.example.phoebe.entity.Term;
+import com.example.phoebe.entity.User;
 import com.example.phoebe.integration.BaseIntegrationTest;
 import com.example.phoebe.repository.NewsRepository;
 import com.example.phoebe.repository.TermRepository;
@@ -48,13 +51,16 @@ class NewsTest extends BaseIntegrationTest {
     void setUp() {
         // Clean up to ensure test isolation
         newsRepository.deleteAll();
-        userRepository.deleteAll();
-        termRepository.deleteAll();
-
-        author = new User("testuser", "{noop}password", "test@example.com", true);
+        
+        // Create test user with unique username to avoid conflicts
+        String uniqueUsername = "testuser_" + System.currentTimeMillis();
+        String uniqueEmail = "test_" + System.currentTimeMillis() + "@example.com";
+        author = new User(uniqueUsername, "{noop}password", uniqueEmail, true);
         userRepository.save(author);
 
-        term = new Term("Technology", "category");
+        // Create test term with unique name to avoid conflicts
+        String uniqueTermName = "Technology_" + System.currentTimeMillis();
+        term = new Term(uniqueTermName, "category");
         termRepository.save(term);
     }
 

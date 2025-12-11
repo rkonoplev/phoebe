@@ -37,22 +37,23 @@ class AuthControllerRateLimitTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
+        // Clean up existing test users but keep sample data
+        userRepository.findByUsername("testuser_rate_limit").ifPresent(userRepository::delete);
         
         // Find the EDITOR role created by Flyway migration V3
         Role editorRole = roleRepository.findByName("EDITOR")
                 .orElseThrow(() -> new IllegalStateException("EDITOR role not found in test database"));
 
         User user = new User(
-            "testuser",
+            "testuser_rate_limit",
             passwordEncoder.encode("password123"),
-            "test@example.com",
+            "test_rate_limit@example.com",
             true
         );
         user.setRoles(Set.of(editorRole)); // Assign the role to the user
         userRepository.save(user);
 
-        String credentials = "testuser:password123";
+        String credentials = "testuser_rate_limit:password123";
         authHeader = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes());
     }
 
