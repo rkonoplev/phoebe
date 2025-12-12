@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, Alert } from '@mui/material';
+import { Box, TextField, Button, Typography, Alert, Snackbar } from '@mui/material';
 import { useRouter } from 'next/router';
 import { admin } from '../../services/api';
+import useUndoSave from '../../hooks/useUndoSave';
 
 const TermForm = ({ term: initialTerm }) => {
   const [term, setTerm] = useState({ name: '', vocabulary: '' });
   const [errors, setErrors] = useState({});
-  const [submitError, setSubmitError] = useState('');
   const router = useRouter();
   const isEditMode = !!initialTerm;
+  
+  const saveFunction = async (data) => {
+    if (isEditMode) {
+      await admin.updateTerm(data.id, data);
+    } else {
+      await admin.createTerm(data);
+    }
+    router.push('/admin/taxonomy');
+  };
+  
+  const { showUndo, error: submitError, executeSave, undoSave, isProcessing } = useUndoSave(saveFunction);
 
   useEffect(() => {
     if (initialTerm) {
@@ -36,20 +47,9 @@ const TermForm = ({ term: initialTerm }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitError('');
 
     if (validate()) {
-      try {
-        if (isEditMode) {
-          await admin.updateTerm(term.id, term);
-        } else {
-          await admin.createTerm(term);
-        }
-        router.push('/admin/taxonomy');
-      } catch (error) {
-        console.error('Failed to save term:', error);
-        setSubmitError('Failed to save term. Please check your input and try again.');
-      }
+      await executeSave(term);
     }
   };
 
@@ -80,13 +80,24 @@ const TermForm = ({ term: initialTerm }) => {
       />
       {submitError && <Alert severity="error" sx={{ width: '100%', mt: 2 }}>{submitError}</Alert>}
       <Box>
-        <Button type="submit" variant="contained" color="primary">
+        <Button type="submit" variant="contained" color="primary" disabled={isProcessing}>
           {isEditMode ? 'Update' : 'Create'}
         </Button>
-        <Button variant="outlined" onClick={() => router.push('/admin/taxonomy')} sx={{ ml: 2 }}>
+        <Button variant="outlined" onClick={() => router.push('/admin/taxonomy')} sx={{ ml: 2 }} disabled={isProcessing}>
           Cancel
         </Button>
       </Box>
+      
+      <Snackbar
+        open={showUndo}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        message="Saving in 5 seconds..."
+        action={
+          <Button color="primary" size="small" onClick={undoSave}>
+            UNDO
+          </Button>
+        }
+      />
     </Box>
   );
 };

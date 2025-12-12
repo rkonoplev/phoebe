@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Switch, FormControlLabel, Typography, Alert, Snackbar } from '@mui/material';
 import { useRouter } from 'next/router';
 import { admin } from '../../services/api';
+import useUndoSave from '../../hooks/useUndoSave';
 
 const NewsForm = ({ article: initialArticle }) => {
   const [article, setArticle] = useState({
@@ -11,12 +12,19 @@ const NewsForm = ({ article: initialArticle }) => {
     published: false,
   });
   const [errors, setErrors] = useState({});
-  const [submitError, setSubmitError] = useState('');
-  const [showUndo, setShowUndo] = useState(false);
-  const [pendingData, setPendingData] = useState(null);
   const router = useRouter();
   const isEditMode = !!initialArticle;
-  const saveTimerRef = useRef(null);
+  
+  const saveFunction = async (data) => {
+    if (isEditMode) {
+      await admin.updateNews(data.id, data);
+    } else {
+      await admin.createNews(data);
+    }
+    router.push('/admin/news');
+  };
+  
+  const { showUndo, error: submitError, executeSave, undoSave, isProcessing } = useUndoSave(saveFunction);
 
   useEffect(() => {
     if (initialArticle) {
@@ -76,46 +84,11 @@ const NewsForm = ({ article: initialArticle }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitError('');
 
     if (validate()) {
-      setPendingData({ ...article });
-      setShowUndo(true);
-      
-      saveTimerRef.current = setTimeout(async () => {
-        try {
-          if (isEditMode) {
-            await admin.updateNews(article.id, article);
-          } else {
-            await admin.createNews(article);
-          }
-          router.push('/admin/news');
-        } catch (error) {
-          console.error('Failed to save article:', error);
-          setSubmitError('Failed to save article. Please check your input and try again.');
-          setShowUndo(false);
-          setPendingData(null);
-        }
-      }, 5000);
+      await executeSave(article);
     }
   };
-
-  const handleUndo = () => {
-    if (saveTimerRef.current) {
-      clearTimeout(saveTimerRef.current);
-      saveTimerRef.current = null;
-    }
-    setShowUndo(false);
-    setPendingData(null);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-      }
-    };
-  }, []);
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -178,10 +151,10 @@ const NewsForm = ({ article: initialArticle }) => {
       />
       {submitError && <Alert severity="error" sx={{ width: '100%', mt: 2 }}>{submitError}</Alert>}
       <Box>
-        <Button type="submit" variant="contained" color="primary" disabled={showUndo}>
+        <Button type="submit" variant="contained" color="primary" disabled={isProcessing}>
           {isEditMode ? 'Update' : 'Create'}
         </Button>
-        <Button variant="outlined" onClick={() => router.push('/admin/news')} sx={{ ml: 2 }} disabled={showUndo}>
+        <Button variant="outlined" onClick={() => router.push('/admin/news')} sx={{ ml: 2 }} disabled={isProcessing}>
           Cancel
         </Button>
       </Box>
@@ -191,7 +164,7 @@ const NewsForm = ({ article: initialArticle }) => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         message="Saving in 5 seconds..."
         action={
-          <Button color="primary" size="small" onClick={handleUndo}>
+          <Button color="primary" size="small" onClick={undoSave}>
             UNDO
           </Button>
         }

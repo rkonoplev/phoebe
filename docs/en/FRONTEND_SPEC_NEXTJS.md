@@ -202,6 +202,10 @@ POST /api/admin/terms
 - **Taxonomy Management**: Full CRUD for terms and categories.
 - **User Management**: View and edit user roles (ADMIN only).
 - **Frontend Validation**: Comprehensive form validation according to VALIDATION_GUIDE.md.
+- **Universal Undo System**: All save forms support a 5-second window for canceling operations with return to editing.
+  - **Implementation**: Universal `useUndoSave` hook for all CRUD operations
+  - **UX**: Snackbar notification with "UNDO" button, interface blocking during wait period
+  - **Functionality**: Form state preservation, rollback capability, editing data restoration
 
 ### 6.6 Content Handling
 - **HTML Rendering**: Support for HTML content (allowed tags only) and YouTube embeds in teaser and body fields.
