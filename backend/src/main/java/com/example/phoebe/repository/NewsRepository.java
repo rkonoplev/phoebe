@@ -3,6 +3,8 @@ package com.example.phoebe.repository;
 import com.example.phoebe.entity.News;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -73,6 +75,10 @@ public interface NewsRepository extends JpaRepository<News, Long> {
             @Param("published") boolean published,
             Pageable pageable
     );
+
+    @EntityGraph(attributePaths = {"author", "terms"})
+    @Query("SELECT n FROM News n JOIN n.terms t WHERE t.id IN :termIds")
+    List<News> findNewsByTaxonomyTerms(@Param("termIds") Set<Long> termIds, Pageable pageable);
 
     @EntityGraph(attributePaths = {"author", "terms"})
     Page<News> findByAuthorId(Long authorId, Pageable pageable);
