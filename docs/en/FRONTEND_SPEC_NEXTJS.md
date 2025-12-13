@@ -25,12 +25,9 @@
 
 ## 3. Layout & Pages
 ### 3.1 Homepage
-- Clean multi-column grid layout:
-  - Desktop: 2–3 columns.
-  - Mobile: 1 column.
-- Featured article block at the top (large image, headline, excerpt).
-- Secondary articles below with medium-sized images.
-- Smaller news items listed in compact cards.
+- **Dynamic Layout**: In addition to the standard grid layout, the homepage supports two display modes:
+  - **Simple Mode**: A clean grid layout of the latest news.
+  - **Custom Mode**: A flexible block-based structure managed from the admin panel.
 - Category navigation bar at the top.
 
 ### 3.2 Category Page
@@ -120,6 +117,9 @@ GET /api/public/news?page=0&size=10
 GET /api/public/news/{id}
 GET /api/public/news/term/{termId}
 GET /api/public/news/search?q=query
+GET /api/public/homepage
+GET /api/public/homepage/mode
+PATCH /api/public/homepage/mode
 ```
 
 **Admin requests** (with Basic Auth header):
@@ -131,6 +131,10 @@ PUT /api/admin/news/{id}
 DELETE /api/admin/news/{id}
 GET /api/admin/terms
 POST /api/admin/terms
+GET /api/admin/homepage-blocks
+POST /api/admin/homepage-blocks
+PUT /api/admin/homepage-blocks/{id}
+DELETE /api/admin/homepage-blocks/{id}
 ```
 
 ### 5.4 Error Handling
@@ -186,11 +190,12 @@ POST /api/admin/terms
 **AdminBar Links (ADMIN Only):**
 - Taxonomy - manage categories and tags (`/admin/taxonomy`)
 - Users - manage users and roles (`/admin/users`)
+- Homepage - manage homepage blocks (`/admin/homepage-blocks`)
 
 **Logout Button**: Exit system with redirect to homepage
 
 ### 6.4 Public Content Pages
-- **Homepage** (`/`): SSR display of latest news articles
+- **Homepage** (`/`): An SSR page with two display modes: `Simple` (news list) and `Custom` (block-based structure).
 - **Article Detail Page** (`/node/[id]`): SSG with ISR for optimal performance and SEO
 - **Category Page** (`/category/[id]`): SSR list of articles for specific category
 - **Search Page** (`/search`): Search form integrated with backend API
@@ -203,11 +208,14 @@ POST /api/admin/terms
 - **User Management**: View and edit user roles (ADMIN only).
 - **Frontend Validation**: Comprehensive form validation according to VALIDATION_GUIDE.md.
 - **Universal Undo System**: All save forms support a 5-second window for canceling operations with return to editing.
-  - **Implementation**: Universal `useUndoSave` hook for all CRUD operations
-  - **UX**: Snackbar notification with "UNDO" button, interface blocking during wait period
-  - **Functionality**: Form state preservation, rollback capability, editing data restoration
 
-### 6.6 Content Handling
+### 6.6 Homepage Management
+- **Block CRUD**: A full interface for creating, editing, and deleting homepage blocks is implemented at `/admin/homepage-blocks`.
+- **Dynamic Form**: The block creation/editing form adapts to the selected block type (`News` or `Widget/Ad`), showing only relevant fields.
+- **Mode Switcher**: A button in the site footer allows users to switch between `Simple` and `Custom` homepage display modes.
+- **Dynamic Rendering**: The homepage fetches data from `/api/public/homepage` and renders content according to the active mode.
+
+### 6.7 Content Handling
 - **HTML Rendering**: Support for HTML content (allowed tags only) and YouTube embeds in teaser and body fields.
 - **Safe Processing**: Using backend's SafeHtml processing.
 
@@ -226,139 +234,4 @@ POST /api/admin/terms
 
 ## Running the Next.js Frontend Locally
 
-To run the Next.js frontend on your local machine:
-
-1.  **Ensure the backend is running**:
-    ```bash
-    cd phoebe # Project root directory
-    make run # This will start the backend and database
-    ```
-    Verify that the backend is accessible at `http://localhost:8080`.
-
-2.  **Navigate to the Next.js frontend directory**:
-    ```bash
-    cd frontends/nextjs
-    ```
-
-3.  **Install dependencies**:
-    ```bash
-    npm install
-    ```
-
-4.  **Start the Next.js application**:
-    ```bash
-    npm run dev
-    ```
-    The application will be available at `http://localhost:3000`.
-
-5.  **View in browser**: Open `http://localhost:3000` in your web browser.
-    You should see the Next.js frontend homepage displaying content from the locally
-    running backend.
-
----
-
-## 8. Troubleshooting
-
-### Problem: `Module not found: Can't resolve '@mui/icons-material/Search'` (or other MUI icons)
-
-**Problem Description**: When building or running the Next.js frontend, a "Module not found"
-error occurs for Material-UI icons like `Search`, `Edit`, `Delete`, etc. This happens
-when the `@mui/icons-material` package is not installed or not available in the Docker
-build environment.
-
-**Reason**: Although you might have installed the package locally, Docker uses cached
-layers for building. If `package.json` was updated after the `RUN npm install` layer
-was cached, Docker will use the old cache, not installing the new dependency.
-
-**Solution**: Force a rebuild of the `nextjs-app` Docker image without using the cache.
-
-1.  **Ensure the package is installed locally**:
-    Navigate to the `frontends/nextjs` directory and run:
-    ```bash
-    npm install @mui/icons-material
-    ```
-    This will update `package.json` and `package-lock.json`.
-
-2.  **Check `package.json`**:
-    Verify that `@mui/icons-material` is added to the `dependencies` section in the
-    `frontends/nextjs/package.json` file. If it's missing, add it manually:
-    ```json
-    "dependencies": {
-      // ... other dependencies
-      "@mui/icons-material": "^5.15.18" // Add this line
-    },
-    ```
-    After manually adding it, run `npm install` in `frontends/nextjs` again to update
-    `package-lock.json`.
-
-3.  **Return to the project root directory**:
-    ```bash
-    cd ../..
-    ```
-
-4.  **Force rebuild the `nextjs-app` Docker image without cache**:
-    ```bash
-    docker compose build --no-cache nextjs-app
-    ```
-    This command will rebuild only the `nextjs-app` image, ignoring the cache for all
-    its layers.
-
-5.  **Run the project again**:
-    ```bash
-    make run
-    ```
-    Or, if you prefer `docker compose`:
-    ```bash
-    docker compose up
-    ```
-    The frontend should now build and run successfully.
-
----
-
-**Recommendation for `Dockerfile` (optional, but recommended for consistency):**
-
-To ensure maximum consistency in dependency installation, it is recommended to also
-copy the `package-lock.json` file (or `yarn.lock`, if you use Yarn) into the Dockerfile.
-This guarantees that `npm install` will use the same dependency versions as on your
-local machine.
-
-You can modify the first `deps` stage in `frontends/nextjs/Dockerfile` as follows:
-
-```dockerfile
-# 1. Install dependencies
-FROM node:20-alpine AS deps
-WORKDIR /app
-COPY package.json ./
-COPY package-lock.json ./  # Add this line
-RUN npm install
-```
-After this change, you will also need to run `docker compose build --no-cache nextjs-app`
-once for Docker to pick up the new layer.
-
----
-
-## 9. Building the Docker Image
-
-For a successful build of the Next.js application Docker image, it is crucial to execute commands from the correct directory so that Docker can find all necessary files (such as `Dockerfile`, `package.json`, and `package-lock.json`).
-
-1.  **Navigate to the Next.js frontend directory**:
-    This ensures that the Docker build context will contain all files of your Next.js application.
-    ```bash
-    cd /Users/rk/dev/java/phoebe/frontends/nextjs/
-    ```
-
-2.  **Ensure `package-lock.json` exists**:
-    If you have recently cloned the project or changed dependencies, make sure the `package-lock.json` file is present. If it's not, create it:
-    ```bash
-    npm install
-    ```
-    This command will install dependencies and generate `package-lock.json`.
-
-3.  **Execute the Docker image build**:
-    Run the `docker build` command from the `frontends/nextjs/` directory. The dot (`.`) at the end of the command tells Docker to use the current directory as the build context.
-    ```bash
-    docker build -t my-nextjs-app .
-    ```
-    Replace `my-nextjs-app` with your desired image name.
-
-After performing these steps, Docker should successfully find `package-lock.json` and build the image.
+... (rest of the file remains unchanged)

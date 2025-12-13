@@ -53,67 +53,32 @@ This section serves as a changelog, documenting key implemented features and ref
 - **Project Cleanup**: Removed obsolete files (`Task`, root `docker-compose.yml`) from the repository.
 - **Improved Docker Workflow**: Added a `make run-no-cache` command to force the rebuilding of Docker images
   without cache, resolving issues with stale files.
-- **Universal Undo System**: Implemented a universal `useUndoSave` hook for all save forms.
-  - **Purpose**: Provide users with a 5-second window to cancel save operations.
-  - **Application**: Used for all create and edit operations (news, taxonomy terms, etc.).
-  - **Functionality**: Form data preservation, rollback capability, editing state restoration.
-  - **UX**: Snackbar notification with "UNDO" button, interface blocking during wait period.
-
----
 
 ### User Experience (UX)
 - **Universal Undo System**: All forms support a 5-second window for canceling saves with return to editing.
 
----
-
-## In Progress
-
-- **Homepage Layout System (HomePageBlock)**: Implementation of a universal content block management system
-  for the homepage with two display modes.
-  
-  - **Purpose**: Provide flexible homepage structure configuration through a block system, independent of
-    frontend implementation (Angular, Next.js, or custom frontend).
-  
-  - **Display Modes**:
-    - **Simple (Standard)**: Current representation - simple list of last 10 news items.
-    - **Custom (Configurable)**: Block-based layout with full configuration for each block.
-    - Mode switching available to users in theme settings (alongside dark/light mode).
-  
-  - **Block Parameters** (universal for all blocks):
-    - **Block Weight**: Determines display order (lower number = higher on page).
-    - **Block Type**: Toggle between two modes:
-      - **News Block**: Standard mode with taxonomy term selection and news display
-        - Taxonomy Terms: Selection from 1 to all terms for filtering news in the block
-        - News Count: Total number of news items displayed in the block
-        - Content Display: title (mandatory), teaser (optional)
-        - Title Font Size: relative to base size
-      - **Advertisement/Widget Block**: Mode for placing ads and external widgets
-        - Text field for inserting HTML/JavaScript code
-        - Support for advertising banners (images)
-        - Support for text announcements
-        - Support for Google Ads and other advertising systems code
-        - Support for social media widgets
-        - **Security**: HTML code sanitization, filtering of dangerous tags and scripts
-        - **Restrictions**: Whitelist of allowed domains for external scripts
-  
-  - **Limitations**: Maximum 50 blocks on homepage.
-  
-  - **Backend Components**:
-    - `HomePageBlock` entity with universal parameters and block type
-    - `HomepageSettings` entity for storing display mode (Simple/Custom)
-    - HTML sanitization service for advertisement blocks
-    - Public API: `GET /api/public/homepage` (returns structure based on mode)
-    - Public API: `GET /api/public/homepage/mode` (get current mode)
-    - Public API: `PATCH /api/public/homepage/mode` (switch Simple/Custom mode)
-    - Admin API: CRUD operations for block management with content validation
-  
-  - **Frontend Components**:
-    - Mode switching UI in user settings
-    - News block rendering component for Custom mode
-    - Advertisement/widget block rendering component with safe HTML insertion
-    - Simple list component for Simple mode
-    - Admin UI for creating and configuring blocks with block type toggle
-    - Preview functionality for advertisement blocks in admin panel
+### Homepage Layout System (HomePageBlock)
+- **Implementation Status**: ✅ **FULLY IMPLEMENTED** (Backend + Frontend Next.js).
+- **Purpose**: Provide flexible homepage structure configuration through a block system, independent of
+  frontend implementation (Angular, Next.js, or custom frontend).
+- **Display Modes**:
+  - **Simple (Standard)**: A simple list of the last 10 news items.
+  - **Custom (Configurable)**: A block-based layout with full configuration for each block.
+  - Mode switching is available to users in the site footer.
+- **Block Parameters** (universal for all blocks):
+  - **Block Weight**: Determines display order (lower number = higher on page).
+  - **Block Type**: Toggle between two modes:
+    - **News Block**: Standard mode with taxonomy term selection and news display.
+    - **Advertisement/Widget Block**: Mode for placing ads and external widgets.
+- **Backend Components**:
+  - `HomePageBlock` and `HomepageSettings` entities.
+  - HTML sanitization service for advertisement blocks.
+  - Public API: `GET /api/public/homepage`, `GET /api/public/homepage/mode`, `PATCH /api/public/homepage/mode`.
+  - Admin API: Full CRUD operations for block management.
+- **Frontend (Next.js) Components**:
+  - Mode switching UI in the footer.
+  - Rendering components for News and Widget blocks.
+  - Admin UI for creating and configuring blocks.
 
 ---
 

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
 import { useThemeContext } from '../context/ThemeContext';
+import { useHomepage } from '../context/HomepageContext';
 import AdminBar from './AdminBar';
 
 const FooterLink = ({ href, children, ...props }) => (
@@ -55,6 +56,7 @@ const SearchBar = () => {
 const Layout = ({ children }) => {
   const { isAuthenticated } = useAuth();
   const { toggleTheme } = useThemeContext();
+  const { mode, toggleMode } = useHomepage();
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary' }}>
@@ -106,6 +108,12 @@ const Layout = ({ children }) => {
               <Button onClick={toggleTheme} sx={{ color: 'white', p: 0, minWidth: 0, textTransform: 'none' }}>
                 <Typography variant="body2" sx={{ textDecoration: 'underline' }}>
                   Toggle Theme
+                </Typography>
+              </Button>
+              <Typography>|</Typography>
+              <Button onClick={toggleMode} sx={{ color: 'white', p: 0, minWidth: 0, textTransform: 'none' }}>
+                <Typography variant="body2" sx={{ textDecoration: 'underline' }}>
+                  {`Layout: ${mode}`}
                 </Typography>
               </Button>
               <Typography>|</Typography>

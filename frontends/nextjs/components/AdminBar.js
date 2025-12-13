@@ -39,6 +39,9 @@ const AdminBar = () => {
               <Link href="/admin/users" passHref>
                 <Button sx={{ color: 'white' }}>Users</Button>
               </Link>
+              <Link href="/admin/homepage-blocks" passHref>
+                <Button sx={{ color: 'white' }}>Homepage</Button>
+              </Link>
               <Link href="/admin/settings" passHref>
                 <Button sx={{ color: 'white' }}>Settings</Button>
               </Link>
