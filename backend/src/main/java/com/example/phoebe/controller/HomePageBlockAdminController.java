@@ -2,7 +2,6 @@ package com.example.phoebe.controller;
 
 import com.example.phoebe.dto.HomePageBlockDto;
 import com.example.phoebe.service.HomePageBlockService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +10,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/homepage-blocks")
-@RequiredArgsConstructor
 public class HomePageBlockAdminController {
 
     private final HomePageBlockService blockService;
+
+    public HomePageBlockAdminController(HomePageBlockService blockService) {
+        this.blockService = blockService;
+    }
 
     @GetMapping
     public ResponseEntity<List<HomePageBlockDto>> getAllBlocks() {

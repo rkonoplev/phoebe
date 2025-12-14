@@ -2,11 +2,10 @@ package com.example.phoebe.service;
 
 import com.example.phoebe.dto.HomePageBlockDto;
 import com.example.phoebe.entity.HomePageBlock;
-import com.example.phoebe.entity.TaxonomyTerm;
+import com.example.phoebe.entity.Term;
 import com.example.phoebe.mapper.HomePageBlockMapper;
 import com.example.phoebe.repository.HomePageBlockRepository;
-import com.example.phoebe.repository.TaxonomyTermRepository;
-import lombok.RequiredArgsConstructor;
+import com.example.phoebe.repository.TermRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +15,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class HomePageBlockService {
 
     private final HomePageBlockRepository blockRepository;
-    private final TaxonomyTermRepository termRepository;
+    private final TermRepository termRepository;
     private final HomePageBlockMapper blockMapper;
+
+    public HomePageBlockService(HomePageBlockRepository blockRepository, TermRepository termRepository, HomePageBlockMapper blockMapper) {
+        this.blockRepository = blockRepository;
+        this.termRepository = termRepository;
+        this.blockMapper = blockMapper;
+    }
 
     @Transactional(readOnly = true)
     public List<HomePageBlockDto> findAll() {
@@ -73,7 +77,7 @@ public class HomePageBlockService {
         if (termIds == null || termIds.isEmpty()) {
             block.setTaxonomyTerms(new HashSet<>());
         } else {
-            Set<TaxonomyTerm> terms = new HashSet<>(termRepository.findAllById(termIds));
+            Set<Term> terms = new HashSet<>(termRepository.findAllById(termIds));
             block.setTaxonomyTerms(terms);
         }
     }

@@ -5,16 +5,19 @@ import com.example.phoebe.entity.HomepageSettings;
 import com.example.phoebe.mapper.HomepageSettingsMapper;
 import com.example.phoebe.model.HomepageMode;
 import com.example.phoebe.repository.HomepageSettingsRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class HomepageSettingsService {
 
     private final HomepageSettingsRepository settingsRepository;
     private final HomepageSettingsMapper settingsMapper;
+
+    public HomepageSettingsService(HomepageSettingsRepository settingsRepository, HomepageSettingsMapper settingsMapper) {
+        this.settingsRepository = settingsRepository;
+        this.settingsMapper = settingsMapper;
+    }
 
     @Transactional(readOnly = true)
     public HomepageModeDto getCurrentMode() {

@@ -2,16 +2,11 @@ package com.example.phoebe.entity;
 
 import com.example.phoebe.model.HomePageBlockType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "home_page_block")
 public class HomePageBlock {
 
@@ -33,7 +28,7 @@ public class HomePageBlock {
             joinColumns = @JoinColumn(name = "home_page_block_id"),
             inverseJoinColumns = @JoinColumn(name = "taxonomy_term_id")
     )
-    private Set<TaxonomyTerm> taxonomyTerms;
+    private Set<Term> taxonomyTerms = new HashSet<>();
 
     private Integer newsCount;
 
@@ -45,4 +40,27 @@ public class HomePageBlock {
     @Lob
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    // Constructors
+    public HomePageBlock() {}
+
+    // Getters
+    public Integer getId() { return id; }
+    public Integer getWeight() { return weight; }
+    public HomePageBlockType getBlockType() { return blockType; }
+    public Set<Term> getTaxonomyTerms() { return taxonomyTerms; }
+    public Integer getNewsCount() { return newsCount; }
+    public Boolean getShowTeaser() { return showTeaser; }
+    public String getTitleFontSize() { return titleFontSize; }
+    public String getContent() { return content; }
+
+    // Setters
+    public void setId(Integer id) { this.id = id; }
+    public void setWeight(Integer weight) { this.weight = weight; }
+    public void setBlockType(HomePageBlockType blockType) { this.blockType = blockType; }
+    public void setTaxonomyTerms(Set<Term> taxonomyTerms) { this.taxonomyTerms = taxonomyTerms; }
+    public void setNewsCount(Integer newsCount) { this.newsCount = newsCount; }
+    public void setShowTeaser(Boolean showTeaser) { this.showTeaser = showTeaser; }
+    public void setTitleFontSize(String titleFontSize) { this.titleFontSize = titleFontSize; }
+    public void setContent(String content) { this.content = content; }
 }

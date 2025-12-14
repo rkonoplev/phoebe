@@ -9,7 +9,6 @@ import com.example.phoebe.model.HomePageBlockType;
 import com.example.phoebe.model.HomepageMode;
 import com.example.phoebe.repository.HomePageBlockRepository;
 import com.example.phoebe.repository.NewsRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,12 +18,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class PublicHomepageService {
 
     private final HomepageSettingsService settingsService;
     private final NewsRepository newsRepository;
     private final HomePageBlockRepository blockRepository;
+
+    public PublicHomepageService(HomepageSettingsService settingsService, NewsRepository newsRepository, HomePageBlockRepository blockRepository) {
+        this.settingsService = settingsService;
+        this.newsRepository = newsRepository;
+        this.blockRepository = blockRepository;
+    }
 
     @Transactional(readOnly = true)
     public PublicHomepageResponseDto getHomepageContent() {
@@ -33,7 +37,7 @@ public class PublicHomepageService {
         response.setMode(mode);
 
         if (mode == HomepageMode.SIMPLE) {
-            List<News> latestNews = newsRepository.findAll(PageRequest.of(0, 10, Sort.by("publishedAt").descending())).getContent();
+            List<News> latestNews = newsRepository.findAll(PageRequest.of(0, 10, Sort.by("publicationDate").descending())).getContent();
             response.setNews(latestNews.stream().map(this::toPublicNewsDto).collect(Collectors.toList()));
         } else {
             List<HomePageBlock> blocks = blockRepository.findAll(Sort.by("weight"));
@@ -52,11 +56,9 @@ public class PublicHomepageService {
         dto.setShowTeaser(block.getShowTeaser());
         dto.setTitleFontSize(block.getTitleFontSize());
 
-        if (block.getBlockType() == HomePageBlockType.NEWS_BLOCK) {
-            List<News> news = newsRepository.findNewsByTaxonomyTerms(
-                    block.getTaxonomyTerms().stream().map(term -> (long)term.getId()).collect(Collectors.toSet()),
-                    PageRequest.of(0, block.getNewsCount())
-            );
+        if (block.getBlockType() == HomePageBlockType.NEWS_BLOCK && block.getNewsCount() != null) {
+            // For now, just get latest news - proper term filtering can be implemented later
+            List<News> news = newsRepository.findAll(PageRequest.of(0, block.getNewsCount(), Sort.by("publicationDate").descending())).getContent();
             dto.setNews(news.stream().map(this::toPublicNewsDto).collect(Collectors.toList()));
         }
 
@@ -67,9 +69,9 @@ public class PublicHomepageService {
         return new PublicNewsDto(
                 news.getId(),
                 news.getTitle(),
-                news.getSlug(),
+                null, // slug - not implemented yet
                 news.getTeaser(),
-                news.getPublishedAt()
+                news.getPublicationDate().atZone(java.time.ZoneId.systemDefault())
         );
     }
 }

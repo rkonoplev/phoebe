@@ -2,7 +2,7 @@ package com.example.phoebe.mapper;
 
 import com.example.phoebe.dto.HomePageBlockDto;
 import com.example.phoebe.entity.HomePageBlock;
-import com.example.phoebe.entity.TaxonomyTerm;
+import com.example.phoebe.entity.Term;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -21,10 +21,10 @@ public interface HomePageBlockMapper {
     HomePageBlock toEntity(HomePageBlockDto dto);
 
     @Named("termsToIds")
-    default Set<Integer> termsToIds(Set<TaxonomyTerm> terms) {
+    default Set<Integer> termsToIds(Set<Term> terms) {
         if (terms == null) {
             return Collections.emptySet();
         }
-        return terms.stream().map(TaxonomyTerm::getId).collect(Collectors.toSet());
+        return terms.stream().map(Term::getId).collect(Collectors.toSet());
     }
 }
