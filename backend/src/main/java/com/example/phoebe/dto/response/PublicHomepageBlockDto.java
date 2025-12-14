@@ -1,7 +1,6 @@
 package com.example.phoebe.dto.response;
 
 import com.example.phoebe.model.HomePageBlockType;
-import com.example.phoebe.dto.response.PublicNewsDto;
 import java.util.List;
 
 public class PublicHomepageBlockDto {

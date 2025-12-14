@@ -2,7 +2,6 @@ package com.example.phoebe.entity;
 
 import com.example.phoebe.model.HomePageBlockType;
 import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,26 +40,70 @@ public class HomePageBlock {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    // Constructors
-    public HomePageBlock() {}
+    public HomePageBlock() {
+    }
 
-    // Getters
-    public Integer getId() { return id; }
-    public Integer getWeight() { return weight; }
-    public HomePageBlockType getBlockType() { return blockType; }
-    public Set<TaxonomyTerm> getTaxonomyTerms() { return taxonomyTerms; }
-    public Integer getNewsCount() { return newsCount; }
-    public Boolean getShowTeaser() { return showTeaser; }
-    public String getTitleFontSize() { return titleFontSize; }
-    public String getContent() { return content; }
+    public Integer getId() {
+        return id;
+    }
 
-    // Setters
-    public void setId(Integer id) { this.id = id; }
-    public void setWeight(Integer weight) { this.weight = weight; }
-    public void setBlockType(HomePageBlockType blockType) { this.blockType = blockType; }
-    public void setTaxonomyTerms(Set<TaxonomyTerm> taxonomyTerms) { this.taxonomyTerms = taxonomyTerms; }
-    public void setNewsCount(Integer newsCount) { this.newsCount = newsCount; }
-    public void setShowTeaser(Boolean showTeaser) { this.showTeaser = showTeaser; }
-    public void setTitleFontSize(String titleFontSize) { this.titleFontSize = titleFontSize; }
-    public void setContent(String content) { this.content = content; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Integer weight) {
+        this.weight = weight;
+    }
+
+    public HomePageBlockType getBlockType() {
+        return blockType;
+    }
+
+    public void setBlockType(HomePageBlockType blockType) {
+        this.blockType = blockType;
+    }
+
+    public Set<TaxonomyTerm> getTaxonomyTerms() {
+        return taxonomyTerms;
+    }
+
+    public void setTaxonomyTerms(Set<TaxonomyTerm> taxonomyTerms) {
+        this.taxonomyTerms = taxonomyTerms;
+    }
+
+    public Integer getNewsCount() {
+        return newsCount;
+    }
+
+    public void setNewsCount(Integer newsCount) {
+        this.newsCount = newsCount;
+    }
+
+    public Boolean getShowTeaser() {
+        return showTeaser;
+    }
+
+    public void setShowTeaser(Boolean showTeaser) {
+        this.showTeaser = showTeaser;
+    }
+
+    public String getTitleFontSize() {
+        return titleFontSize;
+    }
+
+    public void setTitleFontSize(String titleFontSize) {
+        this.titleFontSize = titleFontSize;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 }
