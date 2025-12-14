@@ -7,26 +7,12 @@ public class PublicHomepageBlockDto {
     private Integer id;
     private Integer weight;
     private HomePageBlockType blockType;
-
-    // For WIDGET_BLOCK
     private String content;
-
-    // For NEWS_BLOCK
     private List<PublicNewsDto> news;
     private Boolean showTeaser;
     private String titleFontSize;
 
     public PublicHomepageBlockDto() {
-    }
-
-    public PublicHomepageBlockDto(Integer id, Integer weight, HomePageBlockType blockType, String content, List<PublicNewsDto> news, Boolean showTeaser, String titleFontSize) {
-        this.id = id;
-        this.weight = weight;
-        this.blockType = blockType;
-        this.content = content;
-        this.news = news;
-        this.showTeaser = showTeaser;
-        this.titleFontSize = titleFontSize;
     }
 
     public Integer getId() {

@@ -27,7 +27,7 @@ public class HomePageBlock {
             joinColumns = @JoinColumn(name = "home_page_block_id"),
             inverseJoinColumns = @JoinColumn(name = "taxonomy_term_id")
     )
-    private Set<TaxonomyTerm> taxonomyTerms = new HashSet<>();
+    private Set<Term> taxonomyTerms = new HashSet<>();
 
     private Integer newsCount;
 
@@ -67,11 +67,11 @@ public class HomePageBlock {
         this.blockType = blockType;
     }
 
-    public Set<TaxonomyTerm> getTaxonomyTerms() {
+    public Set<Term> getTaxonomyTerms() {
         return taxonomyTerms;
     }
 
-    public void setTaxonomyTerms(Set<TaxonomyTerm> taxonomyTerms) {
+    public void setTaxonomyTerms(Set<Term> taxonomyTerms) {
         this.taxonomyTerms = taxonomyTerms;
     }
 

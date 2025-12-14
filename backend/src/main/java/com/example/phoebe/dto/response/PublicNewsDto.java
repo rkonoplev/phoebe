@@ -9,8 +9,8 @@ public class PublicNewsDto {
     private String teaser;
     private ZonedDateTime publishedAt;
 
-    // Constructors
-    public PublicNewsDto() {}
+    public PublicNewsDto() {
+    }
 
     public PublicNewsDto(Integer id, String title, String slug, String teaser, ZonedDateTime publishedAt) {
         this.id = id;
@@ -20,17 +20,43 @@ public class PublicNewsDto {
         this.publishedAt = publishedAt;
     }
 
-    // Getters
-    public Integer getId() { return id; }
-    public String getTitle() { return title; }
-    public String getSlug() { return slug; }
-    public String getTeaser() { return teaser; }
-    public ZonedDateTime getPublishedAt() { return publishedAt; }
+    public Integer getId() {
+        return id;
+    }
 
-    // Setters
-    public void setId(Integer id) { this.id = id; }
-    public void setTitle(String title) { this.title = title; }
-    public void setSlug(String slug) { this.slug = slug; }
-    public void setTeaser(String teaser) { this.teaser = teaser; }
-    public void setPublishedAt(ZonedDateTime publishedAt) { this.publishedAt = publishedAt; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public String getTeaser() {
+        return teaser;
+    }
+
+    public void setTeaser(String teaser) {
+        this.teaser = teaser;
+    }
+
+    public ZonedDateTime getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(ZonedDateTime publishedAt) {
+        this.publishedAt = publishedAt;
+    }
 }
