@@ -5,6 +5,7 @@ import com.example.phoebe.dto.response.PublicHomepageResponseDto;
 import com.example.phoebe.dto.response.PublicNewsDto;
 import com.example.phoebe.entity.HomePageBlock;
 import com.example.phoebe.entity.News;
+import com.example.phoebe.entity.Term;
 import com.example.phoebe.model.HomePageBlockType;
 import com.example.phoebe.model.HomepageMode;
 import com.example.phoebe.repository.HomePageBlockRepository;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +39,7 @@ public class PublicHomepageService {
         response.setMode(mode);
 
         if (mode == HomepageMode.SIMPLE) {
-            List<News> latestNews = newsRepository.findAll(PageRequest.of(0, 10, Sort.by("publishedAt").descending())).getContent();
+            List<News> latestNews = newsRepository.findAll(PageRequest.of(0, 10, Sort.by("publicationDate").descending())).getContent();
             response.setNews(latestNews.stream().map(this::toPublicNewsDto).collect(Collectors.toList()));
         } else {
             List<HomePageBlock> blocks = blockRepository.findAll(Sort.by("weight"));
@@ -57,10 +59,8 @@ public class PublicHomepageService {
         dto.setTitleFontSize(block.getTitleFontSize());
 
         if (block.getBlockType() == HomePageBlockType.NEWS_BLOCK && block.getNewsCount() != null) {
-            List<News> news = newsRepository.findNewsByTaxonomyTerms(
-                    block.getTaxonomyTerms().stream().map(term -> term.getId()).collect(Collectors.toSet()),
-                    PageRequest.of(0, block.getNewsCount())
-            );
+            Set<Long> termIds = block.getTaxonomyTerms().stream().map(Term::getId).collect(Collectors.toSet());
+            List<News> news = newsRepository.findNewsByTaxonomyTerms(termIds, PageRequest.of(0, block.getNewsCount()));
             dto.setNews(news.stream().map(this::toPublicNewsDto).collect(Collectors.toList()));
         }
 
@@ -71,9 +71,9 @@ public class PublicHomepageService {
         return new PublicNewsDto(
                 news.getId(),
                 news.getTitle(),
-                news.getSlug(),
+                null, // Slug is not available in News entity
                 news.getTeaser(),
-                news.getPublishedAt()
+                news.getPublicationDate().atZone(ZoneId.systemDefault())
         );
     }
 }
