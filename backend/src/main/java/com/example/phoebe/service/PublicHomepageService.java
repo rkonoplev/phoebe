@@ -37,7 +37,7 @@ public class PublicHomepageService {
         response.setMode(mode);
 
         if (mode == HomepageMode.SIMPLE) {
-            List<News> latestNews = newsRepository.findAll(PageRequest.of(0, 10, Sort.by("publicationDate").descending())).getContent();
+            List<News> latestNews = newsRepository.findAll(PageRequest.of(0, 10, Sort.by("publishedAt").descending())).getContent();
             response.setNews(latestNews.stream().map(this::toPublicNewsDto).collect(Collectors.toList()));
         } else {
             List<HomePageBlock> blocks = blockRepository.findAll(Sort.by("weight"));
@@ -57,8 +57,10 @@ public class PublicHomepageService {
         dto.setTitleFontSize(block.getTitleFontSize());
 
         if (block.getBlockType() == HomePageBlockType.NEWS_BLOCK && block.getNewsCount() != null) {
-            // For now, just get latest news - proper term filtering can be implemented later
-            List<News> news = newsRepository.findAll(PageRequest.of(0, block.getNewsCount(), Sort.by("publicationDate").descending())).getContent();
+            List<News> news = newsRepository.findNewsByTaxonomyTerms(
+                    block.getTaxonomyTerms().stream().map(term -> term.getId()).collect(Collectors.toSet()),
+                    PageRequest.of(0, block.getNewsCount())
+            );
             dto.setNews(news.stream().map(this::toPublicNewsDto).collect(Collectors.toList()));
         }
 
@@ -69,9 +71,9 @@ public class PublicHomepageService {
         return new PublicNewsDto(
                 news.getId(),
                 news.getTitle(),
-                null, // slug - not implemented yet
+                news.getSlug(),
                 news.getTeaser(),
-                news.getPublicationDate().atZone(java.time.ZoneId.systemDefault())
+                news.getPublishedAt()
         );
     }
 }

@@ -21,7 +21,7 @@ public interface HomePageBlockMapper {
     HomePageBlock toEntity(HomePageBlockDto dto);
 
     @Named("termsToIds")
-    default Set<Integer> termsToIds(Set<Term> terms) {
+    default Set<Long> termsToIds(Set<Term> terms) { // Changed from Integer to Long
         if (terms == null) {
             return Collections.emptySet();
         }

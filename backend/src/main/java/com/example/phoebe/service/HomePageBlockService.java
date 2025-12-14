@@ -73,7 +73,7 @@ public class HomePageBlockService {
         blockRepository.deleteById(id);
     }
 
-    private void updateTaxonomyTerms(HomePageBlock block, Set<Integer> termIds) {
+    private void updateTaxonomyTerms(HomePageBlock block, Set<Long> termIds) { // Changed from Integer to Long
         if (termIds == null || termIds.isEmpty()) {
             block.setTaxonomyTerms(new HashSet<>());
         } else {

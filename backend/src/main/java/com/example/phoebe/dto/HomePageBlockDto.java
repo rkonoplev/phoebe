@@ -7,7 +7,7 @@ public class HomePageBlockDto {
     private Integer id;
     private Integer weight;
     private HomePageBlockType blockType;
-    private Set<Integer> taxonomyTermIds;
+    private Set<Long> taxonomyTermIds; // Changed from Integer to Long
     private Integer newsCount;
     private Boolean showTeaser;
     private String titleFontSize;
@@ -40,11 +40,11 @@ public class HomePageBlockDto {
         this.blockType = blockType;
     }
 
-    public Set<Integer> getTaxonomyTermIds() {
+    public Set<Long> getTaxonomyTermIds() { // Changed from Integer to Long
         return taxonomyTermIds;
     }
 
-    public void setTaxonomyTermIds(Set<Integer> taxonomyTermIds) {
+    public void setTaxonomyTermIds(Set<Long> taxonomyTermIds) { // Changed from Integer to Long
         this.taxonomyTermIds = taxonomyTermIds;
     }
 
