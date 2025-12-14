@@ -4,6 +4,7 @@ import com.example.phoebe.model.HomePageBlockType;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import com.example.phoebe.entity.Term;
 
 @Entity
 @Table(name = "home_page_block")

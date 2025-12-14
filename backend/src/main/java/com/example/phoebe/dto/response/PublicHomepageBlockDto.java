@@ -15,6 +15,16 @@ public class PublicHomepageBlockDto {
     public PublicHomepageBlockDto() {
     }
 
+    public PublicHomepageBlockDto(Integer id, Integer weight, HomePageBlockType blockType, String content, List<PublicNewsDto> news, Boolean showTeaser, String titleFontSize) {
+        this.id = id;
+        this.weight = weight;
+        this.blockType = blockType;
+        this.content = content;
+        this.news = news;
+        this.showTeaser = showTeaser;
+        this.titleFontSize = titleFontSize;
+    }
+
     public Integer getId() {
         return id;
     }
