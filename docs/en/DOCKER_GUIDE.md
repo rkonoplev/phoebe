@@ -167,76 +167,65 @@ docker-compose down --volumes
 This command will stop and remove all services, networks, and named volumes
 defined in your project's `docker-compose.*.yml` files.
 
-### 2. Removing All Running Containers
+### 2. Full Cleanup of All Docker Resources (Step-by-Step)
 
-Stop all running containers (if any):
-```bash
-docker stop $(docker ps -aq)
-```
-*   `docker ps -aq` lists the IDs of all containers (running and stopped).
-*   `docker stop` stops them.
+This approach provides more granular control over the resources being removed.
 
-### 3. Removing All Stopped Containers
-
-Remove all stopped containers:
-```bash
-docker rm $(docker ps -aq)
-```
-*   This command will remove all containers that were stopped in the previous step.
-
-### 4. Removing All Unused Docker Resources (Images, Networks, Build Cache)
-
-To remove all stopped containers, unused images (dangling images),
-unused networks, and the build cache:
-
-```bash
-docker system prune
-```
-Docker will ask for confirmation. Type `y` and press Enter.
-
-### 5. Removing All Unused Docker Volumes
-
-`docker system prune` does not remove volumes by default to prevent accidental data loss.
-To remove all volumes that are not used by any container:
-
-```bash
-docker volume prune
-```
-Docker will ask for confirmation. Type `y` and press Enter.
-
-### 6. Removing All Docker Images
-
-If you want to remove **all** images, even those that might be used in other projects:
-```bash
-docker rmi -f $(docker images -aq)
-```
-*   `docker images -aq` lists the IDs of all images.
-*   `docker rmi -f` forcibly removes them.
-*   **Be careful with this command**, as it will delete all downloaded images,
-    and Docker will have to re-download them on the next run.
-
-### Recommended Order of Actions for Full Cleanup
-
-1.  Navigate to the `phoebe` project root folder:
+*   **Stop all running containers:**
     ```bash
-    cd /Users/rk/dev/java/phoebe
+    docker stop $(docker ps -aq)
     ```
-2.  Stop and remove containers and volumes associated with your project:
+    (`docker ps -aq` lists the IDs of all containers, `docker stop` stops them.)
+
+*   **Remove all containers (running and stopped):**
     ```bash
-    docker-compose down --volumes
+    docker rm $(docker ps -aq)
     ```
-3.  Perform a general Docker cleanup (removes unused containers, images, networks, and build cache):
+    (This command will remove all containers, regardless of their state.)
+
+*   **Remove all unused Docker resources (images, networks, build cache):**
     ```bash
     docker system prune
     ```
-    When asked `Are you sure you want to continue? [y/N]`, type `y` and press Enter.
-4.  Perform unused volumes cleanup:
+    (Docker will ask for confirmation. Type `y` and press Enter.)
+
+*   **Remove all unused Docker volumes:**
     ```bash
     docker volume prune
     ```
-    When asked `Are you sure you want to continue? [y/N]`, type `y` and press Enter.
+    (Docker will ask for confirmation. Type `y` and press Enter.)
 
-After these steps, your Docker will be maximally cleaned.
+*   **Remove all Docker images (use with caution!):**
+    ```bash
+    docker rmi -f $(docker images -aq)
+    ```
+    (`docker images -aq` lists the IDs of all images, `docker rmi -f` forcibly removes them.
+    **Be careful**, as this will delete all downloaded images, and Docker will have to
+    re-download them on the next run.)
+
+### 3. Alternative Quick Full Cleanup (Deletes Everything!)
+
+This method is the most aggressive and fastest way to clean Docker. It removes
+**all** unused containers, images, networks, and volumes without asking for confirmation.
+Use it if you are absolutely sure you want to delete all unused resources
+and start with a "clean slate."
+
+**Order of execution:**
+1.  **Stop all running containers:**
+    ```bash
+    docker stop $(docker ps -aq)
+    ```
+2.  **Remove all containers (running and stopped):**
+    ```bash
+    docker rm $(docker ps -aq)
+    ```
+3.  **Remove all unused volumes:**
+    ```bash
+    docker volume prune -f
+    ```
+
+**Warning:** This command will permanently delete all data stored in Docker volumes
+and all stopped/running containers. Use it with extreme caution.
 
 ---
 
@@ -264,3 +253,8 @@ changes are applied.
 
 **Note:** You do not need to do this every time. This is a troubleshooting step for when `make run` does not
 seem to be picking up your changes. After this one-time command, you can go back to using the regular `make run`.
+
+---
+
+> If you are new to Docker and want to understand the basic commands,
+> check out [Docker for Beginners](./DOCKER_BASICS.md).
