@@ -35,7 +35,7 @@ The schema supports both **clean installations** and **migrated data from Drupal
 - **Publication Workflow**: Draft/published states with audit trails
 - **Migration Support**: Handles legacy Drupal 6 data transformation
 
-### Current Database Schema `phoebe_db` (After All Migrations V1-V10)
+### Current Database Schema `phoebe_db` (After All Migrations V1-V14)
 
 ```sql
 -- ======================================
@@ -391,6 +391,9 @@ When using Flyway, it is recommended to set `ddl-auto: validate` or `none`, as F
 | V9 | Add indexes | Performance indexes and unique constraints | `mysql/postgresql` |
 | V10 | Site URL field | Added site_url field to channel_settings table | `common` |
 | V11 | Static pages | Added static/technical pages (About, Contact, Privacy, etc.) with page_type vocabulary | `common` |
+| V12 | Homepage blocks | Added `homepage_block` and `homepage_block_item` tables for dynamic content blocks | `common` |
+| V13 | Add `page_type` to static pages | Added `page_type` column to `static_page` table | `common` |
+| V14 | Make timestamps not nullable | Made `created_at` and `updated_at` columns non-nullable across several tables. Renumbered from V12 due to version conflict. | `common` |
 
 ### Migration V3 Default Data
 
