@@ -14,13 +14,13 @@
     "@mui/icons-material": "^5.15.18",
     "@mui/material": "^5.15.18",
     "axios": "^1.7.2",
-    "next": "^16.0.7",
+    "next": "^16.0.9",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
     "eslint": "^8",
-    "eslint-config-next": "14.2.32"
+    "eslint-config-next": "14.2.3"
   },
   "overrides": {
     "glob": ">=10.5.0"
