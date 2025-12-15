@@ -66,13 +66,13 @@ dependencies {
     // Core test dependencies available for all tests
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
-    testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // Dependencies for integration tests
     integrationTestImplementation sourceSets.test.compileClasspath
     integrationTestRuntimeOnly sourceSets.test.runtimeClasspath
+    integrationTestImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
+    integrationTestImplementation "org.testcontainers:mysql:${testcontainersVersion}"
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
     implementation 'com.bucket4j:bucket4j-core:8.7.0'
