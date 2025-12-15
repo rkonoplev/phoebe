@@ -1,7 +1,14 @@
 package com.example.phoebe.entity;
 
 import com.example.phoebe.model.HomepageMode;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "homepage_settings")
@@ -16,17 +23,26 @@ public class HomepageSettings {
     private HomepageMode mode;
 
     // Constructors
-    public HomepageSettings() {}
+    public HomepageSettings() {
+    }
 
     public HomepageSettings(HomepageMode mode) {
         this.mode = mode;
     }
 
     // Getters
-    public Integer getId() { return id; }
-    public HomepageMode getMode() { return mode; }
+    public Integer getId() {
+        return id;
+    }
+    public HomepageMode getMode() {
+        return mode;
+    }
 
     // Setters
-    public void setId(Integer id) { this.id = id; }
-    public void setMode(HomepageMode mode) { this.mode = mode; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public void setMode(HomepageMode mode) {
+        this.mode = mode;
+    }
 }

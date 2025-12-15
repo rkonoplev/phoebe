@@ -58,6 +58,8 @@ docker compose up --build
       - `V4-V7`: Apply schema changes (author unification, permissions system, channel settings).
       - `V8-V9`: Setup permissions and add performance indexes.
       - `V10`: Add `site_url` field to channel settings for storing the base site URL.
+      - `V12`: Adds tables for homepage blocks functionality.
+      - `V13`: Makes `created_at` and `updated_at` columns in the `content` table non-nullable.
 
 ### Step 3: Verify the Result
 
