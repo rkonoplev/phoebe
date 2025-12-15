@@ -16,7 +16,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
-import com.example.phoebe.entity.Term;
 
 @Entity
 @Table(name = "home_page_block")
@@ -63,6 +62,8 @@ public class HomePageBlock {
     public void setId(Integer id) {
         this.id = id;
     }
+
+
 
     public Integer getWeight() {
         return weight;
