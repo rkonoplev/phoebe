@@ -23,8 +23,8 @@ CREATE TABLE home_page_block (
 -- Create the join table for blocks and taxonomy terms
 CREATE TABLE home_page_block_taxonomy_term (
     home_page_block_id INT NOT NULL,
-    taxonomy_term_id INT NOT NULL,
+    taxonomy_term_id BIGINT NOT NULL,
     PRIMARY KEY (home_page_block_id, taxonomy_term_id),
     FOREIGN KEY (home_page_block_id) REFERENCES home_page_block(id) ON DELETE CASCADE,
-    FOREIGN KEY (taxonomy_term_id) REFERENCES taxonomy_term(id) ON DELETE CASCADE
+    FOREIGN KEY (taxonomy_term_id) REFERENCES terms(id) ON DELETE CASCADE
 );
