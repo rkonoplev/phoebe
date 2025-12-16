@@ -84,6 +84,11 @@ dependencies {
     testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
 }
 
+flyway {
+    validateOnMigrate = true
+    baselineOnMigrate = true
+}
+
 checkstyle {
     toolVersion = '10.12.1'
     configFile = file("${project.projectDir}/config/checkstyle/checkstyle.xml")
@@ -142,10 +147,8 @@ tasks.register('integrationTest', Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
     useJUnitPlatform()
     testLogging {
-        events "passed", "skipped", "failed"
-        showExceptions = true
-        showCauses = true
-        showStackTraces = true
+        events "FAILED"
+        showStandardStreams = true
     }
     
     // Use Testcontainers everywhere - same profile for all environments
