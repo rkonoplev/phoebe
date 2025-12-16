@@ -1,18 +1,7 @@
--- V12__make_timestamps_not_nullable.sql
+-- V14: Make Timestamps Not Nullable in Various Tables
 -- This migration was originally V12 but was renumbered to V14 due to a version conflict.
 -- This script makes created_at and updated_at columns NOT NULL across several tables.
 -- It includes UPDATE statements to handle existing NULL values before applying the constraint.
-
--- Update existing NULL values in channel_settings
-UPDATE `channel_settings`
-SET
-    `created_at` = COALESCE(`created_at`, CURRENT_TIMESTAMP),
-    `updated_at` = COALESCE(`updated_at`, CURRENT_TIMESTAMP)
-WHERE `created_at` IS NULL OR `updated_at` IS NULL;
-
-ALTER TABLE `channel_settings`
-    MODIFY COLUMN `created_at` DATETIME(6) NOT NULL,
-    MODIFY COLUMN `updated_at` DATETIME(6) NOT NULL;
 
 -- Update existing NULL values in homepage_block
 UPDATE `homepage_block`
