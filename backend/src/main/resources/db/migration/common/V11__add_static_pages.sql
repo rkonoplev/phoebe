@@ -103,61 +103,53 @@ SELECT c.id, t.id
 FROM content c
 CROSS JOIN terms t
 WHERE c.title = 'About Us' AND t.name = 'about' AND t.vocabulary = 'page_type'
-AS new_about_link
-ON DUPLICATE KEY UPDATE term_id = new_about_link.term_id;
+ON DUPLICATE KEY UPDATE term_id = VALUES(term_id);
 
 INSERT INTO content_terms (content_id, term_id)
 SELECT c.id, t.id
 FROM content c
 CROSS JOIN terms t
 WHERE c.title = 'Contact Us' AND t.name = 'contact' AND t.vocabulary = 'page_type'
-AS new_contact_link
-ON DUPLICATE KEY UPDATE term_id = new_contact_link.term_id;
+ON DUPLICATE KEY UPDATE term_id = VALUES(term_id);
 
 INSERT INTO content_terms (content_id, term_id)
 SELECT c.id, t.id
 FROM content c
 CROSS JOIN terms t
 WHERE c.title = 'Privacy Policy' AND t.name = 'privacy' AND t.vocabulary = 'page_type'
-AS new_privacy_link
-ON DUPLICATE KEY UPDATE term_id = new_privacy_link.term_id;
+ON DUPLICATE KEY UPDATE term_id = VALUES(term_id);
 
 INSERT INTO content_terms (content_id, term_id)
 SELECT c.id, t.id
 FROM content c
 CROSS JOIN terms t
 WHERE c.title = 'Terms of Service' AND t.name = 'terms_of_service' AND t.vocabulary = 'page_type'
-AS new_terms_link
-ON DUPLICATE KEY UPDATE term_id = new_terms_link.term_id;
+ON DUPLICATE KEY UPDATE term_id = VALUES(term_id);
 
 INSERT INTO content_terms (content_id, term_id)
 SELECT c.id, t.id
 FROM content c
 CROSS JOIN terms t
 WHERE c.title = 'Advertise With Us' AND t.name = 'advertising' AND t.vocabulary = 'page_type'
-AS new_ad_link
-ON DUPLICATE KEY UPDATE term_id = new_ad_link.term_id;
+ON DUPLICATE KEY UPDATE term_id = VALUES(term_id);
 
 INSERT INTO content_terms (content_id, term_id)
 SELECT c.id, t.id
 FROM content c
 CROSS JOIN terms t
 WHERE c.title = 'Editorial Statute' AND t.name = 'editorial_statute' AND t.vocabulary = 'page_type'
-AS new_editorial_link
-ON DUPLICATE KEY UPDATE term_id = new_editorial_link.term_id;
+ON DUPLICATE KEY UPDATE term_id = VALUES(term_id);
 
 INSERT INTO content_terms (content_id, term_id)
 SELECT c.id, t.id
 FROM content c
 CROSS JOIN terms t
 WHERE c.title = 'Community Rules' AND t.name = 'community_rules' AND t.vocabulary = 'page_type'
-AS new_community_link
-ON DUPLICATE KEY UPDATE term_id = new_community_link.term_id;
+ON DUPLICATE KEY UPDATE term_id = VALUES(term_id);
 
 INSERT INTO content_terms (content_id, term_id)
 SELECT c.id, t.id
 FROM content c
 CROSS JOIN terms t
 WHERE c.title = 'Technical Information' AND t.name = 'technical_sheet' AND t.vocabulary = 'page_type'
-AS new_tech_link
-ON DUPLICATE KEY UPDATE term_id = new_tech_link.term_id;
+ON DUPLICATE KEY UPDATE term_id = VALUES(term_id);
