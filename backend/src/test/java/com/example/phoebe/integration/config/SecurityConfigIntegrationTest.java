@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
@@ -48,6 +50,9 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private NewsRepository newsRepository;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
 
     private String adminAuthHeader;
     private String editorAuthHeader;
