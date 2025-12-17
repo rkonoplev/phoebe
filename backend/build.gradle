@@ -1,30 +1,58 @@
+/*
+ * Build configuration for a Spring Boot 3 application
+ * ----------------------------------------------------
+ * Key goals:
+ *  - Java 21 toolchain
+ *  - Clear separation between unit and integration tests
+ *  - Strict code quality gates (Checkstyle, PMD, JaCoCo)
+ *  - Testcontainers-based integration testing
+ *  - Flyway database migrations
+ *  - CI-friendly and interview-ready setup
+ */
+
 plugins {
     id 'java'
-    id 'checkstyle'
-    id 'jacoco'
-    id 'org.springframework.boot' version '3.2.0'
+    id 'org.springframework.boot' version '3.2.8'
     id 'io.spring.dependency-management' version '1.1.6'
+
+    // Code quality & coverage
+    id 'checkstyle'
     id 'pmd'
+    id 'jacoco'
+
+    // Database migrations
     id 'org.flywaydb.flyway' version '9.22.3'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
+/*
+ * Java toolchain configuration.
+ * Ensures consistent Java version across local and CI environments.
+ */
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
-// Add compiler arguments to get detailed deprecation warnings
+/*
+ * Enable additional compiler warnings to catch deprecated API usage early.
+ */
 tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs.add '-Xlint:deprecation'
+    options.compilerArgs.addAll([
+            '-Xlint:deprecation',
+            '-Xlint:unchecked'
+    ])
 }
 
+/*
+ * Centralized dependency versions.
+ * Only versions NOT managed by Spring Boot BOM should be placed here.
+ */
 ext {
     mysqlVersion = '8.3.0'
-    bucket4jVersion = '8.7.0'
     mapStructVersion = '1.5.5.Final'
     testcontainersVersion = '1.20.4'
 }
@@ -33,61 +61,94 @@ repositories {
     mavenCentral()
 }
 
-// Define a separate source set for integration tests
-sourceSets {
-    integrationTest {
-        java.srcDir file('src/test/java/com/example/phoebe/integration')
-        resources.srcDir file('src/test/resources')
-        compileClasspath += sourceSets.main.output + sourceSets.test.output
-        runtimeClasspath += sourceSets.main.output + sourceSets.test.output
-    }
-    test {
-        java {
-            srcDir file('src/test/java/com/example/phoebe/unit')
-            // Explicitly exclude integration tests from test sourceSet
-            exclude '**/integration/**'
-        }
+/*
+ * Import Testcontainers BOM to keep module versions consistent.
+ */
+dependencyManagement {
+    imports {
+        mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
     }
 }
 
+/*
+ * Source sets definition.
+ * - test          → unit tests
+ * - integrationTest → integration tests (Testcontainers, real DB, etc.)
+ */
+sourceSets {
+    test {
+        java.srcDir file('src/test/java/com/example/phoebe/unit')
+        resources.srcDir file('src/test/resources')
+    }
+
+    integrationTest {
+        java.srcDir file('src/test/java/com/example/phoebe/integration')
+        resources.srcDir file('src/integrationTest/resources')
+
+        compileClasspath += sourceSets.main.output + configurations.testImplementation
+        runtimeClasspath += sourceSets.main.output + configurations.testRuntimeOnly
+    }
+}
+
+/*
+ * Application dependencies.
+ */
 dependencies {
+
+    /* ===================== Core Spring Boot ===================== */
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+    /* ===================== Database & Migrations ===================== */
+
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
-    
     runtimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"
 
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-    // Core test dependencies available for all tests
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    // Dependencies for integration tests
-    integrationTestImplementation sourceSets.test.compileClasspath
-    integrationTestRuntimeOnly sourceSets.test.runtimeClasspath
-    integrationTestImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
-    integrationTestImplementation "org.testcontainers:mysql:${testcontainersVersion}"
+    /* ===================== API & Performance ===================== */
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-    implementation 'com.bucket4j:bucket4j-core:8.7.0'
+    implementation 'com.bucket4j:bucket4j-core'
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+    /* ===================== Mapping ===================== */
 
     implementation "org.mapstruct:mapstruct:${mapStructVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
     testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
+
+    /* ===================== Development ===================== */
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    /* ===================== Unit Tests ===================== */
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    /* ===================== Integration Tests ===================== */
+
+    integrationTestImplementation 'org.testcontainers:junit-jupiter'
+    integrationTestImplementation 'org.testcontainers:mysql'
 }
 
+/*
+ * Flyway configuration.
+ * validateOnMigrate ensures schema consistency.
+ * baselineOnMigrate should only be enabled for legacy databases.
+ */
 flyway {
     validateOnMigrate = true
-    baselineOnMigrate = true
+    baselineOnMigrate = false
 }
+
+/* ===================== Checkstyle ===================== */
 
 checkstyle {
     toolVersion = '10.12.1'
@@ -103,12 +164,10 @@ tasks.withType(Checkstyle).configureEach {
     }
 }
 
-jacoco {
-    toolVersion = "0.8.11"
-}
+/* ===================== PMD ===================== */
 
 pmd {
-    toolVersion = "6.55.0"
+    toolVersion = '6.55.0'
     ignoreFailures = false
     consoleOutput = true
     ruleSets = []
@@ -122,55 +181,61 @@ tasks.withType(Pmd).configureEach {
     }
 }
 
-// Configure the standard 'test' task to run only unit tests
+/* ===================== Unit Test Task ===================== */
+
 test {
     useJUnitPlatform()
+
     testLogging {
         events "passed", "skipped", "failed"
         showExceptions = true
         showCauses = true
         showStackTraces = true
     }
-    
-    // Only run unit tests, exclude integration tests
-    exclude '**/integration/**'
-    
-    // Fix Gradle 9.0 deprecation warning
+
+    // Required for Gradle 9+ compatibility
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
 
-// Create a new task for integration tests
+/* ===================== Integration Test Task ===================== */
+
 tasks.register('integrationTest', Test) {
     group = 'verification'
-    description = 'Runs integration tests.'
+    description = 'Runs integration tests using Testcontainers.'
+
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
+
     useJUnitPlatform()
+
     testLogging {
         events "FAILED"
         showStandardStreams = true
     }
-    
-    // Use Testcontainers everywhere - same profile for all environments
-    systemProperty 'integration.test.profile', 'integration-test'
+
     systemProperty 'spring.profiles.active', 'integration-test'
-    
-    // Fix Gradle 9.0 deprecation warning
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
-    
-    // Enable JaCoCo for integration tests
+
     jacoco {
         destinationFile = layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
     }
 }
 
-// Configure JaCoCo report after all test tasks are defined
+/* ===================== JaCoCo ===================== */
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
 tasks.jacocoTestReport {
     dependsOn test, integrationTest
-    executionData.setFrom(fileTree(layout.buildDirectory).include("jacoco/*.exec"))
+
+    executionData.setFrom(
+            fileTree(layout.buildDirectory).include("jacoco/*.exec")
+    )
+
     reports {
         xml.required.set(true)
-        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
         html.required.set(true)
     }
 }
@@ -181,16 +246,27 @@ tasks.jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.0
+                minimum = 0.60
             }
         }
     }
 }
 
-// Ensure integration tests run during the 'check' phase
-tasks.check.dependsOn integrationTest
-integrationTest.mustRunAfter test
-test.finalizedBy jacocoTestReport
+/* ===================== Build Lifecycle ===================== */
 
-tasks.check.dependsOn tasks.jacocoTestCoverageVerification
-tasks.check.dependsOn 'checkstyleMain', 'pmdMain', 'checkstyleTest', 'pmdTest'
+tasks.check {
+    dependsOn(
+            test,
+            integrationTest,
+            jacocoTestReport,
+            jacocoTestCoverageVerification,
+            'checkstyleMain',
+            'checkstyleTest',
+            'pmdMain',
+            'pmdTest'
+    )
+}
+
+tasks.integrationTest {
+    mustRunAfter test
+}
