@@ -1,11 +1,8 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: false
-    database-platform: org.hibernate.dialect.MySQLDialect
-  
+
   flyway:
-    enabled: true
-    locations: classpath:db/migration/common,classpath:db/migration/mysql
-    baseline-on-migrate: true
+    enabled: false

@@ -1,11 +1,9 @@
-# Spring Boot configuration for integration tests that use Testcontainers and Flyway.
-
 spring:
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: false
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
 
   sql:
     init:
@@ -13,5 +11,7 @@ spring:
 
   flyway:
     enabled: true
-    baseline-on-migrate: true
-    locations: classpath:db/migration/common,classpath:db/migration/mysql
+    baseline-on-migrate: false
+    locations:
+      - classpath:db/migration/common
+      - classpath:db/migration/mysql
