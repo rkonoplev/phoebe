@@ -3,28 +3,6 @@
 -- This script makes created_at and updated_at columns NOT NULL across several tables.
 -- It includes UPDATE statements to handle existing NULL values before applying the constraint.
 
--- Update existing NULL values in home_page_block
-UPDATE `home_page_block`
-SET
-    `created_at` = COALESCE(`created_at`, CURRENT_TIMESTAMP),
-    `updated_at` = COALESCE(`updated_at`, CURRENT_TIMESTAMP)
-WHERE `created_at` IS NULL OR `updated_at` IS NULL;
-
-ALTER TABLE `home_page_block`
-    MODIFY COLUMN `created_at` DATETIME(6) NOT NULL,
-    MODIFY COLUMN `updated_at` DATETIME(6) NOT NULL;
-
--- Update existing NULL values in home_page_block_item
-UPDATE `home_page_block_item`
-SET
-    `created_at` = COALESCE(`created_at`, CURRENT_TIMESTAMP),
-    `updated_at` = COALESCE(`updated_at`, CURRENT_TIMESTAMP)
-WHERE `created_at` IS NULL OR `updated_at` IS NULL;
-
-ALTER TABLE `home_page_block_item`
-    MODIFY COLUMN `created_at` DATETIME(6) NOT NULL,
-    MODIFY COLUMN `updated_at` DATETIME(6) NOT NULL;
-
 -- Update existing NULL values in permission
 UPDATE `permission`
 SET
