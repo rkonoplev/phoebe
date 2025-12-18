@@ -56,6 +56,7 @@ ext {
     mapStructVersion = '1.5.5.Final'
     testcontainersVersion = '2.0.2'
     bucket4jVersion = '8.15.0'
+    caffeineVersion = '3.1.8'
 }
 
 repositories {
@@ -112,7 +113,7 @@ dependencies {
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
     implementation "com.bucket4j:bucket4j_jdk17-core:${bucket4jVersion}"
-    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+    implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
 
     /* ===================== Mapping ===================== */
 
@@ -141,9 +142,13 @@ dependencies {
     integrationTestImplementation 'org.springframework.boot:spring-boot-starter-validation'
     integrationTestImplementation 'org.springframework.boot:spring-boot-starter-security'
     integrationTestImplementation 'org.springframework.boot:spring-boot-starter-web'
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-cache'
+
 
     integrationTestRuntimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"
     integrationTestImplementation "com.bucket4j:bucket4j_jdk17-core:${bucket4jVersion}"
+    integrationTestImplementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
+
 
     // Testcontainers
     integrationTestImplementation 'org.testcontainers:junit-jupiter'
@@ -283,6 +288,6 @@ tasks.integrationTest {
     mustRunAfter test
 }
 
-tasks.processTestResources {
+tasks.withType(Copy).all {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
