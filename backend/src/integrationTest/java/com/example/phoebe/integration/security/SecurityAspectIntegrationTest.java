@@ -1,6 +1,5 @@
 package com.example.phoebe.integration.security;
 
-import com.example.phoebe.entity.Role;
 import com.example.phoebe.integration.BaseIntegrationTest;
 import com.example.phoebe.repository.RoleRepository;
 import com.example.phoebe.security.RoleSecurityService;
