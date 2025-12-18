@@ -61,10 +61,17 @@ ext {
     checkstyleToolVersion = '10.12.1'
     pmdToolVersion = '6.55.0'
     jacocoToolVersion = '0.8.11'
+    commonsLang3Version = '3.19.0'
 }
 
 repositories {
     mavenCentral()
+}
+
+configurations.all {
+    resolutionStrategy {
+        force "org.apache.commons:commons-lang3:${commonsLang3Version}"
+    }
 }
 
 /*
@@ -118,6 +125,7 @@ dependencies {
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocOpenapiVersion}"
     implementation "com.bucket4j:bucket4j_jdk17-core:${bucket4jVersion}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
+    implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
 
     /* ===================== Mapping ===================== */
 
@@ -257,7 +265,7 @@ tasks.jacocoTestReport {
 
     reports {
         xml.required.set(true)
-        html.required.set(true)
+        html.required = true
     }
 }
 
