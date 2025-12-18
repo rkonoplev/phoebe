@@ -140,7 +140,7 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
                         .header("Origin", "http://phoebe-nextjs:3000")
                         .header("Access-Control-Request-Method", "GET"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Origin", "http://phoebe-nextjs:3000"));
+                .andExpect(header().string("Access-control-Allow-Origin", "http://phoebe-nextjs:3000"));
     }
 
     @Test

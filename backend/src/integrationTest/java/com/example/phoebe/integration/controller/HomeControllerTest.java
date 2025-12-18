@@ -1,9 +1,9 @@
 package com.example.phoebe.integration.controller;
 
-import com.example.phoebe.config.RateLimitConfig;
-import com.example.phoebe.controller.HomeController;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
+import com.example.phoebe.config.RateLimitConfig;
+import com.example.phoebe.controller.HomeController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,11 +1,11 @@
 package com.example.phoebe.controller;
 
+import io.github.bucket4j.Bucket;
 import com.example.phoebe.config.RateLimitConfig;
 import com.example.phoebe.dto.response.UserDto;
 import com.example.phoebe.entity.User;
 import com.example.phoebe.mapper.UserMapper;
 import com.example.phoebe.repository.UserRepository;
-import io.github.bucket4j.Bucket;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;

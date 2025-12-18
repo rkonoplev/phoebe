@@ -54,7 +54,8 @@ tasks.withType(JavaCompile).configureEach {
 ext {
     mysqlVersion = '8.3.0'
     mapStructVersion = '1.5.5.Final'
-    testcontainersVersion = '1.20.4'
+    testcontainersVersion = '2.0.2'
+    bucket4jVersion = '8.15.0'
 }
 
 repositories {
@@ -77,16 +78,13 @@ dependencyManagement {
  */
 sourceSets {
     test {
-        java.srcDir file('src/test/java/com/example/phoebe/unit')
+        java.srcDir file('src/test/java')
         resources.srcDir file('src/test/resources')
     }
 
     integrationTest {
-        java.srcDir file('src/test/java/com/example/phoebe/integration')
+        java.srcDir file('src/integrationTest/java')
         resources.srcDir file('src/integrationTest/resources')
-
-        compileClasspath += sourceSets.main.output + configurations.testImplementation
-        runtimeClasspath += sourceSets.main.output + configurations.testRuntimeOnly
     }
 }
 
@@ -113,7 +111,7 @@ dependencies {
     /* ===================== API & Performance ===================== */
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-    implementation 'com.bucket4j:bucket4j-core'
+    implementation "com.bucket4j:bucket4j_jdk17-core:${bucket4jVersion}"
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
     /* ===================== Mapping ===================== */
@@ -134,6 +132,20 @@ dependencies {
 
     /* ===================== Integration Tests ===================== */
 
+    integrationTestImplementation sourceSets.main.output
+
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+    integrationTestImplementation 'org.springframework.security:spring-security-test'
+
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-validation'
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-security'
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-web'
+
+    integrationTestRuntimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"
+    integrationTestImplementation "com.bucket4j:bucket4j_jdk17-core:${bucket4jVersion}"
+
+    // Testcontainers
     integrationTestImplementation 'org.testcontainers:junit-jupiter'
     integrationTestImplementation 'org.testcontainers:mysql'
 }
@@ -269,4 +281,8 @@ tasks.check {
 
 tasks.integrationTest {
     mustRunAfter test
+}
+
+tasks.processTestResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
