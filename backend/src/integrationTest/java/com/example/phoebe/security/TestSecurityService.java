@@ -2,6 +2,10 @@ package com.example.phoebe.security;
 
 import org.springframework.stereotype.Service;
 
+/**
+ * Test-only service used to verify custom security annotations and aspects.
+ * Contains no business logic.
+ */
 @Service
 public class TestSecurityService {
 
