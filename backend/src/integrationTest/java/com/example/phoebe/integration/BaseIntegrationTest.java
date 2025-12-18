@@ -20,7 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  *  Works locally and in CI
  *  No static initialization hacks
  */
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration-test")
 @Import(IntegrationTestConfig.class)

@@ -21,7 +21,7 @@ plugins {
     id 'jacoco'
 
     // Database migrations
-    id 'org.flywaydb.flyway' version '9.22.3'
+    id 'org.flywaydb.flyway' version '11.19.1'
 }
 
 group = 'com.example'
@@ -53,10 +53,14 @@ tasks.withType(JavaCompile).configureEach {
  */
 ext {
     mysqlVersion = '8.3.0'
-    mapStructVersion = '1.5.5.Final'
+    mapStructVersion = '1.6.3'
     testcontainersVersion = '2.0.2'
     bucket4jVersion = '8.15.0'
     caffeineVersion = '3.1.8'
+    springdocOpenapiVersion = '2.8.14'
+    checkstyleToolVersion = '10.12.1'
+    pmdToolVersion = '6.55.0'
+    jacocoToolVersion = '0.8.11'
 }
 
 repositories {
@@ -111,7 +115,7 @@ dependencies {
 
     /* ===================== API & Performance ===================== */
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocOpenapiVersion}"
     implementation "com.bucket4j:bucket4j_jdk17-core:${bucket4jVersion}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
 
@@ -168,7 +172,7 @@ flyway {
 /* ===================== Checkstyle ===================== */
 
 checkstyle {
-    toolVersion = '10.12.1'
+    toolVersion = "${checkstyleToolVersion}"
     configFile = file("${project.projectDir}/config/checkstyle/checkstyle.xml")
     maxWarnings = 0
     maxErrors = 0
@@ -184,7 +188,7 @@ tasks.withType(Checkstyle).configureEach {
 /* ===================== PMD ===================== */
 
 pmd {
-    toolVersion = '6.55.0'
+    toolVersion = "${pmdToolVersion}"
     ignoreFailures = false
     consoleOutput = true
     ruleSets = []
@@ -241,7 +245,7 @@ tasks.register('integrationTest', Test) {
 /* ===================== JaCoCo ===================== */
 
 jacoco {
-    toolVersion = "0.8.11"
+    toolVersion = "${jacocoToolVersion}"
 }
 
 tasks.jacocoTestReport {
