@@ -10,7 +10,7 @@ https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml)
 > **Phoebe CMS** is a flexible, open-source headless content management system engineered for
 > high-performance content delivery and modern development workflows.
 
-**Phoebe CMS** is a modern, API-first headless CMS built with **Java** and the **Spring Boot 3** framework.
+**Phoebe CMS** is a modern, API-first headless CMS built with **Java** and the **Spring Boot 3.2.8** framework.
 It provides a flexible REST API for content delivery, making it an ideal backend for **Angular, React, Vue**,
 or any other frontend technology.
 
@@ -56,6 +56,7 @@ phoebe/
 - JDK 21+ (optional, for hybrid development mode)
 - Docker & Docker Compose
 - Git
+- Gradle 8.x is used. Build is Gradle 9–ready.
 
 The fastest way to get the application running:
 ```bash
@@ -83,11 +84,11 @@ For more detailed instructions on setup, migration, and daily development, pleas
 - **Taxonomy System**: Categories and tags with flexible filtering.
 - **User Management**: Role-based access (ADMIN, EDITOR).
 - **Security**: Spring Security with configurable authentication.
-- **Performance**: High-performance caching with Caffeine.
-- **Rate Limiting**: IP-based protection with Bucket4j.
-- **Multi-Database Support**: Works with MySQL 8.0 and PostgreSQL 12+.
-- **Automated DB Migrations**: Database schema is managed and versioned with Flyway.
-- **Modern Testing**: Comprehensive test suite using **Testcontainers** for reliable, isolated testing.
+- **Performance**: High-performance caching with Caffeine (3.1.8).
+- **Rate Limiting**: IP-based protection with Bucket4j (8.15.0).
+- **Multi-Database Support**: Works with MySQL 8.3.0 and PostgreSQL 12+.
+- **Automated DB Migrations**: Database schema is managed and versioned with Flyway (11.19.1).
+- **Modern Testing**: Comprehensive test suite using **Testcontainers (2.0.2)** for reliable, isolated testing.
 - **CI/CD**: GitHub Actions pipeline with automated testing and code quality checks.
 - **Archived Migration History**: Includes legacy scripts from the original Drupal 6 migration for historical context.
 
@@ -117,15 +118,15 @@ For easier database management and inspection during local development, Adminer 
 
 ## 🛠️ Technology Stack
 
-- **Backend**: [Java 21](https://www.oracle.com/java/technologies/javase/21-relnote-issues.html), [Spring Boot 3.x](https://spring.io/projects/spring-boot), [Spring Security](https://spring.io/projects/spring-security)
-- **Database**: [MySQL 8.0](https://www.mysql.com/), [PostgreSQL 12+](https://www.postgresql.org/)
-- **DB Migration**: [Flyway](https://flywaydb.org/)
-- **Mapping**: [MapStruct](https://mapstruct.org/)
-- **Caching**: [Caffeine](https://github.com/ben-manes/caffeine)
-- **Rate Limiting**: [Bucket4j](https://github.com/bucket4j/bucket4j)
-- **Code Quality**: [Checkstyle](https://checkstyle.sourceforge.io/), [PMD](https://pmd.github.io/)
-- **Documentation**: [OpenAPI/Swagger](https://swagger.io/)
-- **Testing**: [JUnit 5](https://junit.org/junit5/), **[Testcontainers](https://testcontainers.com/)**, Mockito
+- **Backend**: [Java 21+](https://www.oracle.com/java/technologies/javase/21-relnote-issues.html), [Spring Boot 3.2.8](https://spring.io/projects/spring-boot), [Spring Security](https://spring.io/projects/spring-security)
+- **Database**: [MySQL 8.3.0](https://www.mysql.com/), [PostgreSQL 12+](https://www.postgresql.org/)
+- **DB Migration**: [Flyway 11.19.1](https://flywaydb.org/)
+- **Mapping**: [MapStruct 1.6.3](https://mapstruct.org/)
+- **Caching**: [Caffeine 3.1.8](https://github.com/ben-manes/caffeine)
+- **Rate Limiting**: [Bucket4j 8.15.0](https://github.com/bucket4j/bucket4j)
+- **Code Quality**: [Checkstyle 10.12.1](https://checkstyle.sourceforge.io/), [PMD 6.55.0](https://pmd.github.io/)
+- **Documentation**: [OpenAPI/Swagger 2.8.14](https://swagger.io/)
+- **Testing**: [JUnit 5.x](https://junit.org/junit5/), **[Testcontainers 2.0.2](https://testcontainers.com/)**, Mockito
 - **CI/CD**: [GitHub Actions](https://github.com/features/actions)
 - **Reference Implementations**: [Angular](https://angular.io/) & [Next.js](https://nextjs.org/)
 

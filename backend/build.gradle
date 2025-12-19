@@ -160,7 +160,7 @@ dependencies {
     integrationTestRuntimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"
     integrationTestImplementation "com.bucket4j:bucket4j_jdk17-core:${bucket4jVersion}"
     integrationTestImplementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
-
+    integrationTestImplementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
 
     // Testcontainers
     integrationTestImplementation 'org.testcontainers:junit-jupiter'

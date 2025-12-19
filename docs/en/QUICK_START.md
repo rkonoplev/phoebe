@@ -58,7 +58,7 @@ The project offers two launch modes to suit your tasks.
 When you run the project, two main services are started:
 
 - **Backend** (`phoebe-app`, port `8080`)
-  - This is a Spring Boot application that handles the API, logic, database, and authorization.
+  - This is a Spring Boot 3.2.8 application that handles the API, logic, database, and authorization.
   - It is accessible at: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 - **Frontend** (`phoebe-nextjs`, port `3000`)
@@ -203,7 +203,7 @@ make reset
 ```
 
 ### Port issues
-- MySQL: port 3306 (may conflict with local MySQL)
+- MySQL 8.3.0: port 3306 (may conflict with local MySQL)
 - Spring Boot: port 8080
 - Stop local services or change ports in `.env.dev`
 
