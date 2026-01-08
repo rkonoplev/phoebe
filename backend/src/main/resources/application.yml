@@ -8,6 +8,19 @@
 spring:
   application:
     name: phoebe
+  
+  # Basic JPA configuration
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    database-platform: org.hibernate.dialect.MySQLDialect
+  
+  # Flyway configuration
+  flyway:
+    enabled: true
+    locations: classpath:db/migration/common,classpath:db/migration/mysql
+    baseline-on-migrate: false
 
 server:
   port: 8080

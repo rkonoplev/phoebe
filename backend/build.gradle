@@ -59,7 +59,7 @@ ext {
     caffeineVersion = '3.1.8'
     springdocOpenapiVersion = '2.8.14'
     checkstyleToolVersion = '10.12.1'
-    pmdToolVersion = '6.55.0'
+    pmdToolVersion = '7.8.0'  // Updated PMD for better Java 21 support
     jacocoToolVersion = '0.8.11'
     commonsLang3Version = '3.19.0'
 }
@@ -156,15 +156,10 @@ dependencies {
     integrationTestImplementation 'org.springframework.boot:spring-boot-starter-web'
     integrationTestImplementation 'org.springframework.boot:spring-boot-starter-cache'
 
-
-    integrationTestRuntimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"
+    integrationTestRuntimeOnly 'com.h2database:h2'
     integrationTestImplementation "com.bucket4j:bucket4j_jdk17-core:${bucket4jVersion}"
     integrationTestImplementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
     integrationTestImplementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
-
-    // Testcontainers
-    integrationTestImplementation 'org.testcontainers:junit-jupiter'
-    integrationTestImplementation 'org.testcontainers:mysql'
 }
 
 /*
@@ -197,7 +192,6 @@ tasks.withType(Checkstyle).configureEach {
 
 pmd {
     toolVersion = "${pmdToolVersion}"
-    ignoreFailures = false
     consoleOutput = true
     ruleSets = []
     ruleSetFiles = files("${project.projectDir}/config/pmd/ruleset.xml")

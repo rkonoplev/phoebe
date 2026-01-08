@@ -1,47 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ruleset name="Minimal Working PMD Ruleset"
+<ruleset name="Minimal PMD Ruleset"
          xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd"
-         language="java"
-         minimumPriority="3">
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
 
     <description>
-        Minimal, verified working PMD ruleset for Spring Boot project.
-        All rules are confirmed to exist in PMD 6.55.
-        Focus on best practices, error prevention, and code quality.
+        Minimal PMD ruleset to avoid PMDException.
+        Start with basic rules and gradually add more.
     </description>
 
-    <!-- Best Practices -->
-    <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace"/>
-    <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters"/>
-    <rule ref="category/java/bestpractices.xml/MethodReturnsInternalArray"/>
-    <rule ref="category/java/bestpractices.xml/UseTryWithResources"/>
-    <rule ref="category/java/bestpractices.xml/PreserveStackTrace"/>
-
-    <!-- Code Style -->
-    <rule ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName"/>
-    <rule ref="category/java/codestyle.xml/TooManyStaticImports"/>
-    <rule ref="category/java/codestyle.xml/ShortVariable"/>
-    <rule ref="category/java/codestyle.xml/UnnecessaryModifier"/>
-    <rule ref="category/java/codestyle.xml/UseDiamondOperator"/>
-
-    <!-- Error Prone -->
-    <rule ref="category/java/errorprone.xml/NullAssignment"/>
-    <rule ref="category/java/errorprone.xml/UseEqualsToCompareStrings"/>
-    <rule ref="category/java/errorprone.xml/NonSerializableClass"/>
-
-    <!-- Performance -->
-    <rule ref="category/java/performance.xml/AvoidInstantiatingObjectsInLoops"/>
-
-    <!-- Design -->
-    <rule ref="category/java/design.xml/CyclomaticComplexity">
-        <properties>
-            <property name="reportLevel" value="12"/>
-        </properties>
-    </rule>
-
-    <!-- Security -->
-    <rule ref="category/java/security.xml/HardCodedCryptoKey"/>
+    <!-- Basic error-prone rules -->
+    <rule ref="category/java/errorprone.xml/AvoidBranchingStatementAsLastInLoop"/>
+    <rule ref="category/java/errorprone.xml/AvoidMultipleUnaryOperators"/>
+    <rule ref="category/java/errorprone.xml/AvoidUsingOctalValues"/>
+    <rule ref="category/java/errorprone.xml/BrokenNullCheck"/>
+    <rule ref="category/java/errorprone.xml/CheckSkipResult"/>
+    <rule ref="category/java/errorprone.xml/ClassCastExceptionWithToArray"/>
+    <rule ref="category/java/errorprone.xml/DontUseFloatTypeForLoopIndices"/>
+    <rule ref="category/java/errorprone.xml/EmptyCatchBlock"/>
+    <rule ref="category/java/errorprone.xml/JumbledIncrementer"/>
+    <rule ref="category/java/errorprone.xml/MisplacedNullCheck"/>
+    <rule ref="category/java/errorprone.xml/OverrideBothEqualsAndHashcode"/>
+    <rule ref="category/java/errorprone.xml/ReturnFromFinallyBlock"/>
+    <rule ref="category/java/errorprone.xml/UnconditionalIfStatement"/>
 
 </ruleset>

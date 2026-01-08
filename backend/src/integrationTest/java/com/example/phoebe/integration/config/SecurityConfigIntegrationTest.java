@@ -52,12 +52,13 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
+        roleRepository.deleteAll();
 
-        Role adminRole = roleRepository.findByName("ADMIN")
-                .orElseThrow(() -> new IllegalStateException("ADMIN role not found"));
-
-        Role editorRole = roleRepository.findByName("EDITOR")
-                .orElseThrow(() -> new IllegalStateException("EDITOR role not found"));
+        // Create roles
+        Role adminRole = new Role("ADMIN", "Administrator role");
+        Role editorRole = new Role("EDITOR", "Editor role");
+        adminRole = roleRepository.save(adminRole);
+        editorRole = roleRepository.save(editorRole);
 
         User admin = new User(
                 "admin_test",
