@@ -1,38 +1,33 @@
-package com.example.phoebe.config;
+package com.example.phoebe.integration.config;
 
+import com.example.phoebe.integration.BaseIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {CacheConfig.class})
-class CacheConfigTest {
+class CacheConfigTest extends BaseIntegrationTest {
 
     @Autowired
     private CacheManager cacheManager;
 
     @Test
     void cacheManagerShouldBeConfigured() {
-        assertNotNull(cacheManager, "CacheManager should be configured");
+        assertThat(cacheManager).isNotNull();
     }
 
     @Test
     void cacheManagerShouldCreateCaches() {
-        assertNotNull(cacheManager.getCache("news-by-id"), "'news-by-id' cache should exist");
-        assertNotNull(cacheManager.getCache("news-by-term"), "'news-by-term' cache should exist");
+        assertThat(cacheManager.getCache("news-by-id")).isNotNull();
+        assertThat(cacheManager.getCache("news-by-term")).isNotNull();
     }
 
     @Test
     void cacheShouldStoreAndRetrieveValues() {
         Cache cache = cacheManager.getCache("news-by-id");
-        assertNotNull(cache);
+        assertThat(cache).isNotNull();
 
         String key = "testKey";
         String value = "testValue";
@@ -40,6 +35,6 @@ class CacheConfigTest {
         cache.put(key, value);
         String retrievedValue = cache.get(key, String.class);
 
-        assertEquals(value, retrievedValue, "Should retrieve the stored value from the cache");
+        assertThat(retrievedValue).isEqualTo(value);
     }
 }
