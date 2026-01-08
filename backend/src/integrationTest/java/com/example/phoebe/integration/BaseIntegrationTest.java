@@ -54,8 +54,6 @@ public abstract class BaseIntegrationTest {
     @Autowired
     private DataSource dataSource;
 
-    private static boolean schemaInitialized = false;
-
     /**
      * Dynamically injects container properties into Spring context.
      * Executed AFTER the container has started.
@@ -73,16 +71,13 @@ public abstract class BaseIntegrationTest {
 
     @BeforeEach
     void initializeSchema() {
-        if (!schemaInitialized) {
-            try {
-                ScriptUtils.executeSqlScript(
-                    dataSource.getConnection(),
-                    new ClassPathResource("test-schema.sql")
-                );
-                schemaInitialized = true;
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to initialize test schema", e);
-            }
+        try {
+            ScriptUtils.executeSqlScript(
+                dataSource.getConnection(),
+                new ClassPathResource("test-schema.sql")
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize test schema", e);
         }
     }
 }
