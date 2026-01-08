@@ -49,6 +49,20 @@ CREATE TABLE IF NOT EXISTS content_terms (
     FOREIGN KEY (term_id) REFERENCES terms(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS permissions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS role_permissions (
+    role_id BIGINT NOT NULL,
+    permission_id BIGINT NOT NULL,
+    PRIMARY KEY (role_id, permission_id),
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+    FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
+);
+
 -- Insert basic test data
 INSERT IGNORE INTO roles (name, description) VALUES 
 ('ADMIN', 'Administrator role'),
