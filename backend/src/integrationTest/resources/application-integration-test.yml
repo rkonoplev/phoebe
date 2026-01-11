@@ -1,13 +1,15 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: none
-    show-sql: false
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+  flyway:
+    enabled: true
+    locations:
+      - classpath:db/migration/common
+      - classpath:db/migration/mysql
 
   sql:
     init:
       mode: never
-
-  flyway:
-    enabled: false

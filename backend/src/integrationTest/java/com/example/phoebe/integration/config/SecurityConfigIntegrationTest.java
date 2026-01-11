@@ -40,10 +40,14 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
     private static final String ADMIN_NEWS_ENDPOINT = "/api/admin/news";
     private static final String AUTH_HEADER_NAME = "Authorization";
 
-    private static final String ADMIN_USERNAME = "admin_test";
-    private static final String ADMIN_PASSWORD = "admin123_secure_for_tests";
-    private static final String EDITOR_USERNAME = "editor_test";
+    // Credentials from V3__insert_sample_data.sql
+    private static final String ADMIN_USERNAME = "admin";
+    private static final String ADMIN_PASSWORD = "admin";
+
+    // Editor is not in V3, so we create it manually
+    private static final String EDITOR_USERNAME = "editor_integration";
     private static final String EDITOR_PASSWORD = "editor123_secure_for_tests";
+
     private static final String TEST_PASSWORD = "testpassword_for_encoder";
 
     @Autowired
@@ -63,23 +67,28 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        // Only delete extra users, NOT the 'admin' from V3
+        // But to keep tests isolated, we delete all and recreate minimal set
         userRepository.deleteAll();
         roleRepository.deleteAll();
 
+        // Recreate roles (V3 inserts them, but we ensure consistency)
         Role adminRole = new Role("ADMIN", "Administrator role");
         Role editorRole = new Role("EDITOR", "Editor role");
         adminRole = roleRepository.save(adminRole);
         editorRole = roleRepository.save(editorRole);
 
+        // Re-create 'admin' exactly as in V3
         User admin = new User(
                 ADMIN_USERNAME,
                 passwordEncoder.encode(ADMIN_PASSWORD),
-                "admin@test.com",
+                "admin@example.com",
                 true
         );
         admin.setRoles(Set.of(adminRole));
         userRepository.save(admin);
 
+        // Create editor manually (not in V3)
         User editor = new User(
                 EDITOR_USERNAME,
                 passwordEncoder.encode(EDITOR_PASSWORD),
