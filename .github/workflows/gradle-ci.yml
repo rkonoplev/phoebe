@@ -28,6 +28,13 @@ jobs:
           echo "Docker info:"
           docker info
 
+      - name: Wait for Docker to be fully ready
+        run: |
+          echo "Waiting for Docker daemon to stabilize..."
+          sleep 10s
+          docker info
+          docker ps -a  # optional: shows any pre-existing containers
+
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x backend/gradlew
 
