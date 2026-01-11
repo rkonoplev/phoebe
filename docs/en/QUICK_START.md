@@ -59,7 +59,7 @@ When you run the project, two main services are started:
 
 - **Backend** (`phoebe-app`, port `8080`)
   - This is a Spring Boot 3.2.8 application that handles the API, logic, database, and authorization.
-  - It is accessible at: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+  - It is accessible at: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
 - **Frontend** (`phoebe-nextjs`, port `3000`)
   - This is a reference frontend application (e.g., Next.js or Angular)—a visual interface that

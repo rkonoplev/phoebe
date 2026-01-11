@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class SecurityConfigIntegrationTest extends BaseIntegrationTest {
 
     private static final String PUBLIC_NEWS_ENDPOINT = "/api/public/news";
@@ -107,7 +109,7 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void swaggerUiShouldBeAccessibleWithoutAuth() throws Exception {
-        mockMvc.perform(get("/swagger-ui/index.html"))
+        mockMvc.perform(get("/swagger-ui.html"))
                 .andExpect(status().isOk());
     }
 

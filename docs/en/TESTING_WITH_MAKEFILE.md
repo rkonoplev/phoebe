@@ -70,7 +70,7 @@ make run-prod
 
 **Access Services:**
 - API: [http://localhost:8080](http://localhost:8080)
-- Swagger: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+- Swagger: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 - Frontend: [http://localhost:3000](http://localhost:3000) (if available)
 
 > **Hint**: Login credentials (usernames and passwords) for different roles are described

@@ -60,7 +60,7 @@
 
 - **Backend** (`phoebe-app`, порт `8080`)
   - Это Spring Boot приложение, которое обрабатывает API, логику, базу данных и авторизацию.
-  - Доступен по адресу: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+  - Доступен по адресу: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
 - **Frontend** (`phoebe-nextjs`, порт `3000`)
   - Это референсное фронтенд-приложение (например, на Next.js или Angular) — визуальный интерфейс,

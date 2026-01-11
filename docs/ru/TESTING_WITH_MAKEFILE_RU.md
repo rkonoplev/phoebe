@@ -70,7 +70,7 @@ make run-prod
 
 **Доступ к сервисам:**
 - API: [http://localhost:8080](http://localhost:8080)
-- Swagger: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+- Swagger: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 - Фронтенд: [http://localhost:3000](http://localhost:3000) (если доступен)
 
 > **Подсказка**: Учетные данные для входа (логины и пароли) для разных ролей описаны в файле **[DATABASE_GUIDE_RU.md](./DATABASE_GUIDE_RU.md)**.

@@ -329,7 +329,7 @@ When validation errors occur (e.g., due to invalid data in a `POST` or `PUT` req
 
 In addition to this guide, you can access live API documentation and test endpoints in your browser:
 
-[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
 Swagger UI is useful for exploring all available endpoints, viewing schemas, and making test requests
 directly in the browser.

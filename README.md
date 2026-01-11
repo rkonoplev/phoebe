@@ -73,7 +73,7 @@ make run
 # For frontend developers (only Docker is needed):
 make run-prod
 ```
-The API is now available at `http://localhost:8080` and Swagger UI at `http://localhost:8080/swagger-ui/index.html`.
+The API is now available at `http://localhost:8080` and Swagger UI at `http://localhost:8080/swagger-ui.html`.
 
 For more detailed instructions on setup, migration, and daily development, please see the comprehensive **[Setup Guide](docs/en/SETUP_GUIDE.md)** and the **[Developer Guide](docs/en/DEVELOPER_GUIDE.md)**.
 

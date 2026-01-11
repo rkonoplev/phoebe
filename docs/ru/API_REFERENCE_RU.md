@@ -332,7 +332,7 @@ done
 В дополнение к этому руководству, вы можете получить доступ к живой документации по API и тестировать
 эндпоинты в вашем браузере:
 
-[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
 Swagger UI полезен для изучения всех доступных эндпоинтов, просмотра схем и выполнения тестовых
 запросов прямо в браузере.
