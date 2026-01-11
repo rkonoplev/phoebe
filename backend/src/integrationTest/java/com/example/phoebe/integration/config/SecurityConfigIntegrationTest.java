@@ -34,6 +34,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class SecurityConfigIntegrationTest extends BaseIntegrationTest {
 
+    private static final String PUBLIC_NEWS_ENDPOINT = "/api/public/news";
+    private static final String ADMIN_NEWS_ENDPOINT = "/api/admin/news";
+    private static final String AUTH_HEADER_NAME = "Authorization";
+
+    private static final String ADMIN_USERNAME = "admin_test";
+    private static final String ADMIN_PASSWORD = "admin123_secure_for_tests";
+    private static final String EDITOR_USERNAME = "editor_test";
+    private static final String EDITOR_PASSWORD = "editor123_secure_for_tests";
+    private static final String TEST_PASSWORD = "testpassword_for_encoder";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -54,15 +64,14 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
         userRepository.deleteAll();
         roleRepository.deleteAll();
 
-        // Create roles
         Role adminRole = new Role("ADMIN", "Administrator role");
         Role editorRole = new Role("EDITOR", "Editor role");
         adminRole = roleRepository.save(adminRole);
         editorRole = roleRepository.save(editorRole);
 
         User admin = new User(
-                "admin_test",
-                passwordEncoder.encode("admin123"),
+                ADMIN_USERNAME,
+                passwordEncoder.encode(ADMIN_PASSWORD),
                 "admin@test.com",
                 true
         );
@@ -70,23 +79,23 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
         userRepository.save(admin);
 
         User editor = new User(
-                "editor_test",
-                passwordEncoder.encode("editor123"),
+                EDITOR_USERNAME,
+                passwordEncoder.encode(EDITOR_PASSWORD),
                 "editor@test.com",
                 true
         );
         editor.setRoles(Set.of(editorRole));
         userRepository.save(editor);
 
-        adminAuthHeader = basicAuth("admin_test", "admin123");
-        editorAuthHeader = basicAuth("editor_test", "editor123");
+        adminAuthHeader = basicAuth(ADMIN_USERNAME, ADMIN_PASSWORD);
+        editorAuthHeader = basicAuth(EDITOR_USERNAME, EDITOR_PASSWORD);
     }
 
     /* ===================== Public endpoints ===================== */
 
     @Test
     void publicEndpointsShouldBeAccessibleWithoutAuth() throws Exception {
-        mockMvc.perform(get("/api/public/news"))
+        mockMvc.perform(get(PUBLIC_NEWS_ENDPOINT))
                 .andExpect(status().isOk());
     }
 
@@ -106,21 +115,21 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void adminEndpointsShouldRequireAuthentication() throws Exception {
-        mockMvc.perform(get("/api/admin/news"))
+        mockMvc.perform(get(ADMIN_NEWS_ENDPOINT))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void adminEndpointsShouldAcceptAdminRole() throws Exception {
-        mockMvc.perform(get("/api/admin/news")
-                        .header("Authorization", adminAuthHeader))
+        mockMvc.perform(get(ADMIN_NEWS_ENDPOINT)
+                        .header(AUTH_HEADER_NAME, adminAuthHeader))
                 .andExpect(status().isOk());
     }
 
     @Test
     void adminEndpointsShouldRejectEditorRole() throws Exception {
-        mockMvc.perform(get("/api/admin/news")
-                        .header("Authorization", editorAuthHeader))
+        mockMvc.perform(get(ADMIN_NEWS_ENDPOINT)
+                        .header(AUTH_HEADER_NAME, editorAuthHeader))
                 .andExpect(status().isForbidden());
     }
 
@@ -129,7 +138,7 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
     @Test
     void authMeEndpointShouldReturnUserInfoForAuthenticatedUser() throws Exception {
         mockMvc.perform(get("/api/admin/auth/me")
-                        .header("Authorization", adminAuthHeader))
+                        .header(AUTH_HEADER_NAME, adminAuthHeader))
                 .andExpect(status().isOk());
     }
 
@@ -137,7 +146,7 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void corsShouldAllowLocalhostOrigin() throws Exception {
-        mockMvc.perform(options("/api/public/news")
+        mockMvc.perform(options(PUBLIC_NEWS_ENDPOINT)
                         .header("Origin", "http://localhost:3000")
                         .header("Access-Control-Request-Method", "GET"))
                 .andExpect(status().isOk())
@@ -149,7 +158,7 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void corsShouldAllowDockerOrigin() throws Exception {
-        mockMvc.perform(options("/api/public/news")
+        mockMvc.perform(options(PUBLIC_NEWS_ENDPOINT)
                         .header("Origin", "http://phoebe-nextjs:3000")
                         .header("Access-Control-Request-Method", "GET"))
                 .andExpect(status().isOk())
@@ -163,10 +172,10 @@ class SecurityConfigIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void passwordEncoderShouldUseBCrypt() {
-        String encoded = passwordEncoder.encode("testpassword");
+        String encoded = passwordEncoder.encode(TEST_PASSWORD);
 
         assertTrue(encoded.startsWith("$2a$") || encoded.startsWith("$2b$"));
-        assertTrue(passwordEncoder.matches("testpassword", encoded));
+        assertTrue(passwordEncoder.matches(TEST_PASSWORD, encoded));
     }
 
     private String basicAuth(String username, String password) {
